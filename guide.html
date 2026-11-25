@@ -3645,9 +3645,181 @@ Notebook 2, cell 21.</p>
 dictionaries, and their weaknesses (L3)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q2(c) (5 points,
 Boolean search + EPU) and 2025 T/F (h) (dictionaries and polysemy).</p>
-<p><strong>Sources:</strong> Lecture 3 slides 6–12 (recipe on the
-slide-8 figure note); Interactive Notebook 2 cells 4, 7–10, 31; 2025
-exam evaluation guidelines, Q2(c) and 1(h).</p>
+<h3 id="start-from-zero-6">Start from zero</h3>
+<p><strong>The problem.</strong> Economists wanted to measure how
+worried people are about what the government will do to the economy: new
+taxes, budget fights, new rules. There is no thermometer for that kind
+of worry. But newspapers write about it every day. Three researchers
+(Baker, Bloom and Davis) had an idea: count how many newspaper articles
+each month talk about economic policy uncertainty, and track that number
+over time. A company could do the same with customer emails, for example
+counting how many mention “refund” or “cancel”. This chapter is about
+the most basic way to turn text into a number: pick the words, count
+them, and adjust for size.</p>
+<p><strong>How it works, step by step.</strong></p>
+<ol type="1">
+<li><strong>Decide what you want to measure.</strong> For example, worry
+about government policy, or how positive a review is.</li>
+<li><strong>Write down the words that signal it.</strong> For worry:
+“uncertain”, “uncertainty”. For a happy review: “good”, “great”. This
+list is your dictionary.</li>
+<li><strong>Choose the type of rule.</strong> A <em>Boolean</em> rule
+says which mix of words a document must contain. You join words with AND
+(both needed), OR (either one is fine) and NOT (must not appear). A
+<em>dictionary</em> rule counts the hits on each list and combines them,
+for example happy hits minus unhappy hits.</li>
+<li><strong>Run the rule over every document and count.</strong> For
+Boolean: how many documents pass? For a dictionary: what is each
+document’s score?</li>
+<li><strong>Make the counts fair (normalise).</strong> A newspaper that
+prints twice as many articles will get about twice as many hits, even if
+nobody is more worried. So divide by the total number of articles (or,
+for a dictionary score, by the number of words).</li>
+<li><strong>Rescale so “normal” = 100 (optional).</strong> Then a month
+at 150 means “50% more than a normal month”.</li>
+</ol>
+<p><strong>A tiny example by hand.</strong> We reuse the chapter’s own
+example below and go through it slowly.</p>
+<p><em>Which articles count?</em> The table in “A tiny worked example”
+has one row per made-up article. Its columns ask three yes/no questions
+and then give the verdict. Take article A1: “Congress fights over the
+deficit; uncertainty about the economy grows.”</p>
+<ul>
+<li>Uncertainty word (“uncertain” or “uncertainty”)? Yes:
+“uncertainty”.</li>
+<li>Economy word (“economic” or “economy”)? Yes: “economy”.</li>
+<li>Policy word (congress, deficit, white house, …)? Yes: “congress” and
+“deficit”.</li>
+</ul>
+<p>Three yeses, so A1 counts. Now A2: “Economic uncertainty rises as oil
+prices jump.” It has an uncertainty word and an economy word, but no
+policy word. One “no” is enough to fail, because the rule uses AND. So
+A2 does not count. Of the four articles, A1 and A4 pass: 2 of 4.</p>
+<p><em>Making it fair.</em> The second table has one row per month. Its
+columns are the steps of the calculation. Month 1 had 4 EPU articles out
+of 200 articles in total. Share = 4 ÷ 200 = 0.02 (2 in every 100
+articles). Month 2: 10 ÷ 250 = 0.04. Month 3: 3 ÷ 100 = 0.03. The
+average share over the three months is (0.02 + 0.04 + 0.03) ÷ 3 = 0.09 ÷
+3 = 0.03. Month 1’s index = 0.02 ÷ 0.03 × 100 = 66.7. So month 1 was a
+calm month, about a third below normal.</p>
+<p><em>A dictionary score.</em> Review: “good food but bad service and
+wasted time”. That is 8 words. Happy list {good, great}: 1 hit (“good”).
+Unhappy list {bad, wasted}: 2 hits (“bad”, “wasted”). Score = (1 − 2) ÷
+8 = −0.125. Times 1,000 gives −125 per 1,000 words, so the review comes
+out negative.</p>
+<p><strong>What it’s good at / where it breaks.</strong></p>
+<ul>
+<li>Good: easy to understand, explain and check. You can always see
+which words gave the score. It is “by far the most used approach in
+economics and finance” (slide 7).</li>
+<li>Good: cheap and fast, even on millions of articles.</li>
+<li>Breaks: it only finds the words you thought of. “Doubt about tax
+policy” is missed, because “doubt” is not on the list.</li>
+<li>Breaks: it cannot read context. One word with two meanings (“apple”
+the fruit or the company), or a “no” in front (“no crisis”), fools a
+plain count.</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>Boolean search:</strong> a search rule made of words joined
+by AND, OR and NOT. Like a shop website filter: “shoes AND red AND NOT
+sandals”.</li>
+<li><strong>AND:</strong> both parts must be present. “uncertainty AND
+economy” needs both words in the same article.</li>
+<li><strong>OR:</strong> at least one of the parts is enough. “uncertain
+OR uncertainty” is happy with either.</li>
+<li><strong>NOT:</strong> this part must be absent.</li>
+<li><strong>dictionary (word list):</strong> a hand-made list of words
+that signal something, like a list of happy words.</li>
+<li><strong>keyword:</strong> a word you search for.</li>
+<li><strong>hit:</strong> one match between the text and your list.
+“bad” in a review is a hit for the unhappy list.</li>
+<li><strong>normalise:</strong> make numbers fair to compare by dividing
+by size. 4 bad reviews out of 10 is worse than 4 out of 1,000.</li>
+<li><strong>share:</strong> a part divided by the whole. 4 EPU articles
+out of 200 = a share of 0.02.</li>
+<li><strong>average (mean):</strong> add the numbers and divide by how
+many there are. The average of 0.02, 0.04 and 0.03 is 0.03.</li>
+<li><strong>index:</strong> one number that tracks something over time,
+rescaled so it is easy to read, like a price index.</li>
+<li><strong>“normalized to mean 100”:</strong> rescaled so the average
+month in the chosen period (1985–2009) equals 100. Then 200 means “twice
+as much as normal”.</li>
+<li><strong>series / time series:</strong> a list of values in time
+order, one per month or year.</li>
+<li><strong>EPU (Economic Policy Uncertainty) index:</strong> the Baker,
+Bloom and Davis measure: the scaled monthly count of newspaper articles
+that mention uncertainty AND the economy AND policy.</li>
+<li><strong>policy:</strong> what the government decides to do (taxes,
+rules, budgets, interest rates).</li>
+<li><strong>latent concept:</strong> something real but hidden that we
+cannot measure directly, like worry or mood.</li>
+<li><strong><span class="math inline">\(f(c_i)\)</span>, known
+function:</strong> the fixed rule (our word lists and counting) applied
+to document <span class="math inline">\(i\)</span>’s word counts <span class="math inline">\(c_i\)</span>.</li>
+<li><strong><span class="math inline">\(\hat v_i\)</span>:</strong> the
+hat means “our estimate”. It is the number our rule gives for the hidden
+concept in document <span class="math inline">\(i\)</span>.</li>
+<li><strong>sentiment / tone:</strong> how positive or negative a text
+sounds.</li>
+<li><strong>per 1,000 words:</strong> the score scaled up so it reads
+like “−125 for every 1,000 words”, which is easier to read than
+−0.125.</li>
+<li><strong><span class="math inline">\(\#W^{pos}\)</span>, <span class="math inline">\(\#W^{neg}\)</span>:</strong> “#” means “number
+of”. The number of positive words and the number of negative words.</li>
+<li><strong>General Inquirer:</strong> a ready-made, general-purpose
+list of positive and negative words.</li>
+<li><strong>Loughran and McDonald (2011):</strong> a word list made for
+finance texts.</li>
+<li><strong>10-K:</strong> the annual report a US listed company must
+publish.</li>
+<li><strong>polysemy:</strong> one word, several meanings. “Apple” the
+fruit or the company; “liability” (a bad thing in daily talk, a neutral
+accounting item in a company report).</li>
+<li><strong>synonym:</strong> different words with the same meaning,
+like “unsure” and “uncertain”.</li>
+<li><strong>negation:</strong> a “not” or “no” that flips the meaning.
+“No crisis” is good news, but a plain count sees “crisis”.</li>
+<li><strong>subjective:</strong> depends on the person choosing. Two
+researchers would pick different word lists.</li>
+<li><strong>bag-of-words:</strong> treating a text as a bag of loose
+words, ignoring their order. “Dog bites man” and “man bites dog” look
+the same.</li>
+<li><strong>token / tokeniser:</strong> a token is one word-piece of a
+text; the tokeniser is the rule that cuts the text into tokens.</li>
+<li><strong><code>re.findall(r&quot;[a-z]+&quot;, ...)</code>:</strong> a piece of
+Python code that pulls out every run of letters as one word.</li>
+<li><strong>stock returns:</strong> how much a share price went up or
+down, in %.</li>
+<li><strong>forecast:</strong> a prediction about the future, such as
+next year’s growth.</li>
+<li><strong>GDP growth:</strong> how fast a country’s total production
+grew, in %. Used as “how well the economy is doing”.</li>
+<li><strong>quarter:</strong> three months. “4 quarters ahead” = one
+year ahead.</li>
+<li><strong><span class="math inline">\(R^2\)</span> / adjusted <span class="math inline">\(R^2\)</span>:</strong> a score from 0 to 1 for how
+much of the ups and downs in the outcome a model explains. 0 = nothing,
+1 = everything. “Adjusted” adds a small charge for using extra inputs.
+[Not in course files — general knowledge: the exact meaning of
+“adjusted”.]</li>
+<li><strong>central bank / Federal Reserve:</strong> the bank that sets
+a country’s interest rates; the Federal Reserve is the US one. [Not in
+course files — general knowledge]</li>
+<li><strong>Financial Stability Report:</strong> a report where a
+central bank says how safe it thinks the financial system is.</li>
+<li><strong>correlation:</strong> how closely two series move together.
+Near 1 = they rise and fall together; near 0 = no link.</li>
+<li><strong>baseline index:</strong> the starting version you compare
+your own version with.</li>
+<li><strong>switch (<code>HANDLE_NEGATION = False</code>):</strong> a
+setting you turn on (True) or off (False) in the code.</li>
+<li><strong><span class="math inline">\(\underbrace{\ \cdots\
+}_{U}\)</span> (the curly bracket under the formula):</strong> a name
+tag for a group of words. U, E and P stand for the uncertainty, economy
+and policy groups.</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-6">The idea in plain words</h3>
 <p>Decide in advance which words matter, then <strong>count them and
 divide by something sensible</strong>. That is it. Slide 7: “By far the
@@ -3673,9 +3845,11 @@ other.</p>
 <h3 id="the-exam-definition-6">The exam definition</h3>
 <p>Slide 7: <span class="math inline">\(v_i\)</span> “represents some
 latent concept, e.g., the sentiment or political uncertainty, and <span class="math inline">\(f(c_i)\)</span> is a known function giving an
-estimate <span class="math inline">\(\hat v_i\)</span>.” (They are
-“supervised” because <span class="math inline">\(f\)</span> is known —
-see Chapter 6.)</p>
+estimate <span class="math inline">\(\hat v_i\)</span>.” (Latent =
+hidden, something real we cannot see directly. The known function is our
+fixed counting rule applied to the word counts <span class="math inline">\(c_i\)</span>; the hat on <span class="math inline">\(\hat v_i\)</span> means “our estimate of”.) (They
+are “supervised” because <span class="math inline">\(f\)</span> is known
+— see Chapter 6.)</p>
 <p>Slide 8, side by side:</p>
 <table>
 <colgroup>
@@ -3693,8 +3867,9 @@ see Chapter 6.)</p>
 <tbody>
 <tr>
 <td>Step 1</td>
-<td>Use general dictionaries (e.g. General Inquirer) or make your own
-(e.g. Loughran and McDonald (2011) for finance)</td>
+<td>Use general dictionaries (e.g. General Inquirer, a ready-made
+general-purpose word list) or make your own (e.g. Loughran and McDonald
+(2011) for finance)</td>
 <td>Define words of interest, e.g. uncertainty, uncertainties, …</td>
 </tr>
 <tr>
@@ -3724,9 +3899,14 @@ policy relevant terms: ‘regulation’, ‘federal reserve’, ‘deficit’,
 ‘congress’, ‘legislation’, or ‘white house’. The series is normalized to
 mean 100 from 1985–2009 …” (10 major US newspapers: USA Today, Miami
 Herald, Chicago Tribune, Washington Post, LA Times, Boston Globe, SF
-Chronicle, Dallas Morning News, NY Times, Wall Street Journal.)</p>
+Chronicle, Dallas Morning News, NY Times, Wall Street Journal.)
+(“Normalized to mean 100” = rescaled so the average month in 1985–2009
+equals 100.)</p>
 </div>
 <p>As a Boolean rule, an article counts if:</p>
+<p><strong>In words:</strong> an article counts only if it has at least
+one uncertainty word, at least one economy word and at least one policy
+word.</p>
 <p><span class="math display">\[\underbrace{(\text{uncertain OR
 uncertainty})}_{\text{U}}\ \text{AND}\ \underbrace{(\text{economic OR
 economy})}_{\text{E}}\ \text{AND}\ \underbrace{(\text{regulation OR
@@ -3857,8 +4037,12 @@ high.</p>
 text).</strong> Take “Doc1” from slide 32 and the slide-8 word lists
 (positive: good, great; negative: bad, wasted). Doc1 contains “good”,
 “great”, “bad” and “wasted”. With the notebook’s tokeniser
-(<code>re.findall(r&quot;[a-z]+&quot;, ...)</code>) Doc1 has 74 words. Using the
-notebook’s tone formula (cell 4/7):</p>
+(<code>re.findall(r&quot;[a-z]+&quot;, ...)</code>, the rule that cuts the text
+into separate words, treating each run of letters as one word) Doc1 has
+74 words. Using the notebook’s tone formula (cell 4/7):</p>
+<p><strong>In words:</strong> take the happy-word hits minus the
+unhappy-word hits, divide by the length of the text, and multiply by
+1,000 to get a score per 1,000 words.</p>
 <p><span class="math display">\[\text{tone} =
 1000\times\frac{\#\text{pos} - \#\text{neg}}{\#\text{words}} =
 1000\times\frac{2-2}{74} = 0\]</span></p>
@@ -3866,6 +4050,8 @@ notebook’s tone formula (cell 4/7):</p>
 the course and only worried about “the investment”.</p>
 <h3 id="the-formula-symbol-by-symbol-3">The formula, symbol by
 symbol</h3>
+<p><strong>In words:</strong> the same tone recipe, written for any
+document number <span class="math inline">\(i\)</span>.</p>
 <p><span class="math display">\[\text{tone}_i = \frac{\#W^{pos}_i -
 \#W^{neg}_i}{\text{number of words in document } i}\times
 1000\]</span></p>
@@ -3884,13 +4070,16 @@ words”, only to make the numbers readable (Notebook 2, cell 7).</li>
 negative hits, per 1,000 words.”</p>
 <p><strong>Evidence that this works (slides 8–11).</strong> Tetlock et
 al. (2008): counting positive and negative words in news predicts firms’
-stock returns. Sharpe et al. (2017): the tone of the Greenbook forecasts
-(Federal Reserve staff forecasts <strong>[Not in course files — general
-knowledge]</strong>) adds to the numeric forecast of GDP growth; 4
-quarters ahead, the adjusted <span class="math inline">\(R^2\)</span>
-rises from 0.25 (forecast only) to 0.36 (with Tonality) and 0.41 (with
-Trend Tonality) (slide 10). Born et al. (2014): the tone of central-bank
-Financial Stability Reports moves stock markets.</p>
+stock returns (how much their share prices go up or down). Sharpe et
+al. (2017): the tone of the Greenbook forecasts (Federal Reserve staff
+forecasts <strong>[Not in course files — general knowledge]</strong>)
+adds to the numeric forecast of GDP growth; 4 quarters ahead (one year
+ahead), the adjusted <span class="math inline">\(R^2\)</span> (a 0-to-1
+score for how much of the ups and downs in GDP growth the forecast
+explains; higher is better) rises from 0.25 (forecast only) to 0.36
+(with Tonality) and 0.41 (with Trend Tonality) (slide 10). Born et
+al. (2014): the tone of central-bank Financial Stability Reports moves
+stock markets.</p>
 <p><strong>General vs finance dictionaries.</strong> General Inquirer is
 general-purpose. Loughran and McDonald (2011) built a finance dictionary
 because, as Notebook 2 (cell 10) says, general dictionaries “misclassify
@@ -3977,10 +4166,11 @@ would still count as negative, because the word right before “crisis” is
 positive and five negative words, and a switch for the negation fix. The
 tone function then computes <code>1000*(pos-neg)/n_words</code> per
 speech, and the scoreboard shows the correlation with the baseline index
-and which words produce the hits. The notebook has no saved outputs;
-when run, it would show a time series of State of the Union tone and a
-list of the words behind most hits (the notebook hints that “war”
-dominates).</p>
+(how closely your version moves together with the notebook’s original
+version) and which words produce the hits. The notebook has no saved
+outputs; when run, it would show a time series (one value per year, in
+time order) of State of the Union tone and a list of the words behind
+most hits (the notebook hints that “war” dominates).</p>
 <div class="callout exam">
 <p><strong>How this shows up on the exam</strong> 2025 Q2(c), 5 points:
 “Describe what is meant by a Boolean search-based method in NLP. Use a
@@ -4047,27 +4237,311 @@ index spikes at events like 9/11 and the debt-ceiling dispute. The
 method is simple and transparent, but subjective: it only finds the
 words you thought of, and cannot handle synonyms or polysemy.</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 3 slides 6–12 (recipe on the
+slide-8 figure note); Interactive Notebook 2 cells 4, 7–10, 31; 2025
+exam evaluation guidelines, Q2(c) and 1(h).</p>
 <hr />
 <h2 id="ch8">8. Text regressions and regularisation (Lasso, Ridge, λ,
 cross-validation) (L3, Interactive 2)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 T/F (e)
 (“regularization … help overcome the curse of dimensionality” → True)
 and very likely T/F or short questions on λ and cross-validation.</p>
-<p><strong>Sources:</strong> Lecture 3 slides 13–20 and 34; Interactive
-Notebook 2 cells 11–14, 31.</p>
+<h3 id="start-from-zero-7">Start from zero</h3>
+<p><strong>The problem.</strong> An economist asks: do the words a US
+president uses in the yearly State of the Union speech say anything
+about how the economy is doing? A shop wants to guess a review’s star
+rating from its words. An investment fund wants to guess how a share
+price will move from today’s news. In all three cases you have texts, a
+number for each text, and you want a recipe that turns words into a good
+guess of that number. The tool for “guess a number from other numbers”
+is called a regression. With text it runs into a special problem: there
+are far more different words than there are texts.</p>
+<p><strong>How it works, step by step.</strong></p>
+<ol type="1">
+<li><strong>Start with one input.</strong> For each speech, count the
+word “growth”. Also write down that year’s GDP growth (how fast the
+economy grew, in %). Draw each speech as a dot on a chart: how far right
+= the count, how high up = the growth.</li>
+<li><strong>Draw a straight line through the dots.</strong> A line has
+two numbers. The <em>intercept</em> is where the line starts when the
+count is 0. The <em>slope</em> (also called the <em>coefficient</em>) is
+how steep it is: “each extra ‘growth’ adds this much to the guess”.</li>
+<li><strong>Score the line.</strong> For each dot, measure how far the
+line misses it. Square each miss (so misses above and below both count
+as positive, and big misses count extra), then add them up. A smaller
+total means a better line.</li>
+<li><strong>Pick the best line.</strong> The line with the smallest
+total of squared misses wins. That is “ordinary least squares”, or OLS:
+“least squares” = the smallest total of squared misses.</li>
+<li><strong>Now use many words.</strong> Instead of one slope, every
+word gets its own coefficient. The guess = intercept + (count of word 1
+× its coefficient) + (count of word 2 × its coefficient) + … for every
+word.</li>
+<li><strong>Here it breaks.</strong> We have about 70 speeches but
+thousands of different words. When there are more coefficients to choose
+than speeches to check them against, the computer can always find
+settings that hit every training speech exactly, and in endless
+different ways. That is memorising, not learning. On a new speech, the
+guess is bad. This is called <em>overfitting</em>, and the course calls
+the cause the “curse of dimensionality”.</li>
+<li><strong>The fix: charge a fee.</strong> Every coefficient that is
+not zero now costs something. The total to make small becomes “squared
+misses + fee”. The computer only gives a word a big coefficient if that
+word cuts the misses by more than its fee. This is
+<em>regularisation</em> (also called <em>penalisation</em>). Lasso and
+Ridge are two versions of it.</li>
+<li><strong>Choose how big the fee is (λ, “lambda”).</strong> Fee too
+small → overfitting again. Fee too big → every coefficient is pushed to
+zero, and the model guesses the average every time. To choose, hide part
+of the data, train on the rest, and see how well the model guesses the
+hidden part. Repeat for several fee sizes and keep the one that guesses
+the hidden data best. This is <em>cross-validation</em>.</li>
+<li><strong>Judge the model only on hidden data.</strong> When there are
+more words than texts, a great score on the training texts proves
+nothing.</li>
+</ol>
+<p><strong>A tiny example by hand.</strong></p>
+<p><em>Part 1: one word, a straight line.</em> Three speeches. In the
+table, rows are speeches, and the columns are the count of “growth” and
+that year’s GDP growth. Toy numbers made up for this explanation.</p>
+<table>
+<thead>
+<tr>
+<th>Speech</th>
+<th>count of “growth”</th>
+<th>GDP growth (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>2</td>
+<td>2</td>
+<td>4</td>
+</tr>
+<tr>
+<td>3</td>
+<td>3</td>
+<td>5</td>
+</tr>
+</tbody>
+</table>
+<p>Try line B: “guess = 2 × count”. Speech 1: 2 × 1 = 2, real 2, miss 0.
+Speech 2: 2 × 2 = 4, real 4, miss 0. Speech 3: 2 × 3 = 6, real 5, miss
+1. Squared misses: 0, 0, 1. Total = 1.</p>
+<p>Try line C: “guess = 1 + count”. Speech 1: 1 + 1 = 2, miss 0. Speech
+2: 1 + 2 = 3, real 4, miss 1. Speech 3: 1 + 3 = 4, real 5, miss 1.
+Squared misses: 0, 1, 1. Total = 2.</p>
+<p>Line B beats line C (1 is smaller than 2). OLS searches all lines and
+finds the very best one. Here it is about “guess = 0.67 + 1.5 × count”,
+with a total of about 0.17.</p>
+<p><em>Part 2: many words, and why the line method breaks.</em> Now look
+at the chapter’s table in “A tiny worked example” below. Rows are 3
+speeches; columns are the counts of 4 words, plus the outcome <span class="math inline">\(y\)</span>. So there are 4 coefficients to choose,
+and only 3 speeches to check them. Take candidate A, coefficients 2, 5,
+1, 0. For speech 2 (counts 0, 1, 0, 1): 2 × 0 + 5 × 1 + 1 × 0 + 0 × 1 =
+5. The real <span class="math inline">\(y\)</span> is 5: a perfect hit.
+Now candidate C, coefficients 0, 3, −1, 2, for speech 3 (counts 0, 0, 1,
+1): 0 × 0 + 3 × 0 + (−1) × 1 + 2 × 1 = 1. The real <span class="math inline">\(y\)</span> is 1: also perfect. Two very different
+sets of coefficients, both perfect on every speech. The data cannot tell
+us which one is “true”, so neither means anything.</p>
+<p><em>Part 3: the fee picks a winner.</em> The fee is (number of
+speeches) × λ × (total size of the coefficients, ignoring minus signs).
+For candidate A: total size = 2 + 5 + 1 + 0 = 8, so the fee = 3 × λ × 8
+= 24λ. Candidate Z sets every coefficient to 0 and always guesses the
+average, (2 + 5 + 1) ÷ 3 = 8 ÷ 3 ≈ 2.67. Its misses are 2 − 2.67 =
+−0.67, 5 − 2.67 = 2.33 and 1 − 2.67 = −1.67. Squared, that is about
+0.44, 5.44 and 2.78, a total of about 8.67, and no fee.</p>
+<ul>
+<li>With λ = 1: A costs 0 + 24 = 24; Z costs 8.67. Z wins.</li>
+<li>With λ = 0.1: A costs 0 + 2.4 = 2.4; Z still costs 8.67. A
+wins.</li>
+</ul>
+<p>So the size of the fee decides how much the model is allowed to use
+the words.</p>
+<p><strong>What it’s good at / where it breaks.</strong></p>
+<ul>
+<li>Good: it can use all the words at once and lets the data decide
+which ones matter.</li>
+<li>Good: Lasso pushes most coefficients to exactly zero, so you get a
+short, readable list of the words that matter.</li>
+<li>Good: cross-validation gives an honest score on texts the model has
+never seen.</li>
+<li>Breaks: with few texts (about 70 speeches), even the best model may
+predict poorly; the honest score can be near zero or below.</li>
+<li>Breaks: the result depends on the fee λ. A different λ gives a
+different list of words.</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>regression:</strong> a method for guessing a number (the
+outcome) from other numbers (the inputs) by finding the best formula,
+often a straight line. Example: guessing a house price from its
+size.</li>
+<li><strong>text regression:</strong> a regression where the inputs are
+the word counts of each document.</li>
+<li><strong>outcome (<span class="math inline">\(y\)</span>):</strong>
+the number we want to guess, such as GDP growth or a star rating. <span class="math inline">\(y_i\)</span> is the outcome of document <span class="math inline">\(i\)</span>.</li>
+<li><strong>explanatory variable / regressor / feature (<span class="math inline">\(x\)</span>):</strong> an input used to make the
+guess. In text regression, each word column is one input.</li>
+<li><strong><span class="math inline">\(x_i = f(c_i)\)</span>:</strong>
+the inputs of document <span class="math inline">\(i\)</span>. Either
+its raw row of word counts, or a changed version of it (like tf-idf
+weights).</li>
+<li><strong>intercept (<span class="math inline">\(\alpha\)</span>,
+alpha):</strong> the starting value of the guess when every input is
+0.</li>
+<li><strong>coefficient / slope (<span class="math inline">\(\beta\)</span>, beta):</strong> how much the guess
+changes when an input goes up by one. <span class="math inline">\(\beta_j\)</span> belongs to word <span class="math inline">\(j\)</span>.</li>
+<li><strong>prediction / guess (<span class="math inline">\(\eta_i\)</span>, eta):</strong> the model’s guess
+for document <span class="math inline">\(i\)</span>: intercept plus each
+input times its coefficient.</li>
+<li><strong><span class="math inline">\(x_i&#39;\beta\)</span>:</strong>
+short for “multiply each of document <span class="math inline">\(i\)</span>’s inputs by its coefficient and add
+them all up”.</li>
+<li><strong>miss / error / residual:</strong> the gap between the real
+outcome and the guess.</li>
+<li><strong>squared error:</strong> the miss times itself. A miss of 2
+becomes 4, a miss of −2 also becomes 4.</li>
+<li><strong>loss (<span class="math inline">\(l(\alpha,\beta)\)</span>):</strong> the total of
+how badly the model fits. Here, the total of squared misses.</li>
+<li><strong><span class="math inline">\(\sum\)</span> (sigma):</strong>
+“add up”. <span class="math inline">\(\sum_{i=1}^{n}\)</span> means “add
+this up for document 1, 2, … up to <span class="math inline">\(n\)</span>”.</li>
+<li><strong><span class="math inline">\(\min\{\cdot\}\)</span>:</strong>
+“choose the numbers that make this as small as possible”.</li>
+<li><strong>objective:</strong> the total you are trying to make as
+small as possible (here, loss + fee).</li>
+<li><strong>OLS (ordinary least squares):</strong> the standard way of
+choosing the coefficients: make the total of squared misses as small as
+possible, with no fee.</li>
+<li><strong><span class="math inline">\(n\)</span> and <span class="math inline">\(p\)</span>:</strong> <span class="math inline">\(n\)</span> = number of documents (rows); <span class="math inline">\(p\)</span> = number of words (columns).</li>
+<li><strong><span class="math inline">\(n \ll p\)</span>:</strong>
+“<span class="math inline">\(n\)</span> is much smaller than <span class="math inline">\(p\)</span>”: far fewer documents than words.</li>
+<li><strong>more unknowns than equations:</strong> more numbers to
+choose (coefficients) than facts to pin them down (documents). Like
+being asked for two numbers that add to 10: there are endless
+answers.</li>
+<li><strong>dimension / high-dimensional:</strong> each input column is
+one “dimension”. Thousands of word columns = high-dimensional.</li>
+<li><strong>curse of dimensionality:</strong> the trouble that comes
+with too many input columns compared with data rows: perfect but
+meaningless fits.</li>
+<li><strong>overfitting:</strong> a model that memorises the training
+examples, including their noise, and so guesses badly on new ones. Like
+a student who memorises last year’s answers and fails a new exam.</li>
+<li><strong>regularisation / penalisation:</strong> adding a fee for big
+coefficients, so the model only uses words that really help.</li>
+<li><strong>penalty:</strong> the fee itself.</li>
+<li><strong><span class="math inline">\(\lambda\)</span>
+(lambda):</strong> the fee rate. <span class="math inline">\(\lambda =
+0\)</span> = no fee (plain OLS). Bigger <span class="math inline">\(\lambda\)</span> = bigger fee, more coefficients
+pushed to zero.</li>
+<li><strong>shrinkage:</strong> coefficients getting pulled towards zero
+by the fee.</li>
+<li><strong>absolute value <span class="math inline">\(\lvert\beta_j\rvert\)</span>:</strong> the size of
+a number ignoring its minus sign. <span class="math inline">\(\lvert
+-3\rvert = 3\)</span>.</li>
+<li><strong>Lasso:</strong> the version whose fee uses absolute values.
+It can set coefficients to exactly zero, so it also picks words.</li>
+<li><strong>Ridge:</strong> the version whose fee uses squared
+coefficients. It shrinks them but keeps every word. [Not in course files
+— general knowledge, as in the Ridge note below]</li>
+<li><strong>Elastic net:</strong> a mix of Lasso and Ridge.</li>
+<li><strong><span class="math inline">\(\omega_j\)</span> (omega),
+variable-specific cost:</strong> an extra weight on each word’s fee, so
+words can be charged differently.</li>
+<li><strong>standard deviation:</strong> how much a number varies around
+its average. Counts that jump around a lot have a big standard
+deviation.</li>
+<li><strong>rare feature upweighting:</strong> setting each word’s extra
+weight <span class="math inline">\(\omega_j\)</span> using its standard
+deviation (slide 17).</li>
+<li><strong>conditional expectation <span class="math inline">\(E[y_i\mid c_i]\)</span>:</strong> the average
+outcome you would expect for documents with these word counts, i.e. the
+best guess of <span class="math inline">\(y\)</span> given the
+words.</li>
+<li><strong>yes/no outcome and logistic loss:</strong> when the outcome
+is yes/no (spam or not), the misses are scored with a different formula,
+the logistic loss.</li>
+<li><strong>log:</strong> the logarithm, a function that turns
+multiplying into adding; <span class="math inline">\(\log(a \times b) =
+\log a + \log b\)</span>. It grows slowly: big numbers become small
+ones.</li>
+<li><strong><span class="math inline">\(e\)</span> (in <span class="math inline">\(e^{\eta_i}\)</span>):</strong> a fixed number,
+about 2.718, that appears in growth formulas. <span class="math inline">\(e^{\eta}\)</span> is <span class="math inline">\(e\)</span> raised to the power <span class="math inline">\(\eta\)</span> (for <span class="math inline">\(\eta = 2\)</span>, that is <span class="math inline">\(e \times e \approx 7.39\)</span>).</li>
+<li><strong>tf-idf:</strong> a word weight that is high for words that
+are frequent in this document but rare in the other documents.</li>
+<li><strong>stop words:</strong> very common words like “the”, “and”,
+“of”, usually removed.</li>
+<li><strong><code>min_df</code>:</strong> “minimum document frequency”:
+drop words that appear in fewer than this many documents.</li>
+<li><strong>dimension reduction (PCA, Partial Least Squares):</strong>
+squeezing thousands of word columns into a few summary columns before
+running the regression. PCA is the same idea as LSA in Chapter 10.</li>
+<li><strong>non-linear methods (GLMs, regression trees, random
+forest):</strong> methods that allow curves and if-then rules instead of
+one straight line. [Not in course files — general knowledge]</li>
+<li><strong>training set / test set:</strong> the part of the data the
+model learns from, and the hidden part used to check it.</li>
+<li><strong>cross-validation:</strong> choosing λ by repeatedly training
+on part of the data and checking guesses on the hidden part.</li>
+<li><strong>fold / 5-fold:</strong> the data is cut into 5 equal groups
+(folds). Train on 4, test on the 5th, and repeat 5 times so every group
+is tested once.</li>
+<li><strong>in-sample / out-of-sample:</strong> in-sample = measured on
+the data the model trained on; out-of-sample = measured on data it never
+saw.</li>
+<li><strong>held-out data:</strong> data kept aside and not used for
+training.</li>
+<li><strong><span class="math inline">\(R^2\)</span>:</strong> a score
+for how much of the ups and downs in the outcome the guesses explain. 1
+= perfect; 0 = “no better than always guessing the average”; below 0 =
+worse than that.</li>
+<li><strong>cross-validated <span class="math inline">\(R^2\)</span>:</strong> the <span class="math inline">\(R^2\)</span> measured on held-out data only, the
+honest one.</li>
+<li><strong>placebo test:</strong> a fake test where the outcome is
+shuffled on purpose, so the words cannot really predict it. If the model
+still “fits”, the fit is fake.</li>
+<li><strong>information criteria (AIC, BIC):</strong> scores computed on
+the training data that reward good fit but charge for every extra
+coefficient. [Not in course files — general knowledge]</li>
+<li><strong>pipeline:</strong> a chain of steps run in order: first turn
+text into numbers, then fit the regression.</li>
+<li><strong>scikit-learn / <code>Ridge(alpha=…)</code>:</strong> a
+popular Python toolbox for these methods. Its <code>alpha</code> setting
+is the fee λ, not the intercept.</li>
+<li><strong><code>KFold</code>, <code>shuffle</code>,
+<code>random_state</code>:</strong> the code that cuts the data into
+folds, mixes up the order first, and fixes the random mixing so you get
+the same result each time you run it.</li>
+<li><strong>GDP growth / State of the Union:</strong> GDP growth = how
+fast the economy grew, in %. The State of the Union is the US
+president’s yearly speech to Congress. [Not in course files — general
+knowledge]</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-7">The idea in plain words</h3>
 <p>A text regression predicts a number (GDP growth, a review score, a
 stock return) from the words of documents. The columns of the
-document-term matrix are the explanatory variables.</p>
+document-term matrix (the word-count table: rows = documents, columns =
+words) are the explanatory variables (the inputs used to make the
+guess).</p>
 <p>The problem: <strong>there are far more words than
 documents</strong>. Notebook 2 regresses GDP growth on about 70 State of
 the Union speeches (69 speech–year pairs, 1948–2018), but the speeches
 contain thousands of different words. With more unknowns (one <span class="math inline">\(\beta\)</span> per word) than equations (one per
-speech), ordinary least squares (OLS) cannot find a single answer. It
-can fit the training speeches <em>perfectly</em> in endless ways, and
-none of them means anything. This is the <strong>curse of
-dimensionality</strong> (slide 34) or the “<span class="math inline">\(n
-\ll p\)</span> problem”.</p>
+speech), ordinary least squares (OLS, the standard “smallest total of
+squared misses” method) cannot find a single answer. It can fit the
+training speeches <em>perfectly</em> in endless ways, and none of them
+means anything. This is the <strong>curse of dimensionality</strong>
+(slide 34) or the “<span class="math inline">\(n \ll p\)</span>
+problem”.</p>
 <p>The fix is <strong>regularisation (penalisation)</strong>: add a cost
 for big coefficients. The model must now “pay” for each word it uses, so
 it only keeps words that really help.</p>
@@ -4084,7 +4558,8 @@ few that pay for themselves.</p>
 <li>Slide 14: text regression estimates <span class="math inline">\(p(y_i\mid c_i)\)</span> “using observed values for
 <span class="math inline">\(y_i\)</span> and <span class="math inline">\(c_i\)</span>. Usually estimated via the
 conditional expectation <span class="math inline">\(E[y_i\mid
-c_i]\)</span>.” It is supervised.</li>
+c_i]\)</span>.” (That is: the average <span class="math inline">\(y\)</span> you would expect for a document with
+these word counts.) It is supervised.</li>
 <li>Slide 15: “Typically <span class="math inline">\(n \ll p\)</span>,
 thus we have more explanatory variables than observations of the outcome
 (more unknowns than equations). Thus, we cannot apply linear regression
@@ -4096,8 +4571,10 @@ This is typically not what we do with text data!”</li>
 <li>Slide 19: “Text regressions are high-dimensional problems. Thus, we
 need penalization methods or dimension reduction.” Options: the Lasso
 family (Ridge, Elastic net), dimension reduction (PCA, Partial Least
-Squares), or non-linear methods (GLMs, regression trees, random
-forest).</li>
+Squares — squeeze the word columns into a few summary columns first), or
+non-linear methods (GLMs, regression trees, random forest — methods that
+allow curves and if-then rules instead of one straight line <strong>[Not
+in course files — general knowledge]</strong>).</li>
 </ul>
 <h3 id="a-tiny-worked-example-7">A tiny worked example</h3>
 <p><strong>Why OLS breaks when <span class="math inline">\(n &lt;
@@ -4186,7 +4663,8 @@ different set of coefficients; every one predicts all three <span class="math in
 perfect fits, so OLS (<span class="math inline">\(\lambda=0\)</span>)
 has no unique answer and the perfect fit tells you nothing.</p>
 <p><strong>What λ does.</strong> Compare two extreme candidates using
-the Lasso objective (below) with <span class="math inline">\(n=3\)</span> and all <span class="math inline">\(\omega_j=1\)</span>:</p>
+the Lasso objective (below; the total to make small = squared misses +
+fee) with <span class="math inline">\(n=3\)</span> and all <span class="math inline">\(\omega_j=1\)</span>:</p>
 <ul>
 <li>Candidate A (perfect fit, intercept <span class="math inline">\(\alpha=0\)</span>): loss <span class="math inline">\(=0\)</span>, penalty <span class="math inline">\(=n\lambda\cdot 8 = 24\lambda\)</span>.</li>
 <li>Candidate Z (all <span class="math inline">\(\beta=0\)</span>, <span class="math inline">\(\alpha\)</span> = average of <span class="math inline">\(y\)</span> = 8/3 ≈ 2.67): loss <span class="math inline">\(= (2-2.67)^2+(5-2.67)^2+(1-2.67)^2 =
@@ -4230,8 +4708,14 @@ shows the direction of the trade-off.</p>
 <h3 id="the-formula-symbol-by-symbol-4">The formula, symbol by
 symbol</h3>
 <p>Slide 16 (copy this):</p>
+<p><strong>In words:</strong> choose the intercept and coefficients that
+make “how badly we miss” plus “the fee for big coefficients” as small as
+possible.</p>
 <p><span class="math display">\[\min\Big\{\, l(\alpha,\beta) + n\lambda
 \sum_{j=1}^{p} \omega_j\,|\beta_j| \,\Big\}\]</span></p>
+<p><strong>In words:</strong> the miss total is the sum of squared gaps
+between each real outcome and the model’s guess, and the guess is the
+starting value plus each word’s value times its coefficient.</p>
 <p><span class="math display">\[l(\alpha,\beta) = \sum_{i=1}^{n} (y_i -
 \eta_i)^2 \quad\text{and}\quad \eta_i = \alpha +
 x_i&#39;\beta\]</span></p>
@@ -4249,7 +4733,8 @@ year of speech <span class="math inline">\(i\)</span>).</li>
 coefficient.</li>
 <li><span class="math inline">\(x_i = f(c_i)\)</span> = the features of
 document <span class="math inline">\(i\)</span> — its row of the DTM, or
-a transformation such as tf-idf (slide 16 says “e.g., the
+a transformation such as tf-idf (word weights that are high for words
+frequent in this document but rare elsewhere) (slide 16 says “e.g., the
 identity”).</li>
 <li><span class="math inline">\(\beta_j\)</span> = the coefficient of
 word <span class="math inline">\(j\)</span>: “The object of interest is
@@ -4259,8 +4744,9 @@ word <span class="math inline">\(j\)</span>: “The object of interest is
 penalty</strong>: how expensive large coefficients are. <span class="math inline">\(\lambda=0\)</span> → standard OLS.</li>
 <li><span class="math inline">\(\omega_j\)</span> = a
 <strong>variable-specific cost</strong>. In text analysis it is
-typically scaled by each word’s sample standard deviation, called
-<strong>“rare feature upweighting”</strong> (slide 17).</li>
+typically scaled by each word’s sample standard deviation (how much that
+word’s count varies from document to document), called <strong>“rare
+feature upweighting”</strong> (slide 17).</li>
 <li><span class="math inline">\(|\beta_j|\)</span> = the size of
 coefficient <span class="math inline">\(j\)</span> (absolute value).
 Using absolute values is what lets Lasso set coefficients
@@ -4269,7 +4755,9 @@ Using absolute values is what lets Lasso set coefficients
 <p>Read aloud: “Choose the intercept and the word coefficients to
 minimise the squared prediction errors plus a penalty that is λ times
 the (weighted) total size of all the coefficients.”</p>
-<p>For a yes/no outcome the slide gives the logistic loss instead: <span class="math inline">\(l(\alpha,\beta) = -\sum_{i=1}^{n} \big(\eta_i y_i
+<p>For a yes/no outcome (e.g. spam or not) the slide gives the logistic
+loss (a different way of scoring the misses; “log” and “<span class="math inline">\(e\)</span>” are explained in the word list at the
+top of this chapter) instead: <span class="math inline">\(l(\alpha,\beta) = -\sum_{i=1}^{n} \big(\eta_i y_i
 - \log(1 + e^{\eta_i})\big)\)</span> (slide 17).</p>
 <p><strong>Ridge.</strong> The slides only name Ridge and Elastic net as
 members of the “Lasso family” (slide 19) and give no formula.
@@ -4286,8 +4774,10 @@ cross-validation (slide 18)</h3>
 the model on training data (<span class="math inline">\(Y^{train}\)</span>, <span class="math inline">\(C^{train}\)</span>) for different λ values;
 evaluate each on test data (<span class="math inline">\(Y^{test}\)</span>, <span class="math inline">\(C^{test}\)</span>); keep the λ that predicts the
 test data best.</li>
-<li><strong>Information criteria (in-sample):</strong> BIC, AIC,
-etc.</li>
+<li><strong>Information criteria (in-sample):</strong> BIC, AIC, etc.
+(scores computed on the training data that reward good fit but charge
+for every extra coefficient <strong>[Not in course files — general
+knowledge]</strong>).</li>
 </ul>
 <p>Notebook 2 (cell 11) uses 5-fold cross-validation: “split the
 speeches into 5 groups, train on 4, predict the 5th, repeat… <span class="math inline">\(R^2 = 0\)</span> means ‘no better than predicting
@@ -4341,8 +4831,9 @@ is: in-sample or out-of-sample? (cell 14).</p>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> cross_val_predict(model, texts, y, cv<span class="op">=</span>cv)</span></code></pre></div>
 <p>(Simplified from Notebook 2, cells 12–13.)</p>
 <ul>
-<li>Line 1–2: build a pipeline that turns each speech into tf-idf word
-weights (dropping English stop words and words found in fewer than
+<li>Line 1–2: build a pipeline (a chain of steps run in order) that
+turns each speech into tf-idf word weights (dropping English stop words
+— very common words like “the” and “and” — and words found in fewer than
 <code>MIN_DF = 5</code> speeches) and then fits a Ridge regression.</li>
 <li><strong>Watch the names:</strong> scikit-learn’s <code>alpha</code>
 is the <strong>penalty strength</strong> — the slide’s
@@ -4420,14 +4911,202 @@ model on training data for different λ values and pick the one that
 predicts held-out test data best (or use an information criterion such
 as AIC/BIC).</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 3 slides 13–20 and 34; Interactive
+Notebook 2 cells 11–14, 31.</p>
 <hr />
 <h2 id="ch9">9. Naive Bayes classification (L3, Interactive 2)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 T/F (g) (“Naive Bayes
 … great for … two continuous variables” → False); the mechanics (Bayes’
 rule, “naive”, Laplace smoothing) are a likely T/F or short
 question.</p>
-<p><strong>Sources:</strong> Lecture 3 slides 21–29; Interactive
-Notebook 2 cells 15–20, 31.</p>
+<h3 id="start-from-zero-8">Start from zero</h3>
+<p><strong>The problem.</strong> Your inbox gets 200 emails a day, and
+50 of them are junk (“You won a prize! Click here!”). You want a program
+that moves the junk to a spam folder before you see it. You have a big
+pile of old emails that you already marked “spam” or “not spam”. Can the
+computer learn from that pile and then sort new emails by itself? Naive
+Bayes is one of the oldest and most basic ways to do this. The same idea
+can sort political speeches by party, or reviews into good and bad.</p>
+<p><strong>How it works, step by step.</strong></p>
+<ol type="1">
+<li><strong>Collect labelled examples.</strong> Gather old emails that
+already carry the right label, “spam” or “not spam”. This pile is the
+training set.</li>
+<li><strong>Count how common each label is.</strong> If 1 in 4 old
+emails was spam, then before reading a new email, your starting guess is
+“1 in 4 chance it is spam”. This starting guess is called the
+<em>prior</em>.</li>
+<li><strong>For each label, count each word.</strong> “prize” might be
+common in spam and rare in normal mail; “meeting” the other way round.
+Turn these counts into shares: out of all the words in spam emails, what
+share is “prize”? This share is the <em>likelihood</em> of the word in
+that label.</li>
+<li><strong>Fix the zero problem.</strong> If a word never appeared in
+spam, its share would be 0. One zero wipes out the whole score, because
+anything times 0 is 0. So pretend every word was seen one extra time in
+every label. This is <em>Laplace smoothing</em>.</li>
+<li><strong>Score a new email for each label.</strong> Start from the
+prior and multiply by the share of each word in the email. “Naive” means
+we treat every word as separate evidence, as if the words did not affect
+each other.</li>
+<li><strong>Pick the winner.</strong> The label with the bigger score
+wins. To turn the scores into chances that add up to 100%, divide each
+score by the total of all the scores.</li>
+<li><strong>Why “Bayes”.</strong> Bayes’ rule is the bit of probability
+that lets us flip the question. We learned “how likely are these words,
+if the email is spam?” Bayes’ rule turns that into “how likely is it
+spam, given these words?”</li>
+<li><strong>Test it fairly.</strong> Check it on emails that were
+<em>not</em> in the training pile, and compare with a lazy baseline like
+“always say not spam”.</li>
+</ol>
+<p><strong>A tiny example by hand.</strong> We reuse the chapter’s own
+example (slides 24 and 26) and go through it slowly. In the data table
+further down, each row is one short document, and the columns are its
+words and its class. Classes “a” and “b” are two labels, like “spam” and
+“not spam”. Documents 1–4 are the training set. Document 5, “inflation
+norway high”, is the new one we must sort.</p>
+<p><em>Prior.</em> 3 of the 4 training documents are class a, so the
+prior for a is 3/4. 1 of the 4 is class b, so the prior for b is
+1/4.</p>
+<p><em>Counting words.</em> Class a’s three documents together have 9
+words: “growth high trump” (3), “trump rocket man” (3), “trump trump
+trump” (3). “trump” shows up 1 + 1 + 3 = 5 times. Class b’s one document
+has 3 words: trump, inflation, norway. Across all training documents
+there are 7 different words: growth, high, trump, rocket, man,
+inflation, norway.</p>
+<p><em>One table cell out loud.</em> In the likelihood table, rows are
+the words of document 5 and columns are the two classes. Take
+“inflation” in class a. It appears 0 times in class a. Add 1 for
+smoothing: 0 + 1 = 1 on top. On the bottom, class a has 9 words; add 7
+(one extra for each of the 7 different words): 9 + 7 = 16. So the chance
+is 1/16. Another one: “high” in class b appears 0 times, so the top is 0
++ 1 = 1. The bottom is 3 + 7 = 10. So 1/10.</p>
+<p><em>Scores.</em> Class a: 3/4 × 1/16 × 1/16 × 1/8 = 3/8192, about
+0.000366. Class b: 1/4 × 1/5 × 1/5 × 1/10 = 1/1000 = 0.001. Class b’s
+score is bigger.</p>
+<p><em>Chances.</em> Add the two scores: 0.000366 + 0.001 = 0.001366.
+Class b’s chance = 0.001 ÷ 0.001366 ≈ 0.73, so about 73%. Class a’s
+chance ≈ 0.27, about 27%. Document 5 goes to class b. The reason: its
+words “inflation” and “norway” were only ever seen in class b.</p>
+<p><strong>What it’s good at / where it breaks.</strong></p>
+<ul>
+<li>Good: fast and needs only counting. Despite being so basic, it
+“works very well for categorizing documents” and is “a good starting
+point” (slides 22, 29).</li>
+<li>Good: easy to see which words push a document towards each
+class.</li>
+<li>Breaks: it only sorts into categories (spam / not spam). It cannot
+guess a number like GDP growth (2025 T/F g).</li>
+<li>Breaks: the “words are independent” idea is false in real text
+(“New” is often followed by “York”), and a test set that shares people
+or periods with the training set makes the accuracy look better than it
+is (see “Evaluation” below).</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>classification / classifier:</strong> sorting things into
+boxes; the classifier is the method that does the sorting. Like a post
+office sorting letters by city.</li>
+<li><strong>class / category:</strong> one of the boxes, such as “spam”
+or “Democrat”. Written <span class="math inline">\(v_k\)</span> (class
+number <span class="math inline">\(k\)</span>), or <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> in the example.</li>
+<li><strong>categorical vs continuous:</strong> categorical = a fixed
+set of boxes (spam / not spam). Continuous = a number that can take any
+value (2.37% growth).</li>
+<li><strong>label / labelled data:</strong> the correct class written
+next to each training document.</li>
+<li><strong>training set / test set:</strong> the training set is the
+labelled pile the model learns from. The test set is a separate pile
+kept aside to check how well it sorts.</li>
+<li><strong>probability / chance, <span class="math inline">\(P(\cdot)\)</span>:</strong> a number from 0 to 1
+for how likely something is. <span class="math inline">\(P(\text{rain})
+= 0.3\)</span> = 30% chance of rain.</li>
+<li><strong><span class="math inline">\(P(A\mid B)\)</span>:</strong>
+“the chance of A, given B”. <span class="math inline">\(P(\text{umbrella}\mid\text{rain})\)</span> = how
+likely you carry an umbrella when it rains.</li>
+<li><strong>document <span class="math inline">\(d\)</span>:</strong>
+the text we want to sort.</li>
+<li><strong>prior, <span class="math inline">\(P(v_k)\)</span>:</strong>
+how common a class is before you read the document. If 3 of 4 emails are
+class a, the prior for a is 3/4.</li>
+<li><strong>likelihood, <span class="math inline">\(P(c_{ij}\mid
+v_k)\)</span>:</strong> how likely a word is to show up in a class.
+“prize” has a high likelihood in spam.</li>
+<li><strong>posterior, <span class="math inline">\(P(v\mid
+d)\)</span>:</strong> the updated chance of a class after reading the
+document. Prior + evidence → posterior.</li>
+<li><strong><span class="math inline">\(P(d)\)</span>:</strong> the
+overall chance of seeing this document. It is the same for every class,
+so it can be dropped when comparing.</li>
+<li><strong>Bayes’ rule:</strong> the rule that flips “chance of words
+given class” into “chance of class given words”: posterior = likelihood
+× prior ÷ <span class="math inline">\(P(d)\)</span>.</li>
+<li><strong><span class="math inline">\(\propto\)</span> (“proportional
+to”):</strong> “equal up to a common scaling”. We skip dividing by the
+same number for every class, because it does not change the winner.</li>
+<li><strong><span class="math inline">\(\arg\max\)</span>:</strong> “the
+choice that gives the biggest value”. If a scores 0.000366 and b scores
+0.001, the argmax is b.</li>
+<li><strong>MAP, <span class="math inline">\(v_{map}\)</span> (maximum a
+posteriori):</strong> the class with the highest posterior chance, the
+winner.</li>
+<li><strong>naive / independence / conditional independence:</strong>
+treating each word as separate evidence, as if knowing one word tells
+you nothing about the next once you know the class.</li>
+<li><strong>bag-of-words assumption:</strong> a document is a loose bag
+of words; order does not matter.</li>
+<li><strong><span class="math inline">\(\prod\)</span> (capital
+pi):</strong> “multiply all of these together”, like <span class="math inline">\(\sum\)</span> means “add all of these”.</li>
+<li><strong><span class="math inline">\(c_{ij}\)</span>:</strong> the
+count of word <span class="math inline">\(j\)</span> in document <span class="math inline">\(i\)</span>.</li>
+<li><strong>token:</strong> one word occurrence. “trump trump trump” is
+3 tokens of 1 word.</li>
+<li><strong>vocabulary, <span class="math inline">\(p\)</span>:</strong>
+the list of different words seen in training. In the example, <span class="math inline">\(p = 7\)</span>.</li>
+<li><strong>Multinomial Naive Bayes:</strong> the version of Naive Bayes
+that works with word counts.</li>
+<li><strong>Laplace smoothing (+1 / +p):</strong> add 1 to every word’s
+count in every class, and add the vocabulary size <span class="math inline">\(p\)</span> to the bottom, so no chance is ever
+exactly zero.</li>
+<li><strong>normalise:</strong> divide each score by the total so the
+chances add up to 1.</li>
+<li><strong>estimate, hat (<span class="math inline">\(\hat
+P\)</span>):</strong> a value worked out from the data. <span class="math inline">\(\hat P(a)\)</span> = our estimated prior for class
+a.</li>
+<li><strong>inference:</strong> drawing a conclusion from the data.</li>
+<li><strong>odds:</strong> how many times more likely one thing is than
+another. In the notebook’s quote, how much more a word belongs to one
+party than the other.</li>
+<li><strong>Support Vector Machines, logistic regression, neural
+networks:</strong> other, more complex classifiers, named on slide 29
+but not taught here.</li>
+<li><strong>accuracy:</strong> the share of test documents sorted into
+the right class. 70 right out of 100 = 70%.</li>
+<li><strong>majority-class baseline:</strong> the lazy rule “always
+guess the biggest class”. A real model must beat it.</li>
+<li><strong>data leakage:</strong> when information from the test set
+sneaks into training, so the test score looks better than it
+should.</li>
+<li><strong>random split vs grouped split
+(<code>GroupShuffleSplit</code>):</strong> a random split picks test
+documents at random. A grouped split holds out whole groups (for
+example, all speeches by some presidents).</li>
+<li><strong>random seed:</strong> the starting number for the computer’s
+random choices. Same seed = same split; new seed = new split.</li>
+<li><strong>log / log probability:</strong> the logarithm, a function
+that turns multiplying into adding. The difference of two logs compares
+how many times bigger one chance is than the other.</li>
+<li><strong><code>CountVectorizer</code>, <code>fit</code>,
+<code>MultinomialNB</code>, <code>feature_log_prob_</code>:</strong>
+Python tools that count words, learn from training data, run Naive
+Bayes, and store the log chance of each word in each class.</li>
+<li><strong>stop words / <code>min_df</code>:</strong> very common words
+(“the”, “and”) that are removed / drop words seen in fewer than this
+many documents.</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-8">The idea in plain words</h3>
 <p>Naive Bayes sorts documents into <strong>categories</strong> (spam /
 not spam, Democrat / Republican, good / bad review). It learns from
@@ -4437,7 +5116,9 @@ are these exact words? And from category B?” It combines that with how
 common each category is, and picks the category with the highest
 score.</p>
 <p>Notebook 2 (cell 15) puts it nicely: “Naive Bayes learns, for each
-party, the odds of every word, and lets the words vote.”</p>
+party, the odds of every word, and lets the words vote.” (Odds here =
+how much more often a word shows up for one party than for the
+other.)</p>
 <div class="callout analogy">
 <p><strong>Analogy</strong> A doctor guessing between a cold and the
 flu. They know how common each illness is right now (the <em>prior</em>)
@@ -4453,19 +5134,24 @@ together.</p>
 <ul>
 <li>The outcome is <strong>categorical</strong> (“good versus bad, spam
 versus not spam, etc.”). Regression (e.g. OLS) “works best for
-continuous outcome variables”; for categorical outcomes “it is more
-common and better to apply classification methods”.</li>
+continuous outcome variables” (numbers that can take any value, like
+2.37% growth); for categorical outcomes (a fixed set of boxes, like spam
+/ not spam) “it is more common and better to apply classification
+methods”.</li>
 <li>“It is called <strong>‘Naive’</strong> because it operates under the
 bag-of-words assumption and assumes that the words in a document are
 independent.”</li>
 <li>“It is called <strong>‘Bayes’</strong> because it applies the Bayes
-rule to make inference.”</li>
+rule to make inference.” (Inference = drawing a conclusion from the
+data; here, deciding the class.)</li>
 <li>Despite its simplicity it “works very well for categorizing
 documents” and has a long history in NLP. Slide 29: it “is usually
 regarded as a good starting point”. Other classifiers: Support Vector
-Machines, logistic regression, neural networks.</li>
+Machines, logistic regression, neural networks (other, more complex
+sorting methods; named, not taught here).</li>
 </ul>
-<p>Slide 27 summary: we know the classes <span class="math inline">\(V^{train}\)</span> and observe <span class="math inline">\(C^{train}\)</span>; we learn <span class="math inline">\(p(c^{train}\mid v^{train})\)</span>; “Via Bayes
+<p>Slide 27 summary: we know the classes <span class="math inline">\(V^{train}\)</span> and observe <span class="math inline">\(C^{train}\)</span> (the known labels and the
+word-count table of the training documents); we learn <span class="math inline">\(p(c^{train}\mid v^{train})\)</span>; “Via Bayes
 rule we can use this to predict <span class="math inline">\(p(v^{test}\mid c^{test})\)</span>.” So Naive Bayes
 models <span class="math inline">\(p(c_i\mid y_i)\)</span> — the reverse
 of text regression’s <span class="math inline">\(p(y_i\mid c_i)\)</span>
@@ -4473,17 +5159,31 @@ of text regression’s <span class="math inline">\(p(y_i\mid c_i)\)</span>
 <h3 id="the-formula-symbol-by-symbol-5">The formula, symbol by
 symbol</h3>
 <p>The derivation on slide 25, line by line:</p>
+<p><strong>In words:</strong> the chance of class <span class="math inline">\(v\)</span> after reading document <span class="math inline">\(d\)</span> equals how likely the document is under
+that class, times how common the class is, divided by how likely the
+document is overall.</p>
 <p><span class="math display">\[P(v\mid d) = \frac{P(d\mid v)P(v)}{P(d)}
 \qquad\text{(Bayes&#39; rule: posterior = likelihood × prior /
 data)}\]</span></p>
+<p><strong>In words:</strong> the predicted class is the one with the
+largest of these chances.</p>
 <p><span class="math display">\[v_{map} = \arg\max \frac{P(d\mid
 v)P(v)}{P(d)} \qquad\text{(pick the most probable class)}\]</span></p>
+<p><strong>In words:</strong> treat the document as its list of word
+counts, and drop the bottom part <span class="math inline">\(P(d)\)</span> because it is the same for every
+class.</p>
 <p><span class="math display">\[v_{k,map} = \arg\max
 P(c_{i1},\dots,c_{ip}\mid v_k)P(v_k) \qquad\text{(document = its words;
 } P(d) \text{ dropped)}\]</span></p>
+<p><strong>In words:</strong> the chance of seeing all the words
+together is taken to be the chance of each word on its own, multiplied
+together.</p>
 <p><span class="math display">\[P(c_{i1},\dots,c_{ip}\mid v_k) =
 P(c_{i1}\mid v_k)\times\dots\times P(c_{ip}\mid v_k) \qquad\text{(the
 &quot;naive&quot; independence step)}\]</span></p>
+<p><strong>In words:</strong> for each class, multiply how common the
+class is by the chance of each word in that class, and pick the class
+with the largest result.</p>
 <p><span class="math display">\[v_{k,nb} = \arg\max P(v_k)\,\prod_j
 P(c_{ij}\mid v_k) \qquad\text{(Multinomial Naive Bayes
 classifier)}\]</span></p>
@@ -4501,8 +5201,13 @@ the same for every class, so it does not change which class wins.</li>
 in the document (the slide writes a capital <span class="math inline">\(\Pi\)</span>).</li>
 </ul>
 <p>Estimation is “simple counting” (slide 25):</p>
+<p><strong>In words:</strong> the prior of a class is the share of
+training documents that belong to it.</p>
 <p><span class="math display">\[\hat P(v_k) = \frac{doccount(V =
 v_k)}{n} = \frac{n_k}{n}\]</span></p>
+<p><strong>In words:</strong> the chance of word <span class="math inline">\(j\)</span> in class <span class="math inline">\(k\)</span> is how often it appears in that class
+(plus 1), divided by the total number of words in that class (plus the
+vocabulary size).</p>
 <p><span class="math display">\[\hat P(c_{\cdot j}\mid v_k) =
 \frac{count(c_{\cdot j}, v_k) + 1}{\sum count(c, v_k) + p}\]</span></p>
 <ul>
@@ -4599,14 +5304,20 @@ Rows = the words in document 5; columns = the two classes. Each cell is
 </tbody>
 </table>
 <p><strong>Step 4 — Multiply prior × likelihoods.</strong></p>
+<p><strong>In words:</strong> class a’s score is its prior 3/4 times the
+chances of “inflation”, “norway” and “high” in class a.</p>
 <p><span class="math display">\[\hat P(a\mid d5) \propto
 \tfrac34\cdot\tfrac1{16}\cdot\tfrac1{16}\cdot\tfrac18 = \tfrac{3}{8192}
 \approx 0.000366\]</span></p>
+<p><strong>In words:</strong> the same for class b: its prior 1/4 times
+the chances of the three words in class b.</p>
 <p><span class="math display">\[\hat P(b\mid d5) \propto
 \tfrac14\cdot\tfrac15\cdot\tfrac15\cdot\tfrac1{10} = \tfrac{1}{1000} =
 0.001\]</span></p>
 <p><strong>Step 5 — Normalise</strong> so the two add to 1 (slide:
 “a/(a+b)”):</p>
+<p><strong>In words:</strong> divide each score by the sum of both
+scores, so the two chances add up to 1.</p>
 <p><span class="math display">\[\hat P(a\mid d5) =
 \frac{0.000366}{0.000366+0.001} \approx 0.27, \qquad \hat P(b\mid d5)
 \approx 0.73\]</span></p>
@@ -4670,9 +5381,11 @@ test of party</td>
 accuracy means. A random split rewards a Naive Bayes model that
 recognises <em>presidents and eras</em>; holding out whole presidents
 reveals how little of that is <em>party</em>.” Also “one split proves
-little”, so cell 19 repeats the experiment over 20 random seeds. The
-business version: a complaint-email flagger trained on a random split of
-last year’s mail may fail on next year’s mail (cell 20).</p>
+little”, so cell 19 repeats the experiment over 20 random seeds (a seed
+is the starting number for the random split; a new seed gives a new
+split). The business version: a complaint-email flagger trained on a
+random split of last year’s mail may fail on next year’s mail (cell
+20).</p>
 <h3 id="reading-the-course-code-7">Reading the course code</h3>
 <div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>vec <span class="op">=</span> CountVectorizer(stop_words<span class="op">=</span><span class="st">&quot;english&quot;</span>, min_df<span class="op">=</span><span class="dv">5</span>, token_pattern<span class="op">=</span><span class="vs">r&quot;</span><span class="pp">[a-zA-Z][a-zA-Z]</span><span class="op">+</span><span class="vs">&quot;</span>)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Xtr <span class="op">=</span> vec.fit_transform(train.rawtext)</span>
@@ -4692,12 +5405,13 @@ general knowledge: <code>MultinomialNB</code> has a smoothing parameter
 <code>alpha</code> that defaults to 1.]</strong></li>
 <li>Line 4: accuracy = share of test speeches given the right
 party.</li>
-<li>Line 5: for each word, log P(word | party 0) − log P(word | party
-1): positive = “more Democratic”, negative = “more Republican”. The
-notebook lists the top 12 of each. For the toy data, the “tilt” of
-“trump” towards a is <span class="math inline">\(\log(3/8) - \log(1/5)
-\approx 0.63\)</span> (P(trump | a) = (5+1)/(9+7) = 3/8, P(trump | b) =
-(1+1)/(3+7) = 1/5).</li>
+<li>Line 5: for each word, log P(word | party 0) − log P(word | party 1)
+(log = logarithm; a difference of logs compares how many times bigger
+one chance is than the other): positive = “more Democratic”, negative =
+“more Republican”. The notebook lists the top 12 of each. For the toy
+data, the “tilt” of “trump” towards a is <span class="math inline">\(\log(3/8) - \log(1/5) \approx 0.63\)</span>
+(P(trump | a) = (5+1)/(9+7) = 3/8, P(trump | b) = (1+1)/(3+7) =
+1/5).</li>
 </ul>
 <p>There are no saved outputs. When run, it would print test accuracy
 next to the majority-class baseline, the test presidents and the most
@@ -4772,6 +5486,8 @@ and “naive” because it uses the bag-of-words assumption that words are
 independent given the class. It is for categorical outcomes (spam/not
 spam), not continuous ones.</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 3 slides 21–29; Interactive
+Notebook 2 cells 15–20, 31.</p>
 <hr />
 <h2 id="ch10">10. Topic models: LSA via SVD and LDA (L3, Interactive 2,
 Practical day 1)</h2>
@@ -5400,7 +6116,7 @@ perplexity</h2>
 <p><strong>Exam priority:</strong> ★★ Medium — not asked in 2025, but
 taught in 2026 and perfect material for True/False and a small
 calculation.</p>
-<h3 id="start-from-zero-6">Start from zero</h3>
+<h3 id="start-from-zero-9">Start from zero</h3>
 <p><strong>The problem.</strong> You type “see you” on your phone, and
 the keyboard offers “tomorrow” or “soon”. Nobody wrote a rule for every
 sentence, so how does it know? Earlier in the course, text was turned
@@ -5577,9 +6293,9 @@ counting.</li>
 says how likely something is. 0 = never, 1 = certain, 0.5 = half the
 time, like heads on a coin.</li>
 <li><strong>conditional probability:</strong> a chance worked out once
-you already know something. “The chance of e, given that we just saw h.”
-The bar “|” in <span class="math inline">\(P(e \mid h)\)</span> is read
-“given”.</li>
+you already know something. “The chance of e, given that we saw h a
+moment ago.” The bar “|” in <span class="math inline">\(P(e \mid
+h)\)</span> is read “given”.</li>
 <li><strong>n-gram:</strong> a run of n tokens in a row. An n-gram model
 guesses the next token from the n − 1 tokens before it.</li>
 <li><strong>bigram:</strong> two neighbouring tokens, like “h then e”. A
@@ -6083,7 +6799,7 @@ weights, softmax, loss, gradient descent, backpropagation</h2>
 <p><strong>Exam priority:</strong> ★★ Medium — the one-hot vector was
 2025 Q3(c); softmax, loss and training words come back in the
 transformer and LLM questions.</p>
-<h3 id="start-from-zero-7">Start from zero</h3>
+<h3 id="start-from-zero-10">Start from zero</h3>
 <p><strong>The problem.</strong> The counting machine from Chapter 11
 works, but only with one letter of memory. If you want it to look
 further back, the count grid grows out of control. And many jobs aren’t
@@ -6667,10 +7383,310 @@ vs contextual</h2>
 2025: Q3(a) assumption + PMI matrix, Q3(b) word2vec vs BERT, Q3(c)
 one-hot in word2vec, Q3(d) cosine drawing, plus a True/False item on SVD
 on PMI.</p>
-<p><strong>Sources:</strong> Lecture 6 “Neural Networks and Word
-Embeddings” (Thorsrud), slides 2–14, 20–31; notebook
-<code>GRA4164_Interactive_3_Embeddings_and_llms.ipynb</code> (cells
-0–27).</p>
+<h3 id="start-from-zero-11">Start from zero</h3>
+<p><strong>The problem.</strong> You’d like a search for “automobile” to
+also find pages that only say “car”. But think back to the word-count
+table: one row per document, one column per word, each cell a count. In
+that table, “car” and “automobile” are two separate columns with nothing
+linking them. The computer has no idea they mean the same thing. We want
+it to learn which words are close in meaning, without anyone writing a
+dictionary for it. Word embeddings do exactly that. Researchers then use
+them to measure things like “how much do the news link recession with
+credit?” month by month.</p>
+<p><strong>How it works, step by step.</strong></p>
+<ol type="1">
+<li>The goal: give each word a spot on a map, so similar words sit close
+together. A spot is a short list of numbers, like map coordinates. A
+paper map uses 2 numbers; embeddings use maybe 100 or 300.</li>
+<li>The clue: words with similar meanings keep similar company.
+“Apricot” and “pineapple” both turn up near “sugar” and “pinch”. So we
+learn the map from which words appear near each other.</li>
+<li>Choose a window, for example 4 words to the left and right of each
+word. Words inside the window count as “appearing together”.</li>
+<li>Way 1, counting. Build a big table with one row per word and one
+column per neighbour word. Each cell says how often the two appeared
+together. This is the co-occurrence matrix.</li>
+<li>Re-weight the table with PMI. For each pair, compare how often they
+really met with how often they’d meet by pure chance, given how common
+each word is on its own. Pairs that meet more than chance score above 0.
+Then set any negative score to 0 (this version is called PPMI).</li>
+<li>The table is huge and mostly zeros. SVD squeezes it: it keeps only
+the few strongest patterns and hands each word a short list of numbers,
+say 300. That list is the word’s spot on the map.</li>
+<li>Way 2, predicting (word2vec). Play a guessing game. Show a small
+neural network one word and ask it to guess which words appear nearby
+(Skipgram). Or show it the neighbours and ask for the middle word
+(CBOW). Every wrong guess nudges the dials. After training, each word’s
+own set of dials is its spot on the map.</li>
+<li>To compare two words, draw an arrow from the centre of the map to
+each word’s spot, and measure the angle between the two arrows (cosine
+similarity). A small angle means similar meaning.</li>
+</ol>
+<p><strong>A tiny example by hand.</strong> Our corpus is three
+sentences:</p>
+<ol type="1">
+<li>“the cat drinks milk”</li>
+<li>“the dog drinks water”</li>
+<li>“the car needs fuel”</li>
+</ol>
+<p>Rule: two words “appear together” if they’re in the same sentence.
+(So the window is the whole sentence, like in the course notebook.) We
+skip “the”, because it’s in every sentence and tells us nothing.</p>
+<p><em>The co-occurrence table.</em> Rows = the words we want spots for
+(target words). Columns = the neighbour words (context words). Each cell
+= the number of sentences where both words appear.</p>
+<table>
+<thead>
+<tr>
+<th>Target ↓ / Context →</th>
+<th>drinks</th>
+<th>milk</th>
+<th>water</th>
+<th>needs</th>
+<th>fuel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cat</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>dog</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>car</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>One cell out loud: row dog, column drinks. “Dog” is only in sentence
+2, and “drinks” is also in sentence 2. They’re together once, so the
+cell is 1. Another: row cat, column water. “Cat” is only in sentence 1
+and “water” only in sentence 2. They never meet, so the cell is 0.</p>
+<p><em>Each row is already a rough spot on a map,</em> with 5 numbers:
+cat = (1, 1, 0, 0, 0), dog = (1, 0, 1, 0, 0), car = (0, 0, 0, 1, 1).</p>
+<p><em>Cosine similarity, cat vs dog.</em></p>
+<ul>
+<li>Dot product: multiply the numbers in matching positions and add: 1 ×
+1 + 1 × 0 + 0 × 1 + 0 × 0 + 0 × 0 = 1.</li>
+<li>Length of each arrow: square each number, add, take the square root.
+Cat: √(1 + 1) = √2 ≈ 1.414. Dog: also √2 ≈ 1.414.</li>
+<li>Cosine = dot product ÷ (length × length) = 1 ÷ (1.414 × 1.414) = 1 ÷
+2 = 0.5.</li>
+</ul>
+<p>Cat vs car: the dot product is 1 × 0 + 1 × 0 + 0 × 0 + 0 × 1 + 0 × 1
+= 0, so the cosine is 0. So cat is halfway similar to dog (they share
+“drinks”) and not at all like car. With millions of sentences, this kind
+of sharing is what pulls related words together.</p>
+<p><em>PMI by hand, slowly, with the chapter’s slide-12 table</em>
+(Table 1 below: rows = target words, columns = context words, cells =
+counts). Look at apricot and pinch.</p>
+<ul>
+<li>The whole table holds 19 co-occurrences. Apricot is part of 2 of
+them. Pinch is part of 2. Apricot-with-pinch happens 1 time.</li>
+<li>Real share of apricot-with-pinch: 1/19 ≈ 0.053.</li>
+<li>Share you’d expect by pure chance: apricot’s share times pinch’s
+share, (2/19) × (2/19) = 4/361 ≈ 0.011. Think of two people who each
+visit a café rarely: by luck alone, they’d hardly ever be there at the
+same time.</li>
+<li>How many times more than chance: (1/19) ÷ (4/361) = 361/76 =
+4.75.</li>
+<li>Take log base 2. Doubling 1 twice gives 4, so the answer is a bit
+over 2: <span class="math inline">\(\log_2 4.75\)</span> = 2.25.</li>
+</ul>
+<p>PMI = 2.25, well above 0: apricot and pinch meet far more often than
+luck would explain.</p>
+<p><em>The guessing game (word2vec), in one line.</em> From sentence 1,
+Skipgram makes the training pairs (cat, drinks) and (cat, milk): shown
+“cat”, the network should give “drinks” and “milk” high chances.</p>
+<p><strong>What it’s good at / where it breaks.</strong></p>
+<ul>
+<li>Good: it learns “similar meaning” from raw text alone, with no
+dictionary. The spots are short lists, so comparing words is quick.</li>
+<li>Good: directions on the map can carry meaning: King − Man + Woman
+lands near Queen.</li>
+<li>Breaks: every word gets one spot, whatever the sentence. “Bank” the
+river and “bank” the money share a single spot (static embeddings).
+Newer models like BERT fix this.</li>
+<li>Breaks: it needs a lot of text. On a small corpus the word
+arithmetic can fail, and PMI over-rewards rare pairs like
+apricot–pinch.</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>bag-of-words / document-term matrix (C):</strong> the
+word-count table: one row per document, one column per word, each cell a
+count. Word order is thrown away.</li>
+<li><strong>word embedding:</strong> a word’s spot on the meaning map: a
+short list of numbers. Similar words get nearby spots.</li>
+<li><strong>“embedding is location”:</strong> the slides’ slogan: an
+embedding is a position in space.</li>
+<li><strong>vector:</strong> a list of numbers, like (0.4, 0.9). You can
+draw it as an arrow from the centre of a map to that point.</li>
+<li><strong>vector space:</strong> the “map” where all these arrows
+live.</li>
+<li><strong>dimension:</strong> how many numbers each vector has. 2
+dimensions = a flat map; 300 dimensions = a map you can’t draw but a
+computer can handle.</li>
+<li><strong>dense vs sparse:</strong> dense = most numbers are not zero;
+sparse = almost everything is zero, like a huge spreadsheet with a few
+filled cells.</li>
+<li><strong>distributional hypothesis:</strong> the idea that words used
+in similar surroundings have similar meanings. “You shall know a word by
+the company it keeps” (Firth 1957).</li>
+<li><strong>target word / context word:</strong> the target is the word
+we’re looking at; context words are its neighbours in the window.</li>
+<li><strong>window (b):</strong> how far left and right we look for
+neighbours. b = 4 means 4 words on each side.</li>
+<li><strong>co-occurrence:</strong> two words appearing near each
+other.</li>
+<li><strong>co-occurrence matrix (Co):</strong> a word-by-word table
+counting how often each pair appears together. Rows = target words,
+columns = context words.</li>
+<li><strong><span class="math inline">\(p \times p\)</span>:</strong> “p
+rows by p columns”, where p is the number of words in the vocabulary.
+Words × words, not documents × words.</li>
+<li><strong>vocabulary (p):</strong> the list of all distinct words the
+model knows.</li>
+<li><strong>probability (chance):</strong> a number from 0 to 1 saying
+how likely something is.</li>
+<li><strong>joint probability (<span class="math inline">\(p_{ij}\)</span>) / skipgram probability:</strong>
+the share of all pairs that are this exact pair. Information-with-data:
+6/19 = 0.32.</li>
+<li><strong>unigram probability (<span class="math inline">\(p_i\)</span>, <span class="math inline">\(p_j\)</span>):</strong> how common one word is on
+its own, as a share of the total. Information: 11/19 = 0.58.</li>
+<li><strong>PMI (pointwise mutual information):</strong> the log of “how
+often two words really appear together” ÷ “how often they would by pure
+chance”. Above 0 = they attract; below 0 = they avoid each other.</li>
+<li><strong>PPMI (positive PMI):</strong> PMI with every negative number
+replaced by 0.</li>
+<li><strong>log, <span class="math inline">\(\log_2\)</span>,
+ln:</strong> the reverse of a power. <span class="math inline">\(\log_2
+8 = 3\)</span> because 2 × 2 × 2 = 8. ln does the same with the number e
+(about 2.718). The log of a number above 1 is positive, below 1
+negative.</li>
+<li><strong>max(…, 0):</strong> “take whichever is bigger, the number or
+0”. It turns negatives into 0.</li>
+<li><strong>sum (Σ):</strong> “add all of these up”.</li>
+<li><strong>add-one smoothing:</strong> add 1 to every count, so rare
+pairs don’t get extreme scores and zeros disappear.</li>
+<li><strong>SVD (singular value decomposition):</strong> a maths tool
+that breaks a big table into three smaller tables (U, S, V′) that
+multiply back to it. Like summarising a long survey by its few main
+themes.</li>
+<li><strong>truncated SVD:</strong> keeping only the K strongest themes
+and throwing the rest away, so each word ends up with K numbers.</li>
+<li><strong>U, S, V′, factors, loadings:</strong> the three pieces of
+SVD. Each word’s row of U is its embedding. “Factors” (US) and
+“loadings” (V′) are the slides’ names for these pieces.</li>
+<li><strong>K:</strong> the number of dimensions you keep, for example
+100 or 300.</li>
+<li><strong>LSA:</strong> the earlier course method that runs SVD on the
+document-term matrix C. Here the same tool runs on the PMI matrix
+M.</li>
+<li><strong>tf-idf:</strong> the earlier re-weighting of the word-count
+table that turns down words appearing in almost every document. PMI
+plays a similar role here.</li>
+<li><strong>stop words:</strong> very common words like “the” and “and”
+that are usually removed.</li>
+<li><strong>binary:</strong> only 0 or 1: “is the word there or not”,
+not “how many times”.</li>
+<li><strong>cosine similarity:</strong> a score from −1 to 1 for how
+closely two arrows point the same way. With plain counts (never
+negative) it stays between 0 and 1. Small angle → close to 1 → similar.
+It ignores how long the arrows are.</li>
+<li><strong>dot product:</strong> multiply two vectors’ numbers in
+matching positions and add up. Big when the arrows point the same way
+and are long.</li>
+<li><strong>length / norm (<span class="math inline">\(\lVert a
+\rVert\)</span>):</strong> how long an arrow is: square each number,
+add, take the square root.</li>
+<li><strong>angle:</strong> how far apart two arrows point. 0° = same
+direction; 90° = unrelated.</li>
+<li><strong>nearest neighbours (<code>most_similar</code>):</strong> the
+words whose spots are closest to a given word.</li>
+<li><strong>vector arithmetic:</strong> adding and subtracting word
+vectors number by number, as in King − Man + Woman ≈ Queen.</li>
+<li><strong>neural network:</strong> a machine of many small dials that
+learns by nudging them after each wrong guess (Chapter 12).</li>
+<li><strong>shallow / two-layered / feed-forward:</strong> a small
+network with one hidden layer, where numbers flow one way from input to
+output.</li>
+<li><strong>word2vec:</strong> a small neural network that learns word
+embeddings by playing the “guess the neighbours” game (Mikolov et
+al. 2013).</li>
+<li><strong>CBOW (continuous bag of words):</strong> the word2vec
+version that guesses the middle word from its neighbours. Like a
+fill-in-the-blank exercise. (The long name is <strong>[Not in course
+files — general knowledge]</strong>.)</li>
+<li><strong>Skipgram:</strong> the opposite version: from the middle
+word, guess the neighbours.</li>
+<li><strong>supervised / unsupervised / self-supervised:</strong>
+supervised = a human gives the right answers; unsupervised = no answers
+at all; self-supervised = the text itself provides the answers (the real
+neighbours).</li>
+<li><strong>one-hot vector / selection vector:</strong> a list as long
+as the vocabulary, all 0s except a single 1 at the word’s slot.
+Multiplying it by a grid picks out that word’s column.</li>
+<li><strong>target embedding matrix (<span class="math inline">\(W^1\)</span>):</strong> the grid of dials holding
+one column per word. After training, those columns are the
+embeddings.</li>
+<li><strong>context embedding matrix (<span class="math inline">\(W^2\)</span>):</strong> the second grid, used to
+score every word as a possible neighbour.</li>
+<li><strong>hidden layer (<span class="math inline">\(h^1\)</span>):</strong> the middle step of the
+network. In word2vec it’s the chosen word’s embedding.</li>
+<li><strong>softmax:</strong> turns a list of scores into chances that
+are all positive and add up to 1.</li>
+<li><strong>sigmoid:</strong> squeezes any number into a chance between
+0 and 1.</li>
+<li><strong>logistic regression:</strong> a classic method that turns a
+score into a yes/no chance with the sigmoid.</li>
+<li><strong>epoch:</strong> one full pass through all the training
+data.</li>
+<li><strong>negative sampling:</strong> a shortcut for word2vec. Instead
+of scoring every word in the vocabulary, mix each real pair with 2–5
+fake pairs made of random words, and train the network to tell real from
+fake.</li>
+<li><strong>α = 0.75:</strong> a power applied to word counts when
+picking the fake words. It gives rarer words a slightly better chance of
+being picked <strong>[Not in course files — general
+knowledge]</strong>.</li>
+<li><strong>static vs contextual (context-specific) embeddings:</strong>
+static = one fixed spot per word in every sentence (word2vec);
+contextual = the spot changes with the sentence (BERT).</li>
+<li><strong>BERT / transformer:</strong> newer, bigger language models
+(2017/2018) that give each word a spot depending on its sentence.</li>
+<li><strong>pre-trained embeddings:</strong> embeddings someone already
+learned from a huge amount of text, which you can reuse instead of
+training on your own small corpus.</li>
+<li><strong>gensim:</strong> the Python package the notebook uses to
+train word2vec.</li>
+<li><strong><code>min_df</code>:</strong> a setting that drops words
+appearing in too few sentences.</li>
+<li><strong>GloVe, Doc2vec, Word Mover’s Distance:</strong> alternatives
+on the slides: GloVe is another way to learn word embeddings; Doc2vec
+gives whole documents embeddings; Word Mover’s Distance compares
+documents using word embeddings <strong>[Not in course files — general
+knowledge]</strong>.</li>
+<li><strong>LDA:</strong> the topic-model method from an earlier course
+chapter; the slides call Doc2vec an alternative to it.</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-12">The idea in plain words</h3>
 <p>In bag-of-words, “car” and “automobile” are just two unrelated
 columns. The computer has no idea they mean the same thing. Word
@@ -6709,17 +7725,19 @@ use the phrase “distributional hypothesis”; it is the standard name for
 this idea <strong>[Not in course files — general
 knowledge]</strong>.</li>
 <li><strong>Embedding is location:</strong> “word embedding methods
-build on vector space representations”, “focus on co-occurrence”,
-“across space or time” (slide 4). “Words that share some type of meaning
-are close to each other in the (large) vector space” (slide 6).</li>
+build on vector space representations” (each word stored as a list of
+numbers, a point on a map), “focus on co-occurrence”, “across space or
+time” (slide 4). “Words that share some type of meaning are close to
+each other in the (large) vector space” (slide 6).</li>
 <li><strong>Why move beyond bag-of-words:</strong> BoW + document-term
-matrix “does not (in general) take into account context”; “word
-embeddings and word embedding models do” (slide 4).</li>
+matrix (the word-count table: rows = documents, columns = words) “does
+not (in general) take into account context”; “word embeddings and word
+embedding models do” (slide 4).</li>
 <li><strong>Unsupervised / self-supervised:</strong> in the course map,
 word embeddings sit under “Unsupervised/Self-supervised”, estimated by
 <strong>SVD</strong> or <strong>neural networks</strong> (slide 3).
-Skipgram “makes the problem self-supervised”, since real text decides
-which words occur together (slide 20).</li>
+Skipgram “makes the problem self-supervised” (no human labels needed),
+since real text decides which words occur together (slide 20).</li>
 <li><strong>Co-occurrence matrix:</strong> “the fraction of times word
 <span class="math inline">\(w_i\)</span> and <span class="math inline">\(w_j\)</span> appear within, say <span class="math inline">\(b\)</span> words of each other”; a <strong><span class="math inline">\(p \times p\)</span> matrix</strong>, rows = words,
 columns = context words (slide 11).</li>
@@ -6729,15 +7747,18 @@ appear a lot together relative to individually get a high score” (slide
 <li><strong>PPMI:</strong> PMI with negatives set to 0, because negative
 values are “strange” (slide 11).</li>
 <li><strong>SVD on PMI:</strong> the PMI matrix “is large and sparse”
-like the document-term matrix, so “use the Singular Value Decomposition
-(SVD), but now not on C, but on M!” Use the <strong>truncated U
-matrix</strong> as the word vectors (slide 13).</li>
+(huge and mostly zeros) like the document-term matrix, so “use the
+Singular Value Decomposition (SVD), but now not on C, but on M!” Use the
+<strong>truncated U matrix</strong> (U cut down to its first K columns,
+so each word keeps K numbers) as the word vectors (slide 13).</li>
 <li><strong>word2vec</strong> (Mikolov et al. 2013, a “game changer”):
 “a shallow two-layered feed-forward Neural Network taking words from a
 vocabulary as input and embeds them as vectors into a lower dimensional
-space”. Two versions: <strong>CBOW</strong>, “predict a term based on
-surrounding terms”, and <strong>Skipgram</strong>, “predict surrounding
-terms based on a term” (slide 14).</li>
+space”. In plain words: a small one-way network that turns each word
+into a short list of numbers. Two versions: <strong>CBOW</strong>,
+“predict a term based on surrounding terms”, and
+<strong>Skipgram</strong>, “predict surrounding terms based on a term”
+(slide 14).</li>
 <li><strong>Static vs contextual:</strong> “Word2vec-style word
 embeddings are not context dependent in the sense that a word will have
 the same embedding irrespective of the sentence it is used in”; “newer
@@ -6977,6 +7998,9 @@ co-occurs (Co = 0), so the log is undefined and PPMI treats it as 0.</p>
 </tbody>
 </table>
 <p><strong>One cell by hand: information–data.</strong></p>
+<p><strong>In words:</strong> divide how often information and data
+really appeared together by how often they would by chance, then take
+log base 2.</p>
 <p><span class="math display">\[\text{PMI} =
 \log_2\!\left(\frac{p_{ij}}{p_i\,p_j}\right)
 = \log_2\!\left(\frac{6/19}{(11/19)(7/19)}\right)
@@ -7027,10 +8051,14 @@ Woman (0.4, 0.3), Man (0.5, 0.1).</p>
 Man</text> </g>
 </svg>
 <p>By hand (checked in python):</p>
+<p><strong>In words:</strong> subtract Man’s two coordinates from
+King’s, one at a time.</p>
 <p><span class="math display">\[\text{King} - \text{Man} = (0.5 - 0.5,\;
-0.7 - 0.1) = (0.0,\; 0.6)\]</span> <span class="math display">\[(0.0,\;
-0.6) + \text{Woman} = (0.0 + 0.4,\; 0.6 + 0.3) = (0.4,\; 0.9) =
-\text{Queen}\]</span></p>
+0.7 - 0.1) = (0.0,\; 0.6)\]</span></p>
+<p><strong>In words:</strong> add Woman’s coordinates to that result,
+one at a time; you land exactly on Queen’s spot.</p>
+<p><span class="math display">\[(0.0,\; 0.6) + \text{Woman} = (0.0 +
+0.4,\; 0.6 + 0.3) = (0.4,\; 0.9) = \text{Queen}\]</span></p>
 <p>King − Man is a “royalty” direction. Add it to Woman and you land on
 Queen. On real data the result is not exactly Queen but has “high cosine
 similarity with Queen” (slide 13). In the toy example the cosine
@@ -7040,6 +8068,9 @@ similarity of the result with Queen is exactly 1.</p>
 embedding size <span class="math inline">\(K = 2\)</span>. The target
 embedding matrix <span class="math inline">\(W^1\)</span> is <span class="math inline">\(K \times p = 2 \times 3\)</span>, one
 <strong>column</strong> per word (my made-up numbers):</p>
+<p><strong>In words:</strong> <span class="math inline">\(W^1\)</span>
+holds one column of two numbers per word, and multiplying it by dog’s
+one-hot vector pulls out dog’s column.</p>
 <p><span class="math display">\[W^1 = \begin{pmatrix} 0.9 &amp; 0.8
 &amp; 0.1 \\ 0.2 &amp; 0.3 &amp; 0.9 \end{pmatrix},
 \qquad x_{\text{dog}} = \begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix},
@@ -7055,15 +8086,25 @@ embeddings (python check).</p>
 symbol</h3>
 <p><strong>1. PMI (slide 10, informal) and the formal set (slide
 11).</strong></p>
+<p><strong>In words:</strong> PMI compares how often two words appear
+together with how often they would if they had nothing to do with each
+other, and takes the log.</p>
 <p><span class="math display">\[\text{PMI}(word_1, word_2) =
 \log\left(\frac{P(word_1,
 word_2)}{P(word_1)P(word_2)}\right)\]</span></p>
+<p><strong>In words:</strong> count the pairs inside the window; divide
+a cell by the grand total to get its share; add up a row (or a column)
+and divide by the grand total to get how common each word is on its
+own.</p>
 <p><span class="math display">\[Co_{i,j} = \#pair(i, j \mid b), \qquad
 p_{i,j} = \frac{Co_{i,j}}{\sum_{i=1}^{p}\sum_{j=1}^{p} Co_{i,j}}, \qquad
 p_i = \frac{\sum_{j=1}^{p} Co_{i,j}}{\sum_{i=1}^{p}\sum_{j=1}^{p}
 Co_{i,j}}, \quad
 p_j = \frac{\sum_{i=1}^{p} Co_{i,j}}{\sum_{i=1}^{p}\sum_{j=1}^{p}
 Co_{i,j}}\]</span></p>
+<p><strong>In words:</strong> M is PMI with log base 2; the version with
+the wavy line on top keeps the score if it’s positive and puts 0
+otherwise.</p>
 <p><span class="math display">\[M_{i,j} = \log_2\left(\frac{p_{i,j}}{p_i
 p_j}\right), \qquad
 \tilde{M}_{i,j} = \max\left(\log_2\left(\frac{p_{i,j}}{p_i p_j}\right),
@@ -7096,6 +8137,9 @@ uses the natural log. In the exam, write the slide-11 <span class="math inline">
 it). Changing the log base only rescales the scores and never changes
 the sign <strong>[Not in course files — general knowledge]</strong>.</p>
 <p><strong>2. Truncated SVD on M (slide 13).</strong></p>
+<p><strong>In words:</strong> the big p-by-p PMI table is approximated
+by three slimmer tables multiplied together, keeping only K
+patterns.</p>
 <p><span class="math display">\[\underbrace{M}_{p\times p} \approx
 \underbrace{U}_{p\times K}\;\underbrace{S}_{K\times
 K}\;\underbrace{V&#39;}_{K\times p}\]</span></p>
@@ -7103,13 +8147,19 @@ K}\;\underbrace{V&#39;}_{K\times p}\]</span></p>
 <li><span class="math inline">\(M\)</span> = the PMI matrix; <span class="math inline">\(K\)</span> = number of dimensions kept (much
 smaller than <span class="math inline">\(p\)</span>).</li>
 <li><span class="math inline">\(U\)</span> = one row per word, <span class="math inline">\(K\)</span> numbers each = the <strong>word
-embeddings</strong> (the convention); <span class="math inline">\(US\)</span> = “Factors”, <span class="math inline">\(V&#39;\)</span> = “Loadings”.</li>
+embeddings</strong> (the convention); <span class="math inline">\(US\)</span> = “Factors”, <span class="math inline">\(V&#39;\)</span> = “Loadings” (the slide’s names
+for these pieces).</li>
 </ul>
 <p>Read aloud: <em>“Approximate the huge word-by-word PMI table by three
 thin matrices, and use each word’s row of U as its short, dense
-vector.”</em> This is the same tool as LSA on the document-term matrix
-C, now applied to M.</p>
+vector.”</em> This is the same tool as LSA (the earlier method that runs
+SVD on the word-count table) on the document-term matrix C, now applied
+to M.</p>
 <p><strong>3. word2vec layers (slides 21–22).</strong></p>
+<p><strong>In words:</strong> the one-hot vector picks the word’s column
+out of <span class="math inline">\(W^1\)</span> (its embedding), <span class="math inline">\(W^2\)</span> turns that into a score for every
+word in the vocabulary, and softmax turns the scores into chances of
+being a neighbour.</p>
 <p><span class="math display">\[\underbrace{h^1_t}_{K\times 1} =
 \underbrace{W^1}_{K\times p}\;\underbrace{x_t}_{p\times 1}, \qquad
 \underbrace{h^2_t}_{p\times 1} = \underbrace{W^2}_{p\times
@@ -7139,9 +8189,13 @@ outcome 0, typically <strong>2–5 negatives</strong> per real pair, drawn
 with <span class="math inline">\(P_\alpha(w) =
 \frac{count(w)^\alpha}{\sum count(w&#39;)^\alpha}\)</span>, <span class="math inline">\(\alpha = 0.75\)</span>. Similarity = the dot
 product <span class="math inline">\(\vec{w}^{\,t} \cdot
-\vec{w}^{\,c}\)</span> (“the un-normalized cosine”), turned into a
-probability by the sigmoid, which is a <strong>logistic
-regression</strong>:</p>
+\vec{w}^{\,c}\)</span> (“the un-normalized cosine”: a cosine without
+dividing by the two arrow lengths), turned into a probability by the
+sigmoid, which is a <strong>logistic regression</strong>:</p>
+<p><strong>In words:</strong> the first part turns the dot product of
+two word vectors into the chance that the pair is real; the second part
+is the score training pushes up, which is high when the real pair gets a
+high chance and the fake pair a low one.</p>
 <p><span class="math display">\[P(true \mid x) = \frac{1}{1 +
 e^{-\vec{w}^{\,t} \cdot \vec{w}^{\,c}}}, \qquad
 L(\theta) = \log\left(\frac{1}{1+e^{-x}}\right) +
@@ -7182,17 +8236,19 @@ PPMI.</li>
 the embeddings. <code>cosine_similarity</code> then finds nearest
 neighbours.</li>
 </ul>
-<p>word2vec in gensim (cells 16, 18):
-<code>Word2Vec(..., vector_size=100, window=5, min_count=10)</code> and
+<p>word2vec in gensim (the Python package the notebook uses; cells 16,
+18): <code>Word2Vec(..., vector_size=100, window=5, min_count=10)</code>
+and
 <code>w2v.wv.most_similar(positive=[&quot;king&quot;,&quot;woman&quot;], negative=[&quot;man&quot;])</code>.
 The notebook does not set <code>sg</code>, so gensim uses CBOW by
 default <strong>[Not in course files — general knowledge]</strong>. No
 outputs are saved, so the notebook does not show the answers; the
 takeaways say:</p>
 <ul>
-<li>PMI does for embeddings what <strong>tf-idf</strong> did for
-documents: it removes the “frequent word” noise. Raw counts make common
-words everybody’s neighbour.</li>
+<li>PMI does for embeddings what <strong>tf-idf</strong> (the
+re-weighting that turns down words found in almost every document) did
+for documents: it removes the “frequent word” noise. Raw counts make
+common words everybody’s neighbour.</li>
 <li>You need enough SVD dimensions to hold the structure.</li>
 <li>Meaning drifts: “<em>union</em> meant the Constitution in 1850 and
 the Soviet Union in 1980” (222 State of the Union speeches,
@@ -7323,11 +8379,15 @@ has to tell real context words from these fakes, a logistic-regression
 real pairs’ vectors together and negative pairs’ vectors apart (L6
 slides 23–25).</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 6 “Neural Networks and Word
+Embeddings” (Thorsrud), slides 2–14, 20–31; notebook
+<code>GRA4164_Interactive_3_Embeddings_and_llms.ipynb</code> (cells
+0–27).</p>
 <h1 id="part4">Part IV — Large Language Models and the Transformer</h1>
 <h2 id="ch14">14. What a Large Language Model is</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 T/F (b) and (f) came
 straight from this lecture, and it is the base for all of Block 4.</p>
-<h3 id="start-from-zero-8">Start from zero</h3>
+<h3 id="start-from-zero-12">Start from zero</h3>
 <p><strong>The problem.</strong> You type “What is the capital of
 Norway?” into ChatGPT. A second later it writes “The capital of Norway
 is Oslo.” Nobody wrote that answer in advance, and the program is not
@@ -7857,7 +8917,7 @@ with evaluation guidelines
 <h2 id="ch15">15. Tokens and tokenization</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(c) (5 points) and
 T/F (c) asked exactly this.</p>
-<h3 id="start-from-zero-9">Start from zero</h3>
+<h3 id="start-from-zero-13">Start from zero</h3>
 <p><strong>The problem.</strong> A computer cannot read letters. It
 needs numbers. The first idea is to give every word its own number:
 “cat” = 1, “dog” = 2, and so on. But what number do you give a word the
@@ -8389,7 +9449,7 @@ guidelines Q4(c).</p>
 <h2 id="ch16">16. Attention and the Transformer</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(b) and Q4(d) (10
 points) plus T/F (a) and (i) (4 points).</p>
-<h3 id="start-from-zero-10">Start from zero</h3>
+<h3 id="start-from-zero-14">Start from zero</h3>
 <p><strong>The problem.</strong> Read two sentences: “We sat on the
 river bank” and “I put my salary in the bank.” Same word, two very
 different meanings. Older methods gave “bank” one fixed list of numbers,
@@ -8543,7 +9603,7 @@ the original. The square root of 9 is 3; of 2 it is about 1.414.</li>
 <li><strong><span class="math inline">\(d\)</span>, <span class="math inline">\(d_k\)</span>, <span class="math inline">\(d_v\)</span>:</strong> lengths of lists. <span class="math inline">\(d\)</span> = length of a word’s embedding
 (typically 512); <span class="math inline">\(d_k\)</span> = length of
 each query and key; <span class="math inline">\(d_v\)</span> = length of
-each value (typically 64).</li>
+each value (both typically 64).</li>
 <li><strong><span class="math inline">\(d_{model}\)</span>:</strong>
 another name for <span class="math inline">\(d\)</span>, the length of
 the word embeddings.</li>
@@ -8626,10 +9686,13 @@ one row (one embedding) for each token in the vocabulary.</li>
 vocabulary.</li>
 <li><strong>Encoder / decoder:</strong> two halves of the original
 Transformer. The encoder reads and understands the input; the decoder
-writes output one token at a time, using causal attention.</li>
+writes output one token at a time, using causal attention [Not in course
+files — general knowledge: the encoder’s role; Lecture 9 slide 17 names
+the decoder’s causal self-attention layer].</li>
 <li><strong>Cross-attention:</strong> attention where the words being
 written look at the words of another text, for example the sentence
-being translated.</li>
+being translated [Not in course files — general knowledge: the
+translation example].</li>
 <li><strong>GPT-style / BERT-style models:</strong> GPT-style models
 write text and use causal attention; BERT-style models read and
 understand text and use bidirectional attention [Not in course files —
@@ -8654,11 +9717,12 @@ the next token.</li>
 </ul>
 </div>
 <h3 id="the-idea-in-plain-words-15">The idea in plain words</h3>
-<p>Older word embeddings (word2vec) give each word <strong>one fixed
-vector</strong>, whatever the sentence. But words change meaning with
-context. Lecture 8 uses “bank” (slides 7–8): - “I walked along the
-<strong>pond</strong>, and noticed that one of the trees along the
-<strong>bank</strong> had fallen into the <strong>water</strong>…” →
+<p>Older word embeddings (word2vec, an older method that learns one list
+of numbers per word) give each word <strong>one fixed vector</strong>
+(one fixed list of numbers), whatever the sentence. But words change
+meaning with context. Lecture 8 uses “bank” (slides 7–8): - “I walked
+along the <strong>pond</strong>, and noticed that one of the trees along
+the <strong>bank</strong> had fallen into the <strong>water</strong>…” →
 here “bank” should sit close to “water”. - “Hoping on a high return, the
 <strong>bank</strong> had issued a lot of <strong>credit</strong> to the
 investor” → here “bank” should sit close to “credit”.</p>
@@ -8696,27 +9760,31 @@ the content that is retrieved if their corresponding key matches the
 query”.</p>
 <p><strong>The three steps (slide 14):</strong> (1)
 <strong>Compatibility score</strong>: dot product of the query with each
-key; higher = more relevant. (2) <strong>Weight calculation</strong>:
-softmax turns the scores into weights that are non-negative and sum to
-1. (3) Multiply the weights with the value vectors and sum them: “a new
-representation of the word that incorporates contextual
+key (multiply matching numbers and add them up); higher = more relevant.
+(2) <strong>Weight calculation</strong>: softmax (a rule that turns
+scores into shares) turns the scores into weights that are non-negative
+and sum to 1. (3) Multiply the weights with the value vectors and sum
+them: “a new representation of the word that incorporates contextual
 information”.</p>
 <p><strong>Why self-attention is powerful (slide 15):</strong> it
 captures syntactic and semantic relations “without being limited by the
-sequence’s distance”; handles long-range dependencies; “Allows for
-processing data in parallell, rather than sequentially. Implies
-significant improvements in training efficiency”; and the attention
-weights give some <strong>interpretability</strong>.</p>
+sequence’s distance”; handles long-range dependencies (links between
+words far apart); “Allows for processing data in parallell, rather than
+sequentially. Implies significant improvements in training efficiency”;
+and the attention weights give some <strong>interpretability</strong>
+(you can look at them to see which words a word paid attention to).</p>
 <p><strong>Causal vs bidirectional (slide 11):</strong> in “a) A causal
 self-attention layer” each word sees only itself and earlier words. In
 “b) A bidirectional self-attention layer” each word sees all words,
 before and after. The output vectors have “equal size as x_i, but
-potentially different numerical values”. So the 2025 statement “you can
-have two types of attention; causal- and bidirectional-attention” →
-<strong>True</strong>. (GPT-style next-token models use causal
-attention; BERT-style models use bidirectional attention <strong>[Not in
-course files — general knowledge]</strong>; Lecture 9 slide 17 does name
-the decoder’s “Causal Self-Attention Layer”.)</p>
+potentially different numerical values” (each new list has the same
+length as the word’s original list, but different numbers in it). So the
+2025 statement “you can have two types of attention; causal- and
+bidirectional-attention” → <strong>True</strong>. (GPT-style next-token
+models use causal attention; BERT-style models use bidirectional
+attention <strong>[Not in course files — general knowledge]</strong>;
+Lecture 9 slide 17 does name the decoder’s “Causal Self-Attention
+Layer”.)</p>
 <svg width="520" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="13" role="img" aria-label="Causal versus bidirectional self-attention with three tokens">
 <g stroke="currentColor" stroke-width="1.5" fill="none">
 <line x1="60" y1="150" x2="60" y2="50"></line>
@@ -8743,43 +9811,59 @@ Lecture 8, slide 11).</em></p>
 <p><strong>Masking out the future (slide 16):</strong> “Remember, it is
 all about prediction. But, if we know the future, it is easy to predict
 it. Thus, when traning, Transformers use masking.” Every score above the
-diagonal of the score matrix is set to <span class="math inline">\(-\infty\)</span>. Since <span class="math inline">\(e^{-\infty} = 0\)</span>, those words get zero
+diagonal of the score matrix (the table of match scores; above the
+diagonal = words that come later) is set to <span class="math inline">\(-\infty\)</span> (minus infinity). Since <span class="math inline">\(e^{-\infty} = 0\)</span>, those words get zero
 weight after the softmax <strong>[Not in course files — general
 knowledge: the <span class="math inline">\(e^{-\infty} = 0\)</span>
 step; the slide shows only the −∞ matrix]</strong>.</p>
 <p><strong>Multi-head attention (slide 17):</strong> several attention
 “heads” run side by side, each with its own <span class="math inline">\(W^Q_c, W^K_c, W^V_c\)</span>. Their outputs are
-concatenated (<span class="math inline">\(N \times hd_v\)</span>) and
-projected back to size <span class="math inline">\(d\)</span> with <span class="math inline">\(W^O\)</span>. Why: it “Increases the model’s
-representation capacity. E.g., capturing a richer array of relationships
-within the data, such as different types of syntactic or semantic
-connections in a sentence” and “Improves learning dynamics and ensures
-robustness to input variations”. With the typical sizes on slide 13
-(<span class="math inline">\(d = 512\)</span>, <span class="math inline">\(d_v = 64\)</span>), 8 heads give <span class="math inline">\(8 \times 64 = 512 = d\)</span> (our calculation).
+concatenated (<span class="math inline">\(N \times hd_v\)</span>) (glued
+side by side; <span class="math inline">\(h\)</span> = the number of
+heads) and projected back to size <span class="math inline">\(d\)</span>
+with <span class="math inline">\(W^O\)</span> (multiplied by one more
+learned table to shrink them to the original length). Why: it “Increases
+the model’s representation capacity. E.g., capturing a richer array of
+relationships within the data, such as different types of syntactic or
+semantic connections in a sentence” and “Improves learning dynamics and
+ensures robustness to input variations”. With the typical sizes on slide
+13 (<span class="math inline">\(d = 512\)</span>, <span class="math inline">\(d_v = 64\)</span>), 8 heads give <span class="math inline">\(8 \times 64 = 512 = d\)</span> (our calculation).
 The heads work <strong>in parallel</strong>, and slide 15 stresses
 parallel processing as a source of training efficiency. So the 2025
 statement “Multi-head attention mechanisms makes estimation of Large
 Language Models slower and less efficient” → <strong>False</strong>.</p>
 <p><strong>The Transformer block (slides 18–19):</strong> MultiHead
-Attention → add the input back (residual connection) → Layer Normalize →
-Feedforward → residual connection → Layer Normalize. - Residual
-connection: “Makes training the Deep Neural Network easier”; “Enabling
-feature reuse and avoiding that important features are lost”. - Layer
-Norm: “Makes training the Deep Neural Network easier”. - Feedforward:
-“Adds non-linearity to the mix (self-attention is linear operations)”;
-“Enables richer feature representations”.</p>
+Attention → add the input back (residual connection) → Layer Normalize
+(rescale the numbers to a steady range) → Feedforward (a small extra
+calculation on each word) → residual connection → Layer Normalize. -
+Residual connection: “Makes training the Deep Neural Network easier”;
+“Enabling feature reuse and avoiding that important features are lost”.
+- Layer Norm: “Makes training the Deep Neural Network easier”. -
+Feedforward: “Adds non-linearity to the mix (self-attention is linear
+operations)” (linear = only multiplying and adding; non-linearity lets
+the model capture more complex, curved patterns); “Enables richer
+feature representations”.</p>
+<p><strong>In words:</strong> first let each word look at all the words
+(multi-head attention), then add the original input back, then tidy the
+numbers with layer normalization.</p>
 <p><span class="math display">\[T^1 = \text{MultiHeadAttention}(x_i,
 [x_1, \ldots, x_N]) \quad T^2 = T_1 + X \quad T^3 =
-\text{LayerNorm}(T^2)\]</span> <span class="math display">\[T^4 =
-\text{FFN}(T^3) \quad T^5 = T^4 + T^3 \quad H =
-\text{LayerNorm}(T^5)\]</span></p>
+\text{LayerNorm}(T^2)\]</span></p>
+<p><strong>In words:</strong> next run each word through the small
+feed-forward network, add its input back again, and tidy once more; the
+result <span class="math inline">\(H\)</span> is what this block hands
+to the next block.</p>
+<p><span class="math display">\[T^4 = \text{FFN}(T^3) \quad T^5 = T^4 +
+T^3 \quad H = \text{LayerNorm}(T^5)\]</span></p>
 <p>(The slide writes <span class="math inline">\(T_1\)</span> with a
 subscript in line 2; it is the same <span class="math inline">\(T^1\)</span>. <span class="math inline">\(X\)</span> = the input embeddings.)</p>
 <p><strong>Positional encoding (Lecture 9, slides 5–8).</strong> The
 input to the first block is token embeddings (a one-hot matrix <span class="math inline">\(N \times |V|\)</span> times the embedding matrix
 <span class="math inline">\(E\)</span>, <span class="math inline">\(|V|
 \times d\)</span>, gives an <span class="math inline">\(N \times
-d\)</span> matrix; slide 5). “But, to this input matrix we also add
+d\)</span> matrix; slide 5). (In plain words: each of the <span class="math inline">\(N\)</span> tokens picks out its own row from the
+big lookup table <span class="math inline">\(E\)</span>, so you get one
+embedding row per token.) “But, to this input matrix we also add
 so-called positional embeddings.” Why (slide 7): - “The Transformer’s
 self-attention mechanism processes all words in the input sequence
 simultaneously, but does not automatically understand the position or
@@ -8790,10 +9874,11 @@ embeddings to the word embeddings, the Transformer can maintain
 information about the sequence order of the input data.”</p>
 <p>The position vector is <strong>added</strong> (⊕) to the word vector:
 “X = Composite Embeddings (word + position)” (slide 6, example “Janet
-will back the bill”). There are absolute and relative types; the
-“Original Transformer work used so-called <strong>sinusoidal
-function</strong>” (slide 7). In Lecture 8 positional encoding appears
-only as a label in the architecture diagram on slide 3.</p>
+will back the bill”). There are absolute (“this is word 5”) and relative
+(“2 words after that one”) types; the “Original Transformer work used
+so-called <strong>sinusoidal function</strong>” (slide 7). In Lecture 8
+positional encoding appears only as a label in the architecture diagram
+on slide 3.</p>
 <h3 id="a-tiny-worked-example-13">A tiny worked example</h3>
 <p><strong>Our own illustration (made-up numbers, not from the
 slides).</strong> Sentence: “the river bank”. Three tokens, <span class="math inline">\(d_k = 2\)</span>. Normally <span class="math inline">\(q_i = x_i W^Q\)</span> etc.; here we just pick the
@@ -8955,10 +10040,23 @@ element.</p>
 <h3 id="the-formula-symbol-by-symbol-9">The formula, symbol by
 symbol</h3>
 <p>Lecture 8, slide 13 (copied exactly):</p>
+<p><strong>In words:</strong> each word’s embedding is multiplied by
+three learned tables to give its query (question), key (label) and value
+(contents).</p>
 <p><span class="math display">\[q_i = x_i W^Q \qquad k_i = x_i W^K
-\qquad v_i = x_i W^V\]</span> <span class="math display">\[\text{score}(x_i, x_j) = \frac{q_i \cdot
-k_j}{\sqrt{d_k}}\]</span> <span class="math display">\[\alpha_{ij} =
-\text{softmax}(\text{score}(x_i, x_j))\]</span> <span class="math display">\[\boldsymbol{\alpha}_i = \sum_{j \le i}
+\qquad v_i = x_i W^V\]</span></p>
+<p><strong>In words:</strong> the match score between word <span class="math inline">\(i\)</span> and word <span class="math inline">\(j\)</span> is the dot product of <span class="math inline">\(i\)</span>’s query and <span class="math inline">\(j\)</span>’s key, divided by the square root of
+the key length.</p>
+<p><span class="math display">\[\text{score}(x_i, x_j) = \frac{q_i \cdot
+k_j}{\sqrt{d_k}}\]</span></p>
+<p><strong>In words:</strong> softmax turns word <span class="math inline">\(i\)</span>’s row of scores into attention shares
+that are positive and add up to 1.</p>
+<p><span class="math display">\[\alpha_{ij} =
+\text{softmax}(\text{score}(x_i, x_j))\]</span></p>
+<p><strong>In words:</strong> word <span class="math inline">\(i\)</span>’s new vector is the sum of the values
+of itself and the earlier words, each multiplied by its attention
+share.</p>
+<p><span class="math display">\[\boldsymbol{\alpha}_i = \sum_{j \le i}
 \alpha_{ij}\, v_j\]</span></p>
 <ul>
 <li><span class="math inline">\(x_i\)</span> = the embedding of word
@@ -8992,14 +10090,21 @@ allowed word, scale by the square root of <span class="math inline">\(d_k\)</spa
 softmax, and take the weighted average of those words’ values.”</p>
 <p>Matrix form: the Transformer lecture shows it only as a block chart
 (slide 3: MatMul → Scale → Mask (opt.) → SoftMax → MatMul), but Lecture
-9 slide 18 writes it for cross-attention as <span class="math inline">\(\text{softmax}\left(\frac{QK&#39;}{\sqrt{d_k}}\right)V\)</span>.
+9 slide 18 writes it for cross-attention (attention where one text looks
+at another text) as <span class="math inline">\(\text{softmax}\left(\frac{QK&#39;}{\sqrt{d_k}}\right)V\)</span>.
 Either form is fine in the exam; the per-word form above is the one
 Lecture 8 uses.</p>
 <p><strong>Sinusoidal positional encoding</strong> (Lecture 9, slide 8,
 copied exactly):</p>
+<p><strong>In words:</strong> the even-numbered slots of a position’s
+vector are filled with a sine wave value that depends on the position
+and on the slot.</p>
 <p><span class="math display">\[PE_{(pos,2i)} =
 \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right) \quad \text{even
-positions}\]</span> <span class="math display">\[PE_{(pos,2i+1)} =
+positions}\]</span></p>
+<p><strong>In words:</strong> the odd-numbered slots are filled the same
+way, but with a cosine wave instead.</p>
+<p><span class="math display">\[PE_{(pos,2i+1)} =
 \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right) \quad \text{odd
 positions}\]</span></p>
 <ul>
@@ -9096,6 +10201,11 @@ representation is the weighted sum of the Values. Because all tokens are
 processed in parallel, this handles long-range dependencies and makes
 training efficient (slide 15).</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 8 “Transformers” (Leif Anders
+Thorsrud, <code>Lecture_llm_transformer.pdf</code>), slides 3, 5–20;
+Lecture 9 “LLMs: Input and output”
+(<code>Lecture_llm_inputoutput.pdf</code>), slides 5–8, 17 and 18; 2025
+exam evaluation guidelines Q4(b), Q4(d).</p>
 <hr />
 <h2 id="ch17">17. Critical issues around LLMs (the “ESG” question)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(a) (5 points)
@@ -9362,7 +10472,7 @@ and prompting</h1>
 <p><strong>Exam priority:</strong> ★★ Medium — good source of True/False
 items (temperature, greedy decoding, 512 tokens, cross-attention) and
 short “explain” questions.</p>
-<h3 id="start-from-zero-11">Start from zero</h3>
+<h3 id="start-from-zero-15">Start from zero</h3>
 <p><strong>The problem.</strong> When you ask ChatGPT a question, the
 answer appears word by word, as if someone were typing. Behind the
 screen, the program has a strange problem. A computer cannot read words.
@@ -10101,7 +11211,7 @@ fine tuning</em>, slides 4 and 22; Interactive Notebook 4, cells
 <p><strong>Exam priority:</strong> ★★ Medium — 2025 T/F (f) “LLMs are
 estimated using unsupervised learning” (answer: FALSE); training terms
 make easy True/False items.</p>
-<h3 id="start-from-zero-12">Start from zero</h3>
+<h3 id="start-from-zero-16">Start from zero</h3>
 <p><strong>The problem.</strong> Picture a brand-new LLM as a machine
 with billions of little dials, all set at random. Ask it to finish “So
 long and thanks for” and it writes gibberish. To get something like
@@ -10744,14 +11854,239 @@ zero-/few-shot and alignment</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(e) (fine-tuning vs
 prompt engineering, 5 points) and 2025 T/F (j) (zero-shot); also the
 natural toolbox for the business-case reflection.</p>
-<p><strong>Sources:</strong> Lecture 9b <em>Training and fine
-tuning</em>, slides 20–23; Lecture 7 <em>Introducing LLMs</em>, slides
-9, 10, 20; Interactive Notebook 4, cells 14–25 and 28; Assignments 2026
-slides 20, 22; 2024/2025 assignment evaluation guidelines.
-<strong>Note:</strong> the Lecture 11 slides (“Prompt engineering and
-model alignment”, 16 Nov) are <strong>not in the course folder</strong>.
-If you took notes in that lecture, use its exact terms next to this
-chapter.</p>
+<h3 id="start-from-zero-17">Start from zero</h3>
+<p><strong>The problem.</strong> A bank gets thousands of customer
+complaints every week. Some are about card fees, some about the app
+crashing, some about loans. The bank wants an LLM to sort each complaint
+into the right bin, so the right team sees it fast. A ready-made LLM
+already knows a lot of language. But it has never seen this bank’s bins
+or its customers’ way of writing. So how do you get it to do this one
+job well? There are two big options: change what you <em>tell</em> the
+model, or change the model <em>itself</em>. This chapter is about
+choosing between them, plus two in-between options.</p>
+<p><strong>How it works, step by step.</strong></p>
+<p><em>Option 1: prompting (write the model better instructions; its
+insides stay untouched).</em></p>
+<ol type="1">
+<li>Write clear instructions: “Sort this complaint into one of: fees,
+app, loans. Reply with one word.”</li>
+<li>If you give no solved examples, that is called
+<strong>zero-shot</strong>. If you add one or a few solved examples to
+the instructions, that is <strong>few-shot</strong>.</li>
+<li>Send the instructions plus the complaint to the model. It answers.
+Nothing inside the model changed. Tomorrow you can rewrite the
+instructions and try again.</li>
+</ol>
+<p><em>Option 2: fine-tuning (send the model back to school on your own
+examples; its insides change).</em></p>
+<ol start="4" type="1">
+<li>Collect many complaints that staff have already sorted by hand.
+These are labelled examples.</li>
+<li>Bolt a small new output part, called a <em>head</em>, onto the
+model. Its only job is to choose between fees, app and loans.</li>
+<li>Train it with the same loop as chapter 19: show a complaint, let the
+model guess the bin, measure how wrong it was, nudge the dials,
+repeat.</li>
+<li>You decide which dials may move. Either only the new head’s dials
+(the rest are <em>frozen</em>, locked in place), or all the dials in the
+model.</li>
+<li>Afterwards, the model’s insides are different. It has become a
+specialist in your bins.</li>
+</ol>
+<p><em>Two in-between options (insides untouched).</em></p>
+<ol start="9" type="1">
+<li><strong>RAG:</strong> a search step finds the relevant documents
+(say, the bank’s fee rules) and pastes them into the instructions before
+the model answers.</li>
+<li><strong>Embeddings:</strong> ask the model only for its “number
+summary” of each complaint. Then train your own small, simple sorter on
+those numbers.</li>
+</ol>
+<p><strong>A tiny example by hand.</strong> The complaint is “You
+charged my card fee twice this month.”</p>
+<p><em>Zero-shot prompt.</em> “Sort this complaint into one of: fees,
+app, loans. Reply with one word.” A capable model should reply “fees”.
+Dials changed: <strong>0</strong>.</p>
+<p><em>Few-shot prompt.</em> The same instruction, plus one solved
+example: “Example: ‘The app crashes when I log in.’ → app”. Dials
+changed: still <strong>0</strong>. The model copies the pattern it sees
+in the instructions.</p>
+<p><em>Head-only fine-tuning, in miniature.</em> Imagine the model’s
+summary of each complaint is a list of only 4 numbers. (Real models use
+far more; the chapter’s example below uses 1,024.) The new head must
+turn those 4 numbers into one score for each of the 3 bins.</p>
+<ol type="1">
+<li>Each bin needs one dial for each of the 4 summary numbers: 4 × 3 =
+12 dials.</li>
+<li>Each bin also gets one extra “starting value” dial, called a bias: 3
+more.</li>
+<li>Total: 12 + 3 = <strong>15</strong> new dials. Only these 15 are
+trained. Every other dial in the model is frozen.</li>
+</ol>
+<p><em>At real size.</em> The worked example further down does the same
+count for a summary of 1,024 numbers and 2 labels (positive, negative):
+1,024 × 2 + 2 = <strong>2,050</strong> new dials. For the bank’s 3 bins
+it would be 1,024 × 3 + 3 = 3,075. That is still less than 0.001% of the
+340 million dials in the model. That is why head-only fine-tuning is
+cheap, and full fine-tuning (moving all 340 million) is expensive.</p>
+<p><strong>What it’s good at / where it breaks.</strong></p>
+<ul>
+<li><strong>Prompting is good for</strong> starting fast and cheap, with
+no labelled data and no training. <strong>It breaks</strong> when you
+need the same behaviour every time at huge volume: it can be
+inconsistent, you pay for every token on every request, and only so much
+fits in the instructions.</li>
+<li><strong>Fine-tuning is good for</strong> a stable, high-volume task:
+you get a consistent specialist. <strong>It breaks</strong> when you
+lack labelled data, computing power or skills, or when the bins keep
+changing (you must train again).</li>
+<li><strong>RAG is good for</strong> answers that must rest on your own
+up-to-date documents. <strong>It breaks</strong> when the search step
+finds the wrong document.</li>
+<li><strong>None of them guarantees correct answers.</strong> Always
+check against a sample that people have sorted by hand.</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>LLM (large language model):</strong> a program, like
+ChatGPT, that has learned from huge amounts of text to predict what
+comes next.</li>
+<li><strong>pre-trained LLM:</strong> a model that has already done its
+big general training (chapter 19) and “knows language” but not your
+task.</li>
+<li><strong>weight / parameter:</strong> one adjustable number (a dial)
+inside the model. Changing weights = changing the model’s insides.</li>
+<li><strong>fine-tuning:</strong> extra training of a pre-trained model
+on your own labelled examples, so its weights change. Like sending a
+trained nurse on a short course to specialise in one ward.</li>
+<li><strong>transfer learning:</strong> reusing what a model learned on
+one task to help with another. Like a violin player learning viola
+faster than a beginner.</li>
+<li><strong>domain:</strong> a field or type of data, such as “bank
+complaints” or “film reviews”.</li>
+<li><strong>head (model head, task head, problem-specific
+head):</strong> a small output part bolted onto the top of the model for
+one specific job. Like a new attachment on a drill.</li>
+<li><strong>language modelling head (LM head):</strong> the usual head
+that scores every word in the vocabulary as the possible next word
+(chapter 18).</li>
+<li><strong>logits:</strong> the raw scores a head gives each option
+before they become probabilities.</li>
+<li><strong>softmax head:</strong> a head that ends with softmax, so it
+gives one probability per label, adding up to 1.</li>
+<li><strong>label / labelled data / “already classified”:</strong>
+examples that come with the right answer written down by a person, such
+as a review marked “negative”.</li>
+<li><strong>supervised training:</strong> training on labelled examples,
+with the right answers as the target.</li>
+<li><strong>BERT / Bidirectional Transformer Encoder:</strong> a model
+family that reads the whole text in both directions. Often used for
+understanding tasks such as sentiment.</li>
+<li><strong>[CLS] token:</strong> a special token placed at the start of
+the text in BERT. Its final numbers act as a summary of the whole
+text.</li>
+<li><strong>embedding / vector:</strong> a list of numbers that stands
+for a word or a whole text. A “sequence-level embedding” is one such
+list for a whole text.</li>
+<li><strong>sentiment:</strong> the feeling in a text, such as positive
+or negative.</li>
+<li><strong>frozen layers / head-only fine-tuning:</strong> all the old
+dials are locked; only the new head’s dials are trained.</li>
+<li><strong>full fine-tuning:</strong> both the new head and all the old
+dials are trained.</li>
+<li><strong>bias (in “2 biases”):</strong> one extra dial per output
+that sets its starting level, like the “zero” setting on a kitchen
+scale.</li>
+<li><strong>SGD:</strong> stochastic gradient descent, the “nudge the
+dials downhill using a small random batch” method from chapter 19.</li>
+<li><strong>prompt:</strong> the text you send to the model:
+instructions, examples, documents and the question.</li>
+<li><strong>prompt engineering:</strong> the skill of writing prompts
+that get good, reliable answers. Like writing a clear brief for a new
+colleague.</li>
+<li><strong>system prompt:</strong> standing instructions sent before
+the user’s text, such as “Reply ONLY with JSON.” Like the house rules on
+a staff noticeboard.</li>
+<li><strong>context:</strong> everything the model can see in this
+request: the prompt, examples and any pasted documents. It disappears
+after the answer.</li>
+<li><strong>context window:</strong> the most tokens the model can read
+at once (chapter 18).</li>
+<li><strong>token:</strong> one small piece of text, often a word or
+part of a word. Providers charge per token.</li>
+<li><strong>tone:</strong> the style of the answer, such as formal,
+friendly or short.</li>
+<li><strong>output format / JSON:</strong> the exact shape the answer
+must have. JSON is a strict text format that other programs can read,
+like <code>{&quot;sentiment&quot;: &quot;negative&quot;}</code>.</li>
+<li><strong>edge case:</strong> an unusual example that doesn’t fit the
+rules neatly, such as a lukewarm review.</li>
+<li><strong>temperature 0:</strong> the setting where the model always
+picks its most likely next word, so the same input gives the same answer
+(chapter 18).</li>
+<li><strong>zero-shot:</strong> asking the model to do a task from
+instructions alone, with no examples and no change to its weights.
+<strong>[Not in course files — general knowledge]</strong></li>
+<li><strong>few-shot:</strong> putting one or a few solved examples in
+the prompt. Still no change to the weights.</li>
+<li><strong>chain-of-thought:</strong> asking the model to reason step
+by step before giving its final answer. <strong>[Not in course files —
+general knowledge]</strong></li>
+<li><strong>latency:</strong> waiting time before the answer
+arrives.</li>
+<li><strong>grounding:</strong> telling the model to answer only from a
+text you give it. Like an open-book exam where you may only use the book
+on the desk.</li>
+<li><strong>RAG (retrieval-augmented generation):</strong> a search step
+(the <em>retriever</em>) finds relevant documents and pastes them into
+the prompt, then the model writes the answer. Like a librarian handing
+the consultant the right folder first.</li>
+<li><strong>retrieval / retriever:</strong> finding relevant documents /
+the search tool that does it.</li>
+<li><strong>tf-idf:</strong> a word-count-based way of scoring how
+relevant a document is to a search, from earlier in the course.</li>
+<li><strong>hallucination:</strong> the model stating something false
+with confidence, such as a made-up quote.</li>
+<li><strong>embedding extraction / “average of the last 4
+layers”:</strong> taking the model’s number lists for your texts and
+using them elsewhere. With BERT, people often average the lists from its
+last 4 layers.</li>
+<li><strong>API:</strong> a web service your program sends text to and
+gets results back from. Like a vending machine for model outputs.</li>
+<li><strong>downstream task:</strong> the later task you actually care
+about, such as sorting complaints, that uses the model’s output.</li>
+<li><strong>classifier:</strong> a model that puts things into
+categories.</li>
+<li><strong>Naive Bayes:</strong> a simple, fast word-counting
+classifier from Lecture 3.</li>
+<li><strong>clustering:</strong> grouping similar texts together without
+labels.</li>
+<li><strong>alignment:</strong> teaching a model to follow instructions
+and give helpful, safe answers. <strong>[Not in course files — general
+knowledge]</strong></li>
+<li><strong>SFT (supervised fine-tuning):</strong> training on examples
+of instructions paired with good answers.</li>
+<li><strong>preference optimisation / reinforcement learning:</strong>
+training where answers people prefer are rewarded.</li>
+<li><strong>RLHF (reinforcement learning from human feedback):</strong>
+the common name for training a model on human ratings of its answers.
+<strong>[Not in course files — general knowledge]</strong></li>
+<li><strong>provider:</strong> the company that makes and runs the
+model.</li>
+<li><strong>compute / GPU:</strong> compute = computer power. A GPU is a
+special chip that does the heavy maths of training fast.</li>
+<li><strong>over-fitting:</strong> memorising the training examples
+instead of learning the general pattern.</li>
+<li><strong>validate / hand-labelled sample / benchmark:</strong>
+validate = check how often the model is right. A hand-labelled sample is
+a set of examples people sorted, used for checking. A benchmark is a
+simple method to compare against, like “always guess the biggest
+bin”.</li>
+<li><strong>volume:</strong> how many items you need to process, such as
+100,000 reviews a month.</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-19">The idea in plain words</h3>
 <p>You have a pre-trained LLM that already “knows language”. You want it
 to do <strong>your</strong> job, for example labelling customer reviews
@@ -10794,21 +12129,25 @@ a task in one domain to solve a different task in another domain”.
 Fine-tuning:</p>
 <ul>
 <li>“involves adding a <strong>problem specific head</strong> to an
-otherwise pre-trained LLM”;</li>
+otherwise pre-trained LLM” (a small new output part made for your
+task);</li>
 <li>means you “re-train the model on this new task”;</li>
 <li>updates “<strong>all of the model parameters or only the parameters
 in the new model head</strong>”.</li>
 </ul>
 <p><strong>Fine-tuning example (L9b slides 21–22).</strong> The usual
-language-model head (logits over the vocabulary) is replaced by a new
-head. To classify the <strong>sentiment</strong> of “[CLS] entirely
-predictable and lacks energy”:</p>
+language-model head (logits over the vocabulary, i.e. one raw score per
+possible next word) is replaced by a new head. To classify the
+<strong>sentiment</strong> of “[CLS] entirely predictable and lacks
+energy”:</p>
 <ul>
 <li>use a pre-trained <strong>Bidirectional Transformer Encoder</strong>
 (BERT-type);</li>
 <li>let the <strong>[CLS] token</strong> denote the sequence-level
-embedding;</li>
-<li>add a new <strong>softmax head</strong> on top of it;</li>
+embedding (the special start token whose numbers summarise the whole
+text);</li>
+<li>add a new <strong>softmax head</strong> on top of it (an output part
+that gives one probability per label);</li>
 <li>“Use SGD to train the new parameters in the model and potentially
 update the pre-trained parameters as well”.</li>
 </ul>
@@ -10818,10 +12157,12 @@ classified</strong>”.</p>
 <ol type="1">
 <li>“<strong>Prompt engineering</strong>”.</li>
 <li>“Extract the word embedding vectors from the LLM directly and work
-with these on the down stream task of interest”. With BERT it is common
-to take “the <strong>average of the last 4 layers</strong>”. Many LLMs
-also offer “<strong>API solutions</strong> to get the actual word
-embeddings”.</li>
+with these on the down stream task of interest” (take the model’s number
+lists and use them in the later task you care about). With BERT it is
+common to take “the <strong>average of the last 4 layers</strong>”. Many
+LLMs also offer “<strong>API solutions</strong> to get the actual word
+embeddings” (a web service you send text to and get number lists
+back).</li>
 </ol>
 <p><strong>Context vs weights (L7 slides 10, 20).</strong> “Uploading a
 document changes the context. Fine-tuning changes the weights.”
@@ -10838,18 +12179,21 @@ skills include providing appropriate <strong>context</strong> and
 <li><strong>Notebook 4, cell 17</strong> lists the techniques you
 practised to get valid JSON, “one change at a time”:
 <ol type="1">
-<li>set <strong>temperature 0</strong>;</li>
-<li>a <strong>system prompt</strong> that spells out the <strong>exact
-output format</strong>
+<li>set <strong>temperature 0</strong> (always pick the most likely
+word);</li>
+<li>a <strong>system prompt</strong> (standing instructions sent before
+the user’s text) that spells out the <strong>exact output
+format</strong>
 (<code>Reply ONLY with JSON of the form {&quot;sentiment&quot;: &quot;positive|negative|mixed&quot;, &quot;aspect&quot;: &quot;...&quot;}. No other text.</code>);</li>
 <li>“add an <strong>example</strong> to the system prompt
 (<em>few-shot</em>)”;</li>
-<li>tell the model what to do with <strong>edge cases</strong>
-(e.g. lukewarm reviews).</li>
+<li>tell the model what to do with <strong>edge cases</strong> (unusual
+examples, e.g. lukewarm reviews).</li>
 </ol>
-Cells 19–24 add <strong>grounding</strong> (“Answer using ONLY the
-provided excerpt. If the excerpt does not contain the answer, say that
-it does not.”) and <strong>RAG</strong>.</li>
+Cells 19–24 add <strong>grounding</strong> (tying the answer to a given
+text: “Answer using ONLY the provided excerpt. If the excerpt does not
+contain the answer, say that it does not.”) and <strong>RAG</strong> (a
+search step pastes relevant documents into the prompt).</li>
 <li><strong>Lecture 7 slide 9</strong> gives the training steps after
 pre-training (calling them “alignment” is <strong>[Not in course files —
 general knowledge]</strong>; slide 9 does not use the word):
@@ -10918,9 +12262,10 @@ the policy text into the prompt. Weights changed:
 <strong>none</strong>.</li>
 <li><strong>Embeddings + own model.</strong> Send each review to the LLM
 and take its embedding (e.g. the average of BERT’s last 4 layers, slide
-23). Then train a simple classifier of your own (a supervised model, as
-in Lecture 3) on, say, a few hundred labelled reviews. The LLM’s
-weights: <strong>unchanged</strong>. Your small model is trained.</li>
+23). Then train a simple classifier of your own (a supervised model that
+sorts texts into categories, as in Lecture 3) on, say, a few hundred
+labelled reviews. The LLM’s weights: <strong>unchanged</strong>. Your
+small model is trained.</li>
 <li><strong>Head-only fine-tuning.</strong> Put a softmax head with 2
 outputs on the [CLS] vector. Suppose the vector has length <span class="math inline">\(d = 1024\)</span>, the size used by the
 0.34B-parameter BERT on slide 19 <strong>[Not in course files — general
@@ -10970,10 +12315,12 @@ model</td>
 <td><strong>RAG</strong></td>
 <td>Context: retrieved documents are added to the prompt. Weights
 fixed.</td>
-<td>A document collection plus a retriever (tf-idf or embeddings)</td>
+<td>A document collection plus a retriever (a search tool, using tf-idf
+word matching or embeddings)</td>
 <td>Build and maintain search; longer prompts cost more tokens</td>
 <td>Answers must rest on company or up-to-date facts; reduces
-hallucination but “neither guarantees accuracy”</td>
+hallucination (confident made-up answers) but “neither guarantees
+accuracy”</td>
 </tr>
 <tr>
 <td><strong>Embeddings + own model</strong></td>
@@ -10996,7 +12343,8 @@ frozen</td>
 <td><strong>Full fine-tuning</strong></td>
 <td>The new head <strong>and</strong> all pre-trained weights</td>
 <td>More labelled data</td>
-<td>Highest: GPUs, expertise, risk of over-fitting</td>
+<td>Highest: GPUs (special maths chips), expertise, risk of over-fitting
+(memorising instead of learning)</td>
 <td>Prompting and head-only are not accurate enough, the domain is
 special, and the volume justifies the cost</td>
 </tr>
@@ -11008,12 +12356,13 @@ special, and the volume justifies the cost</td>
 c).</strong> A firm wants to classify <strong>100,000 reviews a
 month</strong>. Prompting a small local model takes 5–30 seconds per
 review on a laptop (Assignment slide 23), so the per-review cost and
-time add up fast at that volume. Naive Bayes (Lecture 3) is fast and
-cheap but needs labels. Fine-tuning becomes worth it when you have (or
-can create) a labelled set, the task is stable, and the volume is high
-enough that a cheaper, faster specialised model pays back the training
-effort. Whatever you choose, validate it against a hand-labelled sample
-and a simple benchmark.</p>
+time add up fast at that volume. Naive Bayes (Lecture 3, a simple
+word-counting classifier) is fast and cheap but needs labels.
+Fine-tuning becomes worth it when you have (or can create) a labelled
+set, the task is stable, and the volume is high enough that a cheaper,
+faster specialised model pays back the training effort. Whatever you
+choose, validate it against a hand-labelled sample and a simple
+benchmark.</p>
 <div class="callout exam">
 <p><strong>How this shows up on the exam</strong> 2025 Q4(e) asked for
 the difference between fine-tuning and prompt engineering (5 points).
@@ -11093,6 +12442,14 @@ labelled data but is less controllable. Fine-tuning needs data, compute
 and skills but can give a more consistent specialist model for a stable,
 high-volume task.</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 9b <em>Training and fine
+tuning</em>, slides 20–23; Lecture 7 <em>Introducing LLMs</em>, slides
+9, 10, 20; Interactive Notebook 4, cells 14–25 and 28; Assignments 2026
+slides 20, 22; 2024/2025 assignment evaluation guidelines.
+<strong>Note:</strong> the Lecture 11 slides (“Prompt engineering and
+model alignment”, 16 Nov) are <strong>not in the course folder</strong>.
+If you took notes in that lecture, use its exact terms next to this
+chapter.</p>
 <hr />
 <h2 id="ch21">21. Lessons from running a real LLM locally (Interactive
 Notebook 4)</h2>
@@ -11100,12 +12457,218 @@ Notebook 4)</h2>
 but excellent, concrete material for the business-case reflection (2025
 Block 5, 20 points) and for T/F items on tokens, temperature and
 RAG.</p>
-<p><strong>Sources:</strong> Interactive Notebook 4 <em>A Real LLM on
-Your Laptop</em>
-(GRA4164_Interactive_4_A_real_LLM_on_your_laptop.ipynb), cells 0–28;
-Assignments 2026 slides 20–24; Lecture 7 slides 18–20, 26. The notebook
-has <strong>no saved outputs</strong>, so no token counts or scores from
-it appear here.</p>
+<h3 id="start-from-zero-18">Start from zero</h3>
+<p><strong>The problem.</strong> Reading about LLMs is one thing. Using
+one for real work is another. Imagine a Norwegian company that wants an
+LLM to label customer reviews and to answer staff questions from its
+handbook. Before spending money, the managers want to know five things.
+What will it cost? Will it give the same answer twice? Can its answers
+be fed straight into other software? Will it make things up? And can it
+find the right page of the handbook when someone asks in their own
+words? The course notebook tests all five with a small, free model
+running on your own laptop.</p>
+<p><strong>How it works, step by step.</strong></p>
+<ol type="1">
+<li><strong>Get a small model.</strong> Download a free model
+(Qwen2.5-0.5B-Instruct) once from Hugging Face, a website where people
+share models. After that it runs on your laptop, with no account and no
+internet service.</li>
+<li><strong>Cost test (tokens).</strong> Feed in the same sentence in
+English and in Norwegian. Count how many pieces (tokens) each one is cut
+into. More pieces means more cost.</li>
+<li><strong>Same-answer test (temperature).</strong> Ask the same
+question three times. Count how many different answers come back at each
+temperature setting.</li>
+<li><strong>Software-ready test (JSON).</strong> Ask the model to label
+4 reviews in a strict, machine-readable format. A small checking program
+counts how many replies are usable. Then improve the instructions one
+change at a time.</li>
+<li><strong>Making-things-up test (hallucination).</strong> Ask the
+model to quote a real speech. Try three ways: with no source text, with
+the right source text, and with the wrong source text.</li>
+<li><strong>Find-the-page test (RAG).</strong> Chop many speeches into
+short chunks. Let a word-matching search pick the best chunks and paste
+them into the prompt. Check whether the search still finds the right
+chunk when the question uses different words.</li>
+<li><strong>Turn each result into a business rule.</strong></li>
+</ol>
+<p><strong>A tiny example by hand.</strong></p>
+<p><em>Why the model needs a search step at all.</em> The collection of
+speeches is about 2 million tokens long. The model can read at most
+32,768 tokens at once. Divide: 2,000,000 / 32,768 = about 61. So the
+speeches are about 61 times too long to fit. The model can only be shown
+a few chosen chunks, and a search step has to choose them.</p>
+<p><em>Why the search step misses reworded questions.</em> Take three
+short chunks (the same toy example as further down). First, the search
+tool throws away very common “stop words” such as “we”, “will”, “for”,
+“the”, “our”, “must” and “more”. What is left:</p>
+<ul>
+<li>Chunk A: protect, social, security, elderly.</li>
+<li>Chunk B: build, roads, bridges.</li>
+<li>Chunk C: schools, need, better, teachers.</li>
+</ul>
+<p>Now count, by hand, how many words each question shares with each
+chunk.</p>
+<ul>
+<li><strong>Question 1</strong> asks about “Social Security for the
+elderly”. It shares 3 words with chunk A (social, security, elderly), 0
+with B and 0 with C. So chunk A wins. Correct.</li>
+<li><strong>Question 2</strong> asks the same thing in other words:
+“pensions for old people”. The words “pensions”, “old” and “people”
+appear in <strong>no</strong> chunk. It shares 0 words with A, 0 with B
+and 0 with C. Every chunk scores 0, so the search has nothing to go on.
+The model then gets the wrong text, or none.</li>
+</ul>
+<p>This is the notebook’s key point: a word-matching search only finds
+the <em>same words</em>, not the <em>same meaning</em>.</p>
+<p><strong>What it’s good at / where it breaks.</strong></p>
+<ul>
+<li><strong>Good:</strong> it is free, runs offline, and keeps company
+data on your own machine.</li>
+<li><strong>Good:</strong> a tiny model makes the typical LLM failures
+easy to see before you scale up.</li>
+<li><strong>Breaks:</strong> a small model on a laptop is weak and slow,
+around 5–30 seconds per review.</li>
+<li><strong>Breaks:</strong> passing a test on 4 reviews proves little
+about 100,000. The wrong source text can be worse than no source, and
+word-matching search misses reworded questions.</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>LLM (large language model):</strong> a program, like
+ChatGPT, that predicts text one token at a time.</li>
+<li><strong>notebook / cell:</strong> a notebook is a document that
+mixes code and explanations and runs in a web browser. A cell is one box
+of code or text in it. Like a recipe book where each step can be
+“cooked” by pressing a button.</li>
+<li><strong>code / Python:</strong> instructions written for the
+computer. Python is the programming language the notebook uses.</li>
+<li><strong>Qwen2.5-0.5B-Instruct:</strong> the name of the small model
+used. “0.5B” means half a billion dials (parameters). “Instruct” means
+it was trained to follow instructions and chat.</li>
+<li><strong>parameter / weight:</strong> one adjustable number (dial)
+inside the model, set during training.</li>
+<li><strong>Hugging Face:</strong> a website where people share models,
+like an app store for AI models.</li>
+<li><strong>account / API key / cloud:</strong> the usual way to use a
+big model: sign up (account), get a password for programs (API key), and
+send your text to the provider’s computers over the internet (cloud).
+The notebook needs none of these.</li>
+<li><strong>local deployment / open weights:</strong> running the model
+on your own computer, which is possible because its dials (weights) are
+published for anyone to download.</li>
+<li><strong>per-token fee:</strong> what online providers charge: a
+small price for every token in and out.</li>
+<li><strong>privacy:</strong> keeping data away from outsiders. Running
+locally means your text never leaves your machine.</li>
+<li><strong>token:</strong> one small piece of text, often a word,
+sometimes part of a word or a number.</li>
+<li><strong>tokenizer:</strong> the tool that cuts text into tokens.
+Like a butcher with a fixed set of cuts.</li>
+<li><strong>subword token:</strong> a token that is only part of a word.
+A long Norwegian word may be cut into several of these.</li>
+<li><strong>tokens per word:</strong> how many tokens, on average, one
+word turns into. Higher means more cost.</li>
+<li><strong>effective price:</strong> what a document really costs once
+you count its tokens. Same price per token, but more tokens per word,
+means a higher bill.</li>
+<li><strong>leading space:</strong> the space in front of a word. ”
+bank” (with a space) and “bank” count as different tokens.</li>
+<li><strong><code>len(text.split())</code>:</strong> a line of code that
+counts words by cutting the text at the spaces.</li>
+<li><strong>context window:</strong> the most tokens the model can read
+at once (here 32,768). Like the size of a desk.</li>
+<li><strong>corpus / SOTU:</strong> a corpus is a collection of texts.
+SOTU is the State of the Union speeches by US presidents, the corpus
+used here.</li>
+<li><strong>temperature (T):</strong> the “boldness” dial for picking
+words (chapter 18). Low = predictable, high = varied.</li>
+<li><strong>greedy (T = 0):</strong> always pick the single most likely
+next word, so the same question gives the same answer every time.</li>
+<li><strong>seed:</strong> a starting number for the computer’s random
+dice. A different seed gives different rolls.</li>
+<li><strong><code>N_SAMPLES</code>:</strong> a setting in the code: how
+many times to ask the same question (here 3).</li>
+<li><strong>JSON / machine-readable:</strong> JSON is a strict text
+format such as <code>{&quot;sentiment&quot;: &quot;positive&quot;}</code>. Machine-readable
+means other software can read it without a human.</li>
+<li><strong>system prompt:</strong> standing instructions sent before
+the user’s text, like house rules.</li>
+<li><strong>explicit output format:</strong> spelling out exactly what
+shape the answer must have.</li>
+<li><strong>few-shot example:</strong> a solved example placed in the
+prompt to show the pattern (chapter 20).</li>
+<li><strong>label set:</strong> the list of allowed answers, such as
+positive / negative / mixed. Choosing it is a business decision.</li>
+<li><strong>edge case / lukewarm:</strong> an example that doesn’t fit
+the labels neatly, like “It’s fine, I guess.”</li>
+<li><strong>format checker / <code>json.loads</code>:</strong> a small
+program that tests whether each reply is valid. <code>json.loads</code>
+tries to read a reply as JSON and fails if it is broken.</li>
+<li><strong>validation sample:</strong> a set of examples people have
+labelled by hand, used to check how often the model is right.</li>
+<li><strong>benchmark / majority class:</strong> a simple method to
+compare against. “Majority class” means always guessing the most common
+label.</li>
+<li><strong>Naive Bayes:</strong> a simple, fast word-counting
+classifier from Lecture 3, often used as a benchmark.</li>
+<li><strong>hallucination:</strong> the model stating something false
+with confidence, such as an invented quote.</li>
+<li><strong>grounding / excerpt:</strong> giving the model a source text
+(an excerpt) and telling it to answer only from that. Like an open-book
+exam.</li>
+<li><strong>STRICT instruction:</strong> the notebook’s firm extra
+instruction: if the answer is not in the excerpt, say so.</li>
+<li><strong>scoreboard:</strong> the notebook’s simple check of whether
+the reply contains the real words of the speech.</li>
+<li><strong>RAG (retrieval-augmented generation):</strong> first search
+for relevant chunks, then paste them into the prompt, then let the model
+answer.</li>
+<li><strong>retriever:</strong> the search tool inside RAG.</li>
+<li><strong>chunk / <code>CHUNK_SIZE</code>:</strong> a short slice of a
+long text. <code>CHUNK_SIZE</code> sets how many words each slice
+has.</li>
+<li><strong>top-k chunks / <code>TOP_K</code>:</strong> the k
+best-matching chunks that get pasted into the prompt.</li>
+<li><strong>stop words:</strong> very common words like “the”, “for”,
+“we” that a search tool ignores.</li>
+<li><strong>tf-idf / <code>TfidfVectorizer</code>:</strong> a way of
+scoring words: a word counts more if it is frequent in this chunk but
+rare across all chunks. <code>TfidfVectorizer</code> is the code tool
+that does it.</li>
+<li><strong>vector:</strong> a list of numbers in a fixed order. Here,
+one number per vocabulary word for each chunk.</li>
+<li><strong>document-term matrix:</strong> a table with one row per
+chunk and one column per word, each cell showing how much that word
+counts in that chunk.</li>
+<li><strong>bag-of-words:</strong> treating a text as a bag of word
+counts, ignoring word order.</li>
+<li><strong>dot product:</strong> multiply two lists number by number
+and add up. If two texts share no words, it is 0.</li>
+<li><strong>cosine similarity:</strong> a 0-to-1 score of how alike two
+word-lists are, built on the dot product. 0 = nothing in common.</li>
+<li><strong><code>argsort</code>:</strong> a code command that puts
+scores in order, used to pick the top chunks.</li>
+<li><strong><code>GENERATE = True</code>:</strong> a switch in the code.
+When on, the retrieved chunks are sent to the model to write an
+answer.</li>
+<li><strong>literal-word matching vs dense embeddings:</strong> matching
+the exact same words, versus matching number lists that capture meaning
+(Interactive Notebook 3). Dense embeddings can see that “pensions” and
+“Social Security” are related.</li>
+<li><strong>paraphrase:</strong> saying the same thing in other
+words.</li>
+<li><strong>hit rate:</strong> how often the retriever finds the right
+chunk.</li>
+<li><strong>pipeline:</strong> the whole chain of steps around the
+model: input, model, checks, output.</li>
+<li><strong>T/F:</strong> a True/False exam question.</li>
+<li><strong>reflection (business case):</strong> the exam’s longer
+question where you propose methods for a firm and discuss their
+pitfalls.</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-20">The idea in plain words</h3>
 <p>The notebook runs a small real LLM,
 <strong>Qwen2.5-0.5B-Instruct</strong>, downloaded once from
@@ -11387,7 +12950,7 @@ per word, which raises cost and fills the context window faster.</li>
 reflection question)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 20 of 100 points in 2025,
 and the question that most separates a C from an A.</p>
-<h3 id="start-from-zero-13">Start from zero</h3>
+<h3 id="start-from-zero-19">Start from zero</h3>
 <p><strong>The problem.</strong> A company has a pile of text it can’t
 read by hand: 1,000 survey answers, 50,000 product reviews, or years of
 news articles. Management asks a simple question, like “do customers
