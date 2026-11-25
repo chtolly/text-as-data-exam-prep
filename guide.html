@@ -7481,61 +7481,66 @@ better)</li>
 </div>
 <h3 id="quick-self-test-10">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “A bigram model predicts the next character
-from the previous two characters.” <em>What it’s asking, in plain
-words:</em> A bigram model is the letter-guesser from this chapter. A
-character is one letter or symbol. Does it look back two letters before
-guessing the next one? <strong>False.</strong> <em>Why:</em> “Bi” means
-two, but the two are the letter you’re on plus the one you’re guessing.
-So it looks back only one letter. In general, an n-gram looks back n − 1
-pieces. It’s like a friend who only remembers the last word you said.
-(Source: L4 slide 2.)</li>
-<li><strong>T/F:</strong> “Without smoothing, a single unseen bigram can
-make the loss infinite.” <em>What it’s asking, in plain words:</em>
-Smoothing means adding a pretend count of 1 to every pair. An unseen
-bigram is a letter pair that never showed up in the training text. The
-loss is the “how wrong” score. Can one never-seen pair make that score
-endless? <strong>True.</strong> <em>Why:</em> A never-seen pair gets
-chance 0. The loss uses the log of each chance, and the log of 0 is
-minus infinity (<span class="math inline">\(\log 0 = -\infty\)</span>).
-One endless number makes the whole average endless. It’s like a judge
-who gives a score of “impossible”: one such vote wrecks the whole total.
-(Source: Part 1 cell 44.)</li>
-<li><strong>T/F:</strong> “Setting the temperature above 1 makes rare
-characters more likely.” <em>What it’s asking, in plain words:</em>
-Temperature is the knob that reshapes the chances before the model rolls
-its dice. Rare characters are letters that normally get a small chance.
-If you turn the knob above 1, do those letters get picked more often?
-<strong>True.</strong> <em>Why:</em> Above 1, the chances get flatter:
-the favourite loses some of its lead and the underdogs gain. Think of
-turning up a DJ’s “surprise me” setting: less-played songs come on more
-often. (Source: Part 1 cell 38.)</li>
-<li><strong>T/F:</strong> “A model with loss 3.30 on 27 characters is
-doing better than random guessing.” <em>What it’s asking, in plain
-words:</em> The loss is the “how wrong” score, lower is better. The
-model chooses among 27 characters (26 letters plus an end mark). Is a
-score of 3.30 better than picking letters blindly?
-<strong>False.</strong> <em>Why:</em> Blind guessing, giving each of the
-27 characters the same chance, gives a loss of exactly ln 27 ≈ 3.30
+<li><p><strong>T/F:</strong> “A bigram model predicts the next character
+from the previous two characters.”</p>
+<p><em>What it’s asking, in plain words:</em> A bigram model is the
+letter-guesser from this chapter. A character is one letter or symbol.
+Does it look back two letters before guessing the next one?</p>
+<p><strong>False.</strong> <em>Why:</em> “Bi” means two, but the two are
+the letter you’re on plus the one you’re guessing. So it looks back only
+one letter. In general, an n-gram looks back n − 1 pieces. It’s like a
+friend who only remembers the last word you said. (Source: L4 slide
+2.)</p></li>
+<li><p><strong>T/F:</strong> “Without smoothing, a single unseen bigram
+can make the loss infinite.”</p>
+<p><em>What it’s asking, in plain words:</em> Smoothing means adding a
+pretend count of 1 to every pair. An unseen bigram is a letter pair that
+never showed up in the training text. The loss is the “how wrong” score.
+Can one never-seen pair make that score endless?</p>
+<p><strong>True.</strong> <em>Why:</em> A never-seen pair gets chance 0.
+The loss uses the log of each chance, and the log of 0 is minus infinity
+(<span class="math inline">\(\log 0 = -\infty\)</span>). One endless
+number makes the whole average endless. It’s like a judge who gives a
+score of “impossible”: one such vote wrecks the whole total. (Source:
+Part 1 cell 44.)</p></li>
+<li><p><strong>T/F:</strong> “Setting the temperature above 1 makes rare
+characters more likely.”</p>
+<p><em>What it’s asking, in plain words:</em> Temperature is the knob
+that reshapes the chances before the model rolls its dice. Rare
+characters are letters that normally get a small chance. If you turn the
+knob above 1, do those letters get picked more often?</p>
+<p><strong>True.</strong> <em>Why:</em> Above 1, the chances get
+flatter: the favourite loses some of its lead and the underdogs gain.
+Think of turning up a DJ’s “surprise me” setting: less-played songs come
+on more often. (Source: Part 1 cell 38.)</p></li>
+<li><p><strong>T/F:</strong> “A model with loss 3.30 on 27 characters is
+doing better than random guessing.”</p>
+<p><em>What it’s asking, in plain words:</em> The loss is the “how
+wrong” score, lower is better. The model chooses among 27 characters (26
+letters plus an end mark). Is a score of 3.30 better than picking
+letters blindly?</p>
+<p><strong>False.</strong> <em>Why:</em> Blind guessing, giving each of
+the 27 characters the same chance, gives a loss of exactly ln 27 ≈ 3.30
 (perplexity 27). So 3.30 <em>is</em> blind guessing, not better. It’s
 like scoring 25% on a test with four answer options per question: that’s
-what a coin-tosser gets. (Source: L4 slide 9.)</li>
-<li><strong>Explain (2–5 sentences):</strong> What does perplexity
-measure, and what do the course’s numbers show? <em>Model answer:</em>
-Perplexity is <span class="math inline">\(e^{\text{Loss}}\)</span>,
-where the loss is the average negative log-likelihood of the true next
-character. It can be read as how many characters the model is “choosing
-between” at each step, so lower is better. Uniform guessing over 27
-characters gives perplexity 27, the count-based bigram 11.6, the neural
-network bigram 11.7, and the MLP with 5 characters of context 9.2. So
-counting and the simple neural net learn the same thing, and the gain
-comes from giving the model more context (L4 slide 9). <em>What this
-answer is saying, in plain words:</em> Perplexity tells you roughly how
-many letters the model is torn between at each step, so smaller is
-better. Blind guessing is torn between all 27. Counting letter pairs
-brings that down to about 12, and the simple neural network gets the
-same. The model that looks back five letters does best, at about 9, so
-looking further back is what really helps.</li>
+what you’d get by guessing with your eyes closed. (Source: L4 slide
+9.)</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> What does perplexity
+measure, and what do the course’s numbers show?</p>
+<p><em>Model answer:</em> Perplexity is <span class="math inline">\(e^{\text{Loss}}\)</span>, where the loss is the
+average negative log-likelihood of the true next character. It can be
+read as how many characters the model is “choosing between” at each
+step, so lower is better. Uniform guessing over 27 characters gives
+perplexity 27, the count-based bigram 11.6, the neural network bigram
+11.7, and the MLP with 5 characters of context 9.2. So counting and the
+simple neural net learn the same thing, and the gain comes from giving
+the model more context (L4 slide 9).</p>
+<p><em>What this answer is saying, in plain words:</em> Perplexity tells
+you roughly how many letters the model is torn between at each step, so
+smaller is better. Blind guessing is torn between all 27. Counting
+letter pairs brings that down to about 12, and the simple neural network
+gets the same. The model that looks back five letters does best, at
+about 9, so looking further back is what really helps.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 4 “Introducing next token
 prediction” (Larsen), slides 2–9; notebook
@@ -8143,61 +8148,65 @@ examples)</li>
 </div>
 <h3 id="quick-self-test-11">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “Multiplying a one-hot vector by a weight
-matrix returns the sum of all rows of the matrix.” <em>What it’s asking,
-in plain words:</em> A one-hot vector is a list of 0s with a single 1 in
-one word’s slot. A weight matrix is a grid of dials with one row per
-word. When you multiply the two, do you get all the rows added together?
-<strong>False.</strong> <em>Why:</em> Every 0 wipes out its row, and the
-single 1 keeps one row. So you get only that one row (or column), the
-one where the 1 sits. It’s like a row of light switches with only one
-on: only that one lamp lights up. (Source: Part 2 cell 13; L6 slide
-22.)</li>
-<li><strong>T/F:</strong> “A deep neural network can be seen as layer
-after layer of logistic regression classifiers.” <em>What it’s asking,
-in plain words:</em> A deep neural network is one with many middle
-layers. Logistic regression is a classic method that adds up weighted
-inputs and squeezes the result into a chance. A classifier is something
-that sorts items into groups. Is a deep network like many of these
-stacked on top of each other? <strong>True.</strong> <em>Why:</em> Each
-layer does a weighted sum and then a squashing step, which is what
-logistic regression does. Stack them, and each layer feeds the next,
-like a relay of small judges each passing their verdict on. (Source: L6
-slide 18.)</li>
-<li><strong>T/F:</strong> “The input layer is counted when we call a
-network with one hidden layer a two-layer network.” <em>What it’s
-asking, in plain words:</em> The input layer is where the numbers come
-in. A hidden layer is a middle layer. A network with one middle layer is
-called “two-layer”. Is the input layer one of those two?
-<strong>False.</strong> <em>Why:</em> The input layer does no
+<li><p><strong>T/F:</strong> “Multiplying a one-hot vector by a weight
+matrix returns the sum of all rows of the matrix.”</p>
+<p><em>What it’s asking, in plain words:</em> A one-hot vector is a list
+of 0s with a single 1 in one word’s slot. A weight matrix is a grid of
+dials with one row per word. When you multiply the two, do you get all
+the rows added together?</p>
+<p><strong>False.</strong> <em>Why:</em> Every 0 wipes out its row, and
+the single 1 keeps one row. So you get only that one row (or column),
+the one where the 1 sits. It’s like a row of light switches with only
+one on: only that one lamp lights up. (Source: Part 2 cell 13; L6 slide
+22.)</p></li>
+<li><p><strong>T/F:</strong> “A deep neural network can be seen as layer
+after layer of logistic regression classifiers.”</p>
+<p><em>What it’s asking, in plain words:</em> A deep neural network is
+one with many middle layers. Logistic regression is a classic method
+that adds up weighted inputs and squeezes the result into a chance. A
+classifier is something that sorts items into groups. Is a deep network
+like many of these stacked on top of each other?</p>
+<p><strong>True.</strong> <em>Why:</em> Each layer does a weighted sum
+and then a squashing step, which is what logistic regression does. Stack
+them, and each layer feeds the next, like a relay of small judges each
+passing their verdict on. (Source: L6 slide 18.)</p></li>
+<li><p><strong>T/F:</strong> “The input layer is counted when we call a
+network with one hidden layer a two-layer network.”</p>
+<p><em>What it’s asking, in plain words:</em> The input layer is where
+the numbers come in. A hidden layer is a middle layer. A network with
+one middle layer is called “two-layer”. Is the input layer one of those
+two?</p>
+<p><strong>False.</strong> <em>Why:</em> The input layer does no
 calculation, so it usually isn’t counted. The two layers are the hidden
 layer and the output layer. It’s like a front door: you don’t count it
 as a room of the house. (Source: L6 slide 16, “The input layer is
-usually not counted”.)</li>
-<li><strong>T/F:</strong> “Softmax outputs always sum to 1.” <em>What
-it’s asking, in plain words:</em> Softmax is the step that turns a list
-of raw scores into chances. Do those chances always add up to exactly 1?
-<strong>True.</strong> <em>Why:</em> Softmax makes each score positive
-(e to the power of the score), then divides each one by the total of all
-of them. Anything divided by its own total adds up to 1, like slices of
-one pizza always making one whole pizza. (Source: L6 slide 17; Part 2
-cell 14.)</li>
-<li><strong>Explain (2–5 sentences):</strong> How is a neural network
-trained, and why did neural networks become popular? <em>Model
-answer:</em> With the current weights the network makes a prediction,
-and a cost function (e.g. negative log-likelihood) measures how far it
-is from the truth. Backpropagation computes how the cost changes with
-each weight, and gradient descent moves every weight a small step in the
-direction that lowers the cost. This is repeated many times over the
-data. Neural networks became popular partly thanks to stochastic
-gradient descent, dropout and regularisation (better learning, less
-overfitting), and GPU computing (L6 slide 19). <em>What this answer is
-saying, in plain words:</em> The network makes a guess with its current
-dials, and a score says how wrong the guess was. Backpropagation works
-out which way each dial should turn, and gradient descent turns them all
-a small step that way. You repeat this many times. They took off thanks
-to faster learning tricks, tricks against memorising the examples, and
-graphics chips that do many sums at once.</li>
+usually not counted”.)</p></li>
+<li><p><strong>T/F:</strong> “Softmax outputs always sum to 1.”</p>
+<p><em>What it’s asking, in plain words:</em> Softmax is the step that
+turns a list of raw scores into chances. Do those chances always add up
+to exactly 1?</p>
+<p><strong>True.</strong> <em>Why:</em> Softmax makes each score
+positive (e to the power of the score), then divides each one by the
+total of all of them. Anything divided by its own total adds up to 1,
+like slices of one pizza always making one whole pizza. (Source: L6
+slide 17; Part 2 cell 14.)</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> How is a neural network
+trained, and why did neural networks become popular?</p>
+<p><em>Model answer:</em> With the current weights the network makes a
+prediction, and a cost function (e.g. negative log-likelihood) measures
+how far it is from the truth. Backpropagation computes how the cost
+changes with each weight, and gradient descent moves every weight a
+small step in the direction that lowers the cost. This is repeated many
+times over the data. Neural networks became popular partly thanks to
+stochastic gradient descent, dropout and regularisation (better
+learning, less overfitting), and GPU computing (L6 slide 19).</p>
+<p><em>What this answer is saying, in plain words:</em> The network
+makes a guess with its current dials, and a score says how wrong the
+guess was. Backpropagation works out which way each dial should turn,
+and gradient descent turns them all a small step that way. You repeat
+this many times. They took off thanks to faster learning tricks, tricks
+against memorising the examples, and graphics chips that do many sums at
+once.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 4 slide 8; Lecture 6 “Neural
 Networks and Word Embeddings” (Thorsrud) slides 15–19, 21–22; notebooks
@@ -9259,80 +9268,90 @@ vs a new spot per sentence)</li>
 </div>
 <h3 id="quick-self-test-12">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “Word embeddings can be obtained by applying
-SVD to a PMI matrix.” <em>What it’s asking, in plain words:</em> Word
-embeddings are each word’s short list of numbers, its spot on the
-meaning map. The PMI matrix is the big words-by-words table that scores
-how much more often two words meet than by chance. SVD is a way to
-squeeze a big table down to its few strongest patterns. Can you get the
-word spots by squeezing that table? <strong>True.</strong> <em>Why:</em>
-That is one of the two course methods (the other is word2vec). The table
-is huge and mostly zeros; squeezing it keeps the main patterns and gives
-each word a short list of numbers. It’s like summing up a long survey
-with a few key scores per person. (Source: L6 slide 13, “Use the SVD …
-not on C, but on M!”.)</li>
-<li><strong>T/F:</strong> “Skipgram predicts a word from its surrounding
-words.” <em>What it’s asking, in plain words:</em> Skipgram is one of
+<li><p><strong>T/F:</strong> “Word embeddings can be obtained by
+applying SVD to a PMI matrix.”</p>
+<p><em>What it’s asking, in plain words:</em> Word embeddings are each
+word’s short list of numbers, its spot on the meaning map. The PMI
+matrix is the big words-by-words table that scores how much more often
+two words meet than by chance. SVD is a way to squeeze a big table down
+to its few strongest patterns. Can you get the word spots by squeezing
+that table?</p>
+<p><strong>True.</strong> <em>Why:</em> That is one of the two course
+methods (the other is word2vec). The table is huge and mostly zeros;
+squeezing it keeps the main patterns and gives each word a short list of
+numbers. It’s like summing up a long survey with a few key scores per
+person. (Source: L6 slide 13, “Use the SVD … not on C, but on
+M!”.)</p></li>
+<li><p><strong>T/F:</strong> “Skipgram predicts a word from its
+surrounding words.”</p>
+<p><em>What it’s asking, in plain words:</em> Skipgram is one of
 word2vec’s two guessing games. Surrounding words are the neighbours
 within the window. Does Skipgram guess the middle word from its
-neighbours? <strong>False.</strong> <em>Why:</em> That’s the other game,
-CBOW. Skipgram goes the other way: it sees the middle word and guesses
-its neighbours. Think of CBOW as a fill-in-the-blank exercise, and
-Skipgram as “here’s a word, which words would you expect around it?”.
-(Source: L6 slide 14.)</li>
-<li><strong>T/F:</strong> “PMI gives rare word pairs low weight, so
-add-one smoothing is not needed.” <em>What it’s asking, in plain
-words:</em> PMI scores how much more often two words meet than by luck.
-Weight means how much a pair counts. Add-one smoothing means adding a
-pretend 1 to every count. Does PMI give rare pairs small scores, so no
-fix is needed? <strong>False.</strong> <em>Why:</em> It’s the opposite:
-PMI gives rare pairs big scores. “Apricot” appears only twice, yet
-apricot–pinch gets the top score in the table, 2.25. One lucky meeting
-looks hugely “more than chance”. It’s like a café regular you’ve seen
-once with a stranger: one sighting and you’d wrongly guess they’re best
-friends. Adding a pretend 1 to every count calms that down. (Source: L6
-slides 11–12, “PMI gives rare words high weight”.)</li>
-<li><strong>T/F:</strong> “In word2vec, the word ‘bank’ gets the same
-embedding in ‘river bank’ and ‘bank loan’.” <em>What it’s asking, in
-plain words:</em> An embedding is the word’s spot on the meaning map.
-“Bank” means a riverside in one phrase and a money business in the
-other. Does word2vec give it one spot for both? <strong>True.</strong>
-<em>Why:</em> word2vec hands each word one fixed spot, whatever sentence
-it’s in. It’s like a phone contact list with only one entry for two
-different people named “Sam”. Models such as BERT fix this by giving a
-new spot in each sentence. (Source: L6 slide 27.)</li>
-<li><strong>Calculate:</strong> With the slide-12 counts, compute
-PMI(digital, computer). <em>What it’s asking, in plain words:</em> Use
-the chapter’s small count table (slide 12, 19 counts in total) to work
-out how much more often “digital” and “computer” meet than they would by
-luck. <em>Answer:</em> <span class="math inline">\(p_{ij} =
-2/19\)</span>, <span class="math inline">\(p_i = 4/19\)</span>, <span class="math inline">\(p_j = 3/19\)</span>; ratio <span class="math inline">\(= \frac{2/19}{(4/19)(3/19)} = 38/12 =
+neighbours?</p>
+<p><strong>False.</strong> <em>Why:</em> That’s the other game, CBOW.
+Skipgram goes the other way: it sees the middle word and guesses its
+neighbours. Think of CBOW as a fill-in-the-blank exercise, and Skipgram
+as “here’s a word, which words would you expect around it?”. (Source: L6
+slide 14.)</p></li>
+<li><p><strong>T/F:</strong> “PMI gives rare word pairs low weight, so
+add-one smoothing is not needed.”</p>
+<p><em>What it’s asking, in plain words:</em> PMI scores how much more
+often two words meet than by luck. Weight means how much a pair counts.
+Add-one smoothing means adding a pretend 1 to every count. Does PMI give
+rare pairs small scores, so no fix is needed?</p>
+<p><strong>False.</strong> <em>Why:</em> It’s the opposite: PMI gives
+rare pairs big scores. “Apricot” appears only twice, yet apricot–pinch
+gets the top score in the table, 2.25. One lucky meeting looks hugely
+“more than chance”. It’s like a café regular you’ve seen once with a
+stranger: one sighting and you’d wrongly guess they’re best friends.
+Adding a pretend 1 to every count calms that down. (Source: L6 slides
+11–12, “PMI gives rare words high weight”.)</p></li>
+<li><p><strong>T/F:</strong> “In word2vec, the word ‘bank’ gets the same
+embedding in ‘river bank’ and ‘bank loan’.”</p>
+<p><em>What it’s asking, in plain words:</em> An embedding is the word’s
+spot on the meaning map. “Bank” means a riverside in one phrase and a
+money business in the other. Does word2vec give it one spot for
+both?</p>
+<p><strong>True.</strong> <em>Why:</em> word2vec hands each word one
+fixed spot, whatever sentence it’s in. It’s like a phone contact list
+with only one entry for two different people named “Sam”. Models such as
+BERT fix this by giving a new spot in each sentence. (Source: L6 slide
+27.)</p></li>
+<li><p><strong>Calculate:</strong> With the slide-12 counts, compute
+PMI(digital, computer).</p>
+<p><em>What it’s asking, in plain words:</em> Use the chapter’s small
+count table (slide 12, 19 counts in total) to work out how much more
+often “digital” and “computer” meet than they would by luck.</p>
+<p><em>Answer:</em> <span class="math inline">\(p_{ij} = 2/19\)</span>,
+<span class="math inline">\(p_i = 4/19\)</span>, <span class="math inline">\(p_j = 3/19\)</span>; ratio <span class="math inline">\(= \frac{2/19}{(4/19)(3/19)} = 38/12 =
 3.17\)</span>; <span class="math inline">\(\log_2 3.17 = 1.66\)</span>
-(matches the slide). <em>Why:</em> The pair met 2 times out of 19
-(that’s <span class="math inline">\(p_{ij}\)</span>). “Digital” makes up
-4 of the 19 counts (<span class="math inline">\(p_i\)</span>) and
-“computer” 3 of the 19 (<span class="math inline">\(p_j\)</span>). By
-luck you’d expect them to meet (4/19) × (3/19) of the time. They really
-met about 3.17 times as often as that. The log base 2 asks “2 to what
-power gives 3.17?”, and the answer is 1.66. Above 0 means “more than
-luck”. (Source: L6 slide 12.)</li>
-<li><strong>Explain (2–5 sentences):</strong> Why does negative sampling
-make word2vec practical? <em>Model answer:</em> In plain word2vec the
-softmax output must be computed over the whole vocabulary for every
-training pair, which is expensive because <span class="math inline">\(p\)</span> is large. Negative sampling instead
-adds a few (2–5) random “negative” word pairs with outcome 0 for every
-real pair, drawn by word frequency raised to 0.75. The model then only
-has to tell real context words from these fakes, a logistic-regression
-(sigmoid) task on the dot product of the two word vectors. It pushes
-real pairs’ vectors together and negative pairs’ vectors apart (L6
-slides 23–25). <em>What this answer is saying, in plain words:</em>
-Without the trick, word2vec must score every word in the whole word list
-for each example, which is very slow because the list is huge. With the
-trick, each real neighbour pair is matched with 2 to 5 random fake
-pairs, and the model only has to say “real or fake?”. It’s a yes/no
-question, like spotting the one real photo among a few fakes, instead of
-ranking every photo in the world. Real pairs get pulled closer on the
-map, and fake pairs get pushed apart.</li>
+(matches the slide).</p>
+<p><em>Why:</em> The pair met 2 times out of 19 (that’s <span class="math inline">\(p_{ij}\)</span>). “Digital” makes up 4 of the 19
+counts (<span class="math inline">\(p_i\)</span>) and “computer” 3 of
+the 19 (<span class="math inline">\(p_j\)</span>). By luck you’d expect
+them to meet (4/19) × (3/19) of the time. They really met about 3.17
+times as often as that. The log base 2 asks “2 to what power gives
+3.17?”, and the answer is 1.66. Above 0 means “more than luck”. (Source:
+L6 slide 12.)</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> Why does negative
+sampling make word2vec practical?</p>
+<p><em>Model answer:</em> In plain word2vec the softmax output must be
+computed over the whole vocabulary for every training pair, which is
+expensive because <span class="math inline">\(p\)</span> is large.
+Negative sampling instead adds a few (2–5) random “negative” word pairs
+with outcome 0 for every real pair, drawn by word frequency raised to
+0.75. The model then only has to tell real context words from these
+fakes, a logistic-regression (sigmoid) task on the dot product of the
+two word vectors. It pushes real pairs’ vectors together and negative
+pairs’ vectors apart (L6 slides 23–25).</p>
+<p><em>What this answer is saying, in plain words:</em> Without the
+trick, word2vec must score every word in the whole word list for each
+example, which is very slow because the list is huge. With the trick,
+each real neighbour pair is matched with 2 to 5 random fake pairs, and
+the model only has to say “real or fake?”. It’s a yes/no question, like
+spotting the one real photo among a few fakes, instead of ranking every
+photo in the world. Real pairs get pulled closer on the map, and fake
+pairs get pushed apart.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 6 “Neural Networks and Word
 Embeddings” (Thorsrud), slides 2–14, 20–31; notebook
@@ -14911,11 +14930,12 @@ be worse than giving it no source at all.”</p>
 <p><em>What it’s asking, in plain words:</em> The source text is the
 passage you paste in for the model to answer from. Can a wrong passage
 do more harm than giving no passage?</p>
-<p><strong>True.</strong> <em>Why:</em> with a wrong passage, the model
-trusts it and answers from the wrong facts. With no passage, it at least
-has only its own memory to go on. It is like being handed the wrong map:
-you may end up further away than if you had no map. (Source: Notebook 4
-cell 28)</p></li>
+<p><strong>True.</strong> <em>Why:</em> with a wrong passage, the small
+model may present that passage as the answer, even when told to say so
+if the answer is not there. With no passage, it dodges or makes things
+up, but at least it is not handed false facts to repeat. It is like
+being handed the wrong map: you may end up further away than if you had
+no map. (Source: Notebook 4 cell 28)</p></li>
 <li><p><strong>T/F:</strong> “Because the SOTU corpus is larger than the
 model’s context window, the notebook retrieves a few chunks instead of
 feeding all speeches.”</p>
