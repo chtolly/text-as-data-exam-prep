@@ -9619,6 +9619,56 @@ every time. It only hesitates after l.</li>
 </ul>
 <p>(These numbers are also this guide’s own illustration, computed with
 Python.)</p>
+<div class="callout plain">
+<p><strong>In plain words: loss is a “surprise score”.</strong> A higher
+chance for the real next letter gives a <em>lower</em> loss, never a
+higher one. Loss measures how surprised the model was when it saw the
+real letter. If it was sure (chance 1), it isn’t surprised at all, so
+the loss is 0. The less likely it thought the real letter was, the
+bigger the surprise, and the bigger the loss.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Chance the model gave the real next letter</th>
+<th>Its log (ln)</th>
+<th>Loss for that step (minus sign dropped)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (completely sure)</td>
+<td>0</td>
+<td><strong>0</strong>: no surprise</td>
+</tr>
+<tr>
+<td>0.5 (a coin flip)</td>
+<td>−0.69</td>
+<td><strong>0.69</strong></td>
+</tr>
+<tr>
+<td>1/27 ≈ 0.037 (a blind guess)</td>
+<td>−3.30</td>
+<td><strong>3.30</strong></td>
+</tr>
+<tr>
+<td>0.01 (thought it very unlikely)</td>
+<td>−4.61</td>
+<td><strong>4.61</strong>: big surprise</td>
+</tr>
+</tbody>
+</table>
+<p>Where the confusion comes from: the log of a chance is always zero or
+negative, and the smaller the chance, the more negative the log.
+Dropping the minus sign turns those negative numbers into positive
+surprise scores. So as the chance goes down, the loss goes up. Training
+tries to push the loss <strong>down</strong>, which is the same as
+giving the real letters <strong>higher</strong> chances.</p>
+</div>
 <p><strong>Step G: the blind guesser.</strong> A model that gives each
 of the 27 possible next characters the same chance, 1/27, gets the same
 loss at every step: <span class="math inline">\(-\ln(1/27) = \ln 27 =
