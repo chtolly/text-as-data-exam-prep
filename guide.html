@@ -5565,7 +5565,7 @@ mixing)”. Rows are 2 topics; columns are 4 words; each cell is the
 chance that the topic picks that word, so each row adds up to 1. A
 document that is 80% finance and 20% football mixes the two rows. For
 “goal”: 0.8 × 0.05 + 0.2 × 0.50 = 0.04 + 0.10 = 0.14. So in this
-document, about 14 words in every 100 are “goal”.</p>
+document we expect about 14 words in every 100 to be “goal”.</p>
 <p><strong>What it’s good at / where it breaks.</strong></p>
 <ul>
 <li>Good: no labels and no word lists are needed. It finds themes on its
@@ -5740,19 +5740,21 @@ extensions of LDA named on slide 59.</li>
 <h3 id="the-idea-in-plain-words-9">The idea in plain words</h3>
 <p>A topic model answers “<strong>what is this text about?</strong>”
 without anyone labelling anything (slide 31: “in a parsimonious
-(unsupervised) manner”).</p>
+(unsupervised) manner”; parsimonious = using as few pieces as
+possible).</p>
 <p>Two ideas carry the whole chapter:</p>
 <ol type="1">
 <li><strong>A topic is a cluster of words that tend to appear
 together.</strong> E.g. {motor, toyota, nissan, vehicl, car, auto…}
-(slide 55).</li>
+(slide 55). (“vehicl” is a stem: words cut to their root, so “vehicle”
+and “vehicles” both become “vehicl”.)</li>
 <li><strong>A document is a mixture of topics.</strong> The
 Nissan/volcano news article on slides 54–55 is part “Motor”, part
 “Natural disasters” and part “Outlook”.</li>
 </ol>
-<p>Mathematically: the huge, sparse <span class="math inline">\(n\times
-p\)</span> document-term matrix <span class="math inline">\(C\)</span>
-is explained by a much smaller set of <span class="math inline">\(K\)</span> common factors (<span class="math inline">\(K \ll p\)</span>). Slide 33 names the two pieces:
+<p>Mathematically: the huge, sparse (mostly zeros) <span class="math inline">\(n\times p\)</span> (<span class="math inline">\(n\)</span> documents in rows, <span class="math inline">\(p\)</span> words in columns) document-term matrix
+<span class="math inline">\(C\)</span> is explained by a much smaller
+set of <span class="math inline">\(K\)</span> common factors (<span class="math inline">\(K \ll p\)</span>). Slide 33 names the two pieces:
 <strong>F</strong> (how much of each topic each document has, <span class="math inline">\(n\times K\)</span>) and <strong>L</strong> (how
 much each topic weights each word, <span class="math inline">\(p\times
 K\)</span>).</p>
@@ -5764,25 +5766,33 @@ banana. Each fruit has its own taste profile over many flavour notes
 base fruits must be <em>and</em> each smoothie’s recipe.</p>
 </div>
 <p><strong>Why bother (slide 34)?</strong> Because <span class="math inline">\(K \ll p\)</span>: (1) easier interpretation — look
-at 6 topics, not 10,000 words; (2) noise reduction — <span class="math inline">\(C\)</span> is large and sparse (many zeros), <span class="math inline">\(F\)</span> is small and dense; (3) might capture
-polysemy and synonyms; (4) avoids the curse of dimensionality when the
-text is used in a second-stage regression (Chapter 8).</p>
+at 6 topics, not 10,000 words; (2) noise reduction — <span class="math inline">\(C\)</span> is large and sparse (many zeros), <span class="math inline">\(F\)</span> is small and dense (few zeros); (3)
+might capture polysemy and synonyms; (4) avoids the curse of
+dimensionality when the text is used in a second-stage regression (a
+regression that uses the topic shares as its inputs; Chapter 8).</p>
 <h3 id="the-exam-definition-9">The exam definition</h3>
 <ul>
 <li><strong>LSA (Latent Semantic Analysis)</strong>: “Simply Principal
-Components Analysis (PCA) applied to text”, i.e. to <span class="math inline">\(C\)</span>. It finds “<span class="math inline">\(K \ll p\)</span> common latent components that
-explain as much of the variation in <span class="math inline">\(C\)</span> as possible”, computed by PCA or the
+Components Analysis (PCA) applied to text”, i.e. to <span class="math inline">\(C\)</span> (PCA = a standard method that finds the
+few directions in which the data vary the most). It finds “<span class="math inline">\(K \ll p\)</span> common latent components that
+explain as much of the variation in <span class="math inline">\(C\)</span> as possible” (variation = how much the
+counts differ from document to document), computed by PCA or the
 <strong>Singular Value Decomposition (SVD)</strong> — “Same results, but
 differences in implementation” (slide 35).</li>
 <li><strong>LDA (Latent Dirichlet Allocation)</strong>: a
 <strong>probabilistic</strong> topic model in which “Topics are
 distributions of words” and “Documents are distributions of topics”, so
-it is “seen as a more plausible generative model for text” (slide 45).
-It “combines the factor model assumption for multinomial data with a
-Dirichlet prior” (slide 53; Blei et al. 2003).</li>
+it is “seen as a more plausible generative model for text” (slide 45)
+(generative model = a model that tells a story of how the text could
+have been produced). It “combines the factor model assumption for
+multinomial data with a Dirichlet prior” (slide 53; Blei et al. 2003)
+(multinomial data = counts of how often each word was drawn; Dirichlet
+prior = a starting assumption about which mixes of shares are likely —
+see the word list above).</li>
 <li>Key contrast (slide 43): “<strong>LSA is not a probabilistic model
 (non-parametric), and not seen as a plausible generative model for
-text!</strong>”</li>
+text!</strong>” (Non-parametric here: it does not assume a probability
+model with settings to estimate; it is pure table arithmetic.)</li>
 <li>2025 guideline for Q2(d): “In NLP topics are basically clusters of
 words. Articles/documents are assumed to consist of different topics,
 with different weights. SVD for matrix decomp and LDA for
@@ -5790,6 +5800,9 @@ probabilities.”</li>
 </ul>
 <h3 id="part-1-lsa-via-svd">Part 1 — LSA via SVD</h3>
 <p><strong>The formula, symbol by symbol (slides 36–37).</strong></p>
+<p><strong>In words:</strong> any word-count table can be rebuilt
+exactly as three tables multiplied together: one for documents, one for
+how important each component is, and one for words.</p>
 <p><span class="math display">\[\underbrace{C}_{n\times p} =
 \underbrace{U}_{n\times n}\ \underbrace{S}_{n\times p}\
 \underbrace{V&#39;}_{p\times p}\]</span></p>
@@ -5798,7 +5811,10 @@ probabilities.”</li>
 (<span class="math inline">\(n\)</span> documents in rows, <span class="math inline">\(p\)</span> words in columns).</li>
 <li><span class="math inline">\(U\)</span> = a “unitary matrix
 (orthogonal, <span class="math inline">\(UU&#39; = I\)</span>)”: one row
-per document.</li>
+per document. (Orthogonal = its columns point in completely separate
+directions. <span class="math inline">\(U&#39;\)</span> is <span class="math inline">\(U\)</span> flipped so rows become columns, and
+<span class="math inline">\(I\)</span> is the “do-nothing” table with 1s
+on the diagonal and 0s elsewhere.)</li>
 <li><span class="math inline">\(S\)</span> = “a diagonal matrix of
 singular values <span class="math inline">\(s_i\)</span>”: numbers on
 the diagonal, largest first, saying how important each component
@@ -5811,6 +5827,8 @@ document matrix times a diagonal importance matrix times a word
 matrix.”</p>
 <p><strong>Truncation</strong> — keep only the <span class="math inline">\(K\)</span> most important components (slide
 37):</p>
+<p><strong>In words:</strong> keep only the <span class="math inline">\(K\)</span> biggest components, so the three tables
+become much smaller and rebuild the original table approximately.</p>
 <p><span class="math display">\[\underbrace{C}_{n\times p} \approx
 \underbrace{U}_{n\times K}\ \underbrace{S}_{K\times K}\
 \underbrace{V&#39;}_{K\times p}\]</span></p>
@@ -5840,8 +5858,8 @@ importance of each factor for each word”. Similar words have similar
 loading rows (slide 38).</li>
 <li>The columns of <span class="math inline">\(F\)</span> are orthogonal
 (unrelated to each other). The first component captures the most
-variance, the second the next most, and so on. The variance explained by
-component <span class="math inline">\(l\)</span> is <span class="math inline">\(\lambda_l = s_l^2/(n-1)\)</span>, which falls as
+variance (spread of the numbers around their average), the second the
+next most, and so on. The variance explained by component <span class="math inline">\(l\)</span> is <span class="math inline">\(\lambda_l = s_l^2/(n-1)\)</span>, which falls as
 <span class="math inline">\(l\)</span> rises (slide 38). (Slide 44 shows
 PCA and SVD give the same factors: <span class="math inline">\(F = XV =
 US\)</span>.)</li>
@@ -5895,8 +5913,8 @@ this guide; computed with numpy’s SVD.</p>
 of the total, so <span class="math inline">\(K=2\)</span> is a natural
 choice. (In slide terms, <span class="math inline">\(\lambda_l =
 s_l^2/(n-1) = 9.31,\ 7.62,\ 0.54,\ 0.20\)</span>; strictly, “variance”
-needs centred columns as in slide 44, but the ranking idea is the
-same.)</p>
+needs centred columns (each column with its average subtracted) as in
+slide 44, but the ranking idea is the same.)</p>
 <p>Factors <span class="math inline">\(F\)</span> (rows = documents,
 columns = components 1 and 2) and loadings <span class="math inline">\(L\)</span> (rows = words, columns =
 components):</p>
@@ -5967,9 +5985,9 @@ positive). Component 2 is the <strong>finance vs football</strong>
 contrast: d1, d2, stock and market are positive; d3, d4, goal and match
 are negative. Documents on the same subject have similar rows of <span class="math inline">\(F\)</span>; words on the same subject have similar
 rows of <span class="math inline">\(L\)</span>.</p>
-<p>Hand check of one cell. The rank-2 approximation of d1’s “stock”
-count is row d1 of <span class="math inline">\(F\)</span> times row
-“stock” of <span class="math inline">\(L\)</span>: <span class="math inline">\(2.504\times0.456 + 2.485\times0.536 = 1.142 +
+<p>Hand check of one cell. The rank-2 approximation (the table rebuilt
+from only the 2 kept components) of d1’s “stock” count is row d1 of
+<span class="math inline">\(F\)</span> times row “stock” of <span class="math inline">\(L\)</span>: <span class="math inline">\(2.504\times0.456 + 2.485\times0.536 = 1.142 +
 1.332 = 2.474 \approx 2.47\)</span> (true count 3). Note also: the
 entries of <span class="math inline">\(F\)</span> and <span class="math inline">\(L\)</span> are <strong>unrestricted</strong> —
 negative values appear and rows do not sum to 1. That is a key
@@ -6000,6 +6018,9 @@ this story backwards: “Assign words to topics and assign topics to
 documents such that the fit of the Document-term matrix becomes as good
 as possible” (slide 48).</p>
 <p><strong>The formula, symbol by symbol (slide 47).</strong></p>
+<p><strong>In words:</strong> each document’s word counts are drawn at
+random from one list of word chances, made by blending the topics’ word
+lists using the document’s own topic shares.</p>
 <p><span class="math display">\[\mathbf{c}_i \sim MN(\mathbf{q}_i, m_i),
 \qquad \mathbf{q}_i = v_{i1}\boldsymbol\theta_1 +
 v_{i2}\boldsymbol\theta_2 + \dots v_{ik}\boldsymbol\theta_k =
@@ -6017,15 +6038,16 @@ length.</li>
 <span class="math inline">\(i\)</span> devoted to topic <span class="math inline">\(l\)</span>; <span class="math inline">\(\sum_{l}
 v_{il} = 1\)</span> (topic weights).</li>
 <li><span class="math inline">\(\boldsymbol\theta_l\)</span> = topic
-<span class="math inline">\(l\)</span>: a probability vector over all
-<span class="math inline">\(p\)</span> words; <span class="math inline">\(\sum_{j} \theta_{lj} = 1\)</span>.</li>
+<span class="math inline">\(l\)</span>: a probability vector (a list of
+chances that add up to 1) over all <span class="math inline">\(p\)</span> words; <span class="math inline">\(\sum_{j} \theta_{lj} = 1\)</span>.</li>
 </ul>
 <p>Read aloud: “each document’s words are drawn from a blend of the
 topics’ word distributions, blended with that document’s topic weights.”
 Slide 47: “<strong>a probabilistic topic model is just a factor model
-for multinomial data!</strong>” The topic weights <span class="math inline">\(V\)</span> play the role of LSA’s factors <span class="math inline">\(F\)</span>, and the topics <span class="math inline">\(\Theta&#39;\)</span> play the role of LSA’s
-loadings <span class="math inline">\(L\)</span>, “but, here, the matrix
-entries are probabilities”: each row of <span class="math inline">\(V\)</span> sums to one and each column of <span class="math inline">\(\Theta&#39;\)</span> sums to one (slide 48).</p>
+for multinomial data!</strong>” The topic weights <span class="math inline">\(V\)</span> play the role of LSA’s factors <span class="math inline">\(F\)</span>, and the topics <span class="math inline">\(\Theta&#39;\)</span> (all topic word-lists side by
+side, one column per topic) play the role of LSA’s loadings <span class="math inline">\(L\)</span>, “but, here, the matrix entries are
+probabilities”: each row of <span class="math inline">\(V\)</span> sums
+to one and each column of <span class="math inline">\(\Theta&#39;\)</span> sums to one (slide 48).</p>
 <p><strong>A tiny worked example (LDA mixing).</strong> Two topics over
 the same four words (toy numbers). Rows = topics; columns = word
 probabilities (each row sums to 1).</p>
@@ -6083,18 +6105,24 @@ probabilities <span class="math inline">\(\mathbf q_i = 0.8\,\theta_1 +
 0.2\times0.05 = 0.40 + 0.01 = 0.41\)</span>. The four numbers sum to 1,
 as probabilities must.</p>
 <p><strong>The multinomial building block (slide 46).</strong> Urn
-example: 8 “true”, 3 “false”, 9 “maybe” balls; draw 6 with replacement.
-<span class="math inline">\(P(2\text{ true}, 1\text{ false}, 3\text{
-maybe}) = \frac{6!}{2!\,1!\,3!}(8/20)^2(3/20)^1(9/20)^3 =
-60\times0.16\times0.15\times0.091125 \approx 0.131\)</span>. (The
-slide’s formula is missing the “=” sign and uses commas where products
-are meant; write it with products.) Slide 58: with <span class="math inline">\(k&gt;2\)</span> outcomes and <span class="math inline">\(n=1\)</span> trial it is the <em>categorical</em>
-distribution, “the one we typically use in NLP”.</p>
+example: 8 “true”, 3 “false”, 9 “maybe” balls; draw 6 with replacement
+(each ball goes back after it is drawn). <span class="math inline">\(P(2\text{ true}, 1\text{ false}, 3\text{ maybe}) =
+\frac{6!}{2!\,1!\,3!}(8/20)^2(3/20)^1(9/20)^3 =
+60\times0.16\times0.15\times0.091125 \approx 0.131\)</span>. (The “!” is
+a factorial: <span class="math inline">\(6! = 720\)</span>, <span class="math inline">\(2! = 2\)</span>, <span class="math inline">\(3! =
+6\)</span>, so <span class="math inline">\(\frac{6!}{2!\,1!\,3!} =
+720/12 = 60\)</span> is the number of different orders in which those
+balls can come out.) (The slide’s formula is missing the “=” sign and
+uses commas where products are meant; write it with products.) Slide 58:
+with <span class="math inline">\(k&gt;2\)</span> outcomes and <span class="math inline">\(n=1\)</span> trial (one single draw, like picking
+one word) it is the <em>categorical</em> distribution, “the one we
+typically use in NLP”.</p>
 <p><strong>Dirichlet priors and sparsity (slide 57).</strong> LDA puts a
-<strong>Dirichlet</strong> prior on the topic weights and on the topics.
-The motivation is <strong>sparsity</strong>: “Small number of high
-probability topics in each document, and small number of words with high
-probability in each topic.”</p>
+<strong>Dirichlet</strong> prior (a way of drawing random lists of
+shares that add up to 1, used as the starting assumption) on the topic
+weights and on the topics. The motivation is <strong>sparsity</strong>:
+“Small number of high probability topics in each document, and small
+number of words with high probability in each topic.”</p>
 <ul>
 <li><span class="math inline">\(Dir(\alpha)\)</span> = prior on <span class="math inline">\(v_i\)</span> (the document’s topic weights):
 “lower values of α will give fewer topics a high probability in each
@@ -6102,42 +6130,55 @@ document”.</li>
 <li><span class="math inline">\(Dir(\beta)\)</span> = prior on <span class="math inline">\(\theta_l\)</span> (the topics): “lower values of β
 will give fewer words higher probability in the topic
 distributions”.</li>
-<li>Benchmarks: “β = 0.01 and α = 50/k”; the lecturer has used “β =
-200/N and α = 50/k” (N is not defined on the slide).</li>
+<li>Benchmarks (this β is LDA’s topic setting, not the regression
+coefficient of Chapter 8): “β = 0.01 and α = 50/k”; the lecturer has
+used “β = 200/N and α = 50/k” (N is not defined on the slide).</li>
 </ul>
 <p>Illustration (numpy draws from a 3-topic Dirichlet, seed 1; general
 illustration, not from the slides): with α = 0.1 the draws were (0.00,
 1.00, 0.00), (0.06, 0.00, 0.94), (0.99, 0.00, 0.00) — each document
 dominated by one topic. With α = 10 they were (0.29, 0.29, 0.43), (0.21,
 0.36, 0.44), (0.18, 0.49, 0.33) — even mixtures.</p>
-<p>The Dirichlet is the multivariate version of the Beta distribution
-and the “conjugate prior” of the multinomial, which makes Bayesian
-estimation convenient (slide 58). Estimation: variational Bayes (Blei et
-al. 2003) or Gibbs sampling (Griffiths and Steyvers 2004) (slide 53).
-LDA is popular because it classifies text “in much the same manner as
-humans would do” (Chang et al. 2009).</p>
-<p><em>Notation warning:</em> the plate diagram on slide 56 calls the
-document–topic distribution <span class="math inline">\(\theta_m\)</span> and the topic–word distribution
-<span class="math inline">\(\varphi_k\)</span>. Slides 47 and 57 call
-them <span class="math inline">\(v_i\)</span> and <span class="math inline">\(\theta_l\)</span>. In the exam, use the slide-47
+<p>The Dirichlet is the multivariate (many-outcome) version of the Beta
+distribution (a random share between 0 and 1 for two outcomes) and the
+“conjugate prior” of the multinomial (it fits the multinomial so neatly
+that the maths stays easy), which makes Bayesian estimation (combining a
+prior with the data) convenient (slide 58). Estimation: variational
+Bayes (Blei et al. 2003) or Gibbs sampling (Griffiths and Steyvers 2004)
+(slide 53) — two step-by-step computer methods that start from a guess
+and improve it many times <strong>[Not in course files — general
+knowledge: this description of the two methods]</strong>. LDA is popular
+because it classifies text “in much the same manner as humans would do”
+(Chang et al. 2009).</p>
+<p><em>Notation warning:</em> the plate diagram (a box-and-arrow picture
+of the LDA story) on slide 56 calls the document–topic distribution
+<span class="math inline">\(\theta_m\)</span> and the topic–word
+distribution <span class="math inline">\(\varphi_k\)</span>. Slides 47
+and 57 call them <span class="math inline">\(v_i\)</span> and <span class="math inline">\(\theta_l\)</span>. In the exam, use the slide-47
 notation and say what each symbol means.</p>
 <h3 id="practical-issues-choosing-k-and-seed-instability">Practical
 issues: choosing K and seed instability</h3>
 <ul>
 <li><strong>How many topics?</strong> “Ad-hoc or based in out-of-sample
 testing (marginal likelihood)! For LSA one can look at the variance
-explained (λ)” (slide 59).</li>
+explained (λ)” (slide 59). (Ad hoc = chosen by judgement; out-of-sample
+testing = checking how well the model explains texts it did not
+see.)</li>
 <li><strong>Seed instability (Notebook 2, Q4).</strong> LDA “starts from
 a random guess (<code>SEED</code>) and improves it”. The notebook fits
 LDA twice with different seeds and matches each topic from run 1 to its
 most similar topic in run 2 by the <strong>cosine similarity of their
-word weights</strong> (1 = identical). Takeaway: “<strong>LDA</strong>
-topics depend on the seed and on K. Topics that reappear across runs
-deserve more trust than those that do not.” Before using topics as data
-(as Hansen et al. 2018 do to study FOMC deliberation, slide 60), show
-that results do not hinge on one lucky seed.</li>
-<li><strong>Practical day 1 (Gensim LDA on State of the Union
-speeches).</strong>
+word weights</strong> (a score of how alike two lists of numbers are; 1
+= identical). Takeaway: “<strong>LDA</strong> topics depend on the seed
+and on K. Topics that reappear across runs deserve more trust than those
+that do not.” Before using topics as data (as Hansen et al. 2018 do to
+study FOMC deliberation, slide 60; FOMC = the US central bank’s
+interest-rate committee <strong>[Not in course files — general
+knowledge]</strong>), show that results do not hinge on one lucky
+seed.</li>
+<li><strong>Practical day 1 (Gensim LDA on State of the Union speeches;
+Gensim is a Python toolbox for topic models, and <code>passes</code> is
+how many times it goes through all the speeches).</strong>
 <code>LdaModel(corpus=corpus, id2word=dictionary, num_topics=6, passes=5, random_state=42)</code>
 on 72 speeches × 6,241 terms (after
 <code>filter_extremes(no_below=3, no_above=0.8)</code>, Gensim’s version
@@ -6347,6 +6388,10 @@ document–topic and topic–word parts, but in LDA these are probabilities
 (rows/columns sum to one), which makes it a more plausible model of how
 text is generated.</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 3 slides 30–59; Interactive
+Notebook 2 cells 21–24, 31; practical_day_1.ipynb cells 16–22 (LDA
+section, from the Part A notes); 2025 exam evaluation guideline
+Q2(d).</p>
 <h1 id="part3">Part III — Learning from prediction: n-grams, neural
 networks and word embeddings</h1>
 <h2 id="ch11">11. Language models from counting: n-grams, bigram
@@ -8869,18 +8914,22 @@ their desk (context). Sending them on a training course changes their
 gut feeling (weights).</p>
 </div>
 <h3 id="the-exam-definition-13">The exam definition</h3>
-<p><strong>What an LLM is (slide 4):</strong> - “A learned set of
-<strong>parameters (weights)</strong>, used with a tokenizer and
-inference software to generate language.” (In plain words: the model is
-a big pile of learned numbers; the tokenizer cuts text into pieces, and
-the inference software is the program that runs those numbers to write
-text.) - “Most generative LLMs use the <strong>Transformer</strong>
+<p><strong>What an LLM is (slide 4):</strong></p>
+<ul>
+<li>“A learned set of <strong>parameters (weights)</strong>, used with a
+tokenizer and inference software to generate language.” (In plain words:
+the model is a big pile of learned numbers; the tokenizer cuts text into
+pieces, and the inference software is the program that runs those
+numbers to write text.)</li>
+<li>“Most generative LLMs use the <strong>Transformer</strong>
 architecture and predict the next <strong>token</strong>: a word, word
-fragment, or other symbol.” - “Pre-training learns patterns from large
-datasets; it can also memorize examples and errors.” - “Post-training
-develops instruction following, tool use, and reasoning capabilities.”
-(Post-training = the training steps after pre-training that turn a
-text-guesser into a helpful assistant.)</p>
+fragment, or other symbol.”</li>
+<li>“Pre-training learns patterns from large datasets; it can also
+memorize examples and errors.”</li>
+<li>“Post-training develops instruction following, tool use, and
+reasoning capabilities.” (Post-training = the training steps after
+pre-training that turn a text-guesser into a helpful assistant.)</li>
+</ul>
 <p><strong>Self-supervised pre-training (slide 7):</strong> “the next
 token in the training text is the target; future tokens are hidden from
 the prediction.” So the targets come from the text, not from humans.
@@ -8919,33 +8968,38 @@ model”. “Everything the model uses at answer time must fit in the
 window; nothing else is ‘remembered’ unless the application re-inserts
 it.” Longer contexts cost more and are slower, and a big window “does
 not guarantee that every detail is used reliably”.</p>
-<p><strong>Other terms the slides define:</strong> - <strong>Deep neural
-network (slide 8):</strong> layers of connected units; “Hidden layers
-learn representations of the input” (hidden layers = the in-between
-stages; representations = internal number-summaries of the text); LLMs
-stack many Transformer blocks. - <strong>Mixture-of-experts, MoE (slide
-12):</strong> “only a subset of the parameters is activated for each
-token.” (Only a few “expert” parts of the model work on each token.) -
-<strong>Quantization (slide 14):</strong> “stores weights at lower
+<p><strong>Other terms the slides define:</strong></p>
+<ul>
+<li><strong>Deep neural network (slide 8):</strong> layers of connected
+units; “Hidden layers learn representations of the input” (hidden layers
+= the in-between stages; representations = internal number-summaries of
+the text); LLMs stack many Transformer blocks.</li>
+<li><strong>Mixture-of-experts, MoE (slide 12):</strong> “only a subset
+of the parameters is activated for each token.” (Only a few “expert”
+parts of the model work on each token.)</li>
+<li><strong>Quantization (slide 14):</strong> “stores weights at lower
 precision, reducing memory needs.” (Each number is kept with fewer
-digits, like rounding 3.14159 to 3.1.) - <strong>Reasoning at answer
-time (slide 11):</strong> extra computation before the final answer can
-help hard tasks “but increases latency and resource use” (latency =
-waiting time), and “A longer answer or a persuasive explanation does not
-guarantee correctness.” - <strong>Open weights (slide 25):</strong>
-“downloadable model parameters; permissions depend on the license.” They
-“do not necessarily include training data or the full training recipe.”
-The slide shows the <strong>Hugging Face model hub</strong> (“The AI
-community building the future.”) and the Ollama model library. The
-course outline calls Huggingface “the AI community’s open-source hub for
-Machine Learning and Natural Language Processing”. So the 2025 statement
-“HuggingFace is a open source hub for Natural Language Processing” was
+digits, like rounding 3.14159 to 3.1.)</li>
+<li><strong>Reasoning at answer time (slide 11):</strong> extra
+computation before the final answer can help hard tasks “but increases
+latency and resource use” (latency = waiting time), and “A longer answer
+or a persuasive explanation does not guarantee correctness.”</li>
+<li><strong>Open weights (slide 25):</strong> “downloadable model
+parameters; permissions depend on the license.” They “do not necessarily
+include training data or the full training recipe.” The slide shows the
+<strong>Hugging Face model hub</strong> (“The AI community building the
+future.”) and the Ollama model library. The course outline calls
+Huggingface “the AI community’s open-source hub for Machine Learning and
+Natural Language Processing”. So the 2025 statement “HuggingFace is a
+open source hub for Natural Language Processing” was
 <strong>True</strong>. (Notebook 4 also downloads its model from Hugging
-Face.) - <strong>RAG, tools, agents (slide 20):</strong> (RAG =
+Face.)</li>
+<li><strong>RAG, tools, agents (slide 20):</strong> (RAG =
 retrieval-augmented generation: search for relevant text first, then
 give it to the model.) “RAG: add retrieved evidence to context.” “Tools:
 run operations outside the model.” “Agents: repeat decisions and tool
-calls, with permissions and stopping conditions.”</p>
+calls, with permissions and stopping conditions.”</li>
+</ul>
 <h3 id="a-tiny-worked-example-11">A tiny worked example</h3>
 <p><strong>Example 1 — the generation loop (slide 7, illustrative
 numbers from the slide).</strong></p>
@@ -8997,10 +9051,13 @@ tokens. The slide says the IDs and percentages are “illustrative”.</p>
 <p><strong>Example 2 — how much of an MoE model works per token (slide
 13).</strong> DeepSeek-V4-Flash has 284 billion parameters in total and
 uses about 13 billion per token, pre-trained on more than 32 trillion
-tokens. - Share used per token = 13 / 284 = 0.0458, so about
-<strong>4.6%</strong>. - So for each token, roughly 95% of the model
-sits idle. That is the point of MoE: a huge model that is cheaper to run
-per token.</p>
+tokens.</p>
+<ul>
+<li>Share used per token = 13 / 284 = 0.0458, so about
+<strong>4.6%</strong>.</li>
+<li>So for each token, roughly 95% of the model sits idle. That is the
+point of MoE: a huge model that is cheaper to run per token.</li>
+</ul>
 <p><strong>Example 3 — context or weights? (slides 10, 20).</strong></p>
 <table>
 <colgroup>
@@ -9040,16 +9097,20 @@ per token.</p>
 </table>
 <p>Columns = which part of the system the action changes.</p>
 <p><strong>Business-use frameworks</strong> (useful for the Block 5
-reflection): - <strong>Four ways to use an LLM (slide 16):</strong> chat
+reflection):</p>
+<ul>
+<li><strong>Four ways to use an LLM (slide 16):</strong> chat
 application (a website or app), API integration (your own program sends
 text to the model), agent (the model loops through tasks using tools),
 local deployment (the model runs on your own machine). “The mode
 determines the cost structure, where data goes, and who is accountable
-for errors.” - <strong>A good use case (slide 18):</strong> Clear Task,
-Available Context, Verifiable Results, Manageable Errors, Business
-Value. - <strong>Risk grid (slide 19):</strong> rows = “Consequences of
-an error” (lower/higher); columns = “Difficulty of checking the output”
-(easier/harder).</p>
+for errors.”</li>
+<li><strong>A good use case (slide 18):</strong> Clear Task, Available
+Context, Verifiable Results, Manageable Errors, Business Value.</li>
+<li><strong>Risk grid (slide 19):</strong> rows = “Consequences of an
+error” (lower/higher); columns = “Difficulty of checking the output”
+(easier/harder).</li>
+</ul>
 <table>
 <colgroup>
 <col style="width: 33%" />
@@ -9577,18 +9638,22 @@ learned list of pieces), vocabulary size <strong>200,019</strong>:</p>
 </tr>
 </tbody>
 </table>
-<p>What to see: - <strong>English vs Norwegian:</strong> the same
-sentence (5 words + full stop) costs 6 tokens in English and 8 in
-Norwegian. 8 / 6 = 1.33, so <strong>33% more tokens</strong> for the
-same meaning. More tokens means a higher price, more of the context
-window used, and a harder job for the model (notebook cell 0:
-“Tokenization is language-dependent”). - <strong>strawberry = st | raw |
-berry:</strong> the model never sees the letters, which is why LLMs
-“struggle to spell a word” (cell 0) and miscount the r’s. -
-<strong>Numbers</strong> are chopped into arbitrary chunks (123 | 45),
-which is why LLMs are “bad at simple arithmetic” (cell 0). - Leading
-spaces are part of the tokens (” market”), and a space can be its own
-token.</p>
+<p>What to see:</p>
+<ul>
+<li><strong>English vs Norwegian:</strong> the same sentence (5 words +
+full stop) costs 6 tokens in English and 8 in Norwegian. 8 / 6 = 1.33,
+so <strong>33% more tokens</strong> for the same meaning. More tokens
+means a higher price, more of the context window used, and a harder job
+for the model (notebook cell 0: “Tokenization is
+language-dependent”).</li>
+<li><strong>strawberry = st | raw | berry:</strong> the model never sees
+the letters, which is why LLMs “struggle to spell a word” (cell 0) and
+miscount the r’s.</li>
+<li><strong>Numbers</strong> are chopped into arbitrary chunks (123 |
+45), which is why LLMs are “bad at simple arithmetic” (cell 0).</li>
+<li>Leading spaces are part of the tokens (” market”), and a space can
+be its own token.</li>
+</ul>
 <h3 id="reading-the-course-code-13">Reading the course code</h3>
 <div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pairs[(a, b)] <span class="op">+=</span> <span class="dv">1</span>                         <span class="co"># count every neighbouring pair</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>(a, b), _ <span class="op">=</span> pairs.most_common(<span class="dv">1</span>)[<span class="dv">0</span>]        <span class="co"># pick the most frequent pair</span></span>
@@ -9959,12 +10024,15 @@ the next token.</li>
 <p>Older word embeddings (word2vec, an older method that learns one list
 of numbers per word) give each word <strong>one fixed vector</strong>
 (one fixed list of numbers), whatever the sentence. But words change
-meaning with context. Lecture 8 uses “bank” (slides 7–8): - “I walked
-along the <strong>pond</strong>, and noticed that one of the trees along
-the <strong>bank</strong> had fallen into the <strong>water</strong>…” →
-here “bank” should sit close to “water”. - “Hoping on a high return, the
-<strong>bank</strong> had issued a lot of <strong>credit</strong> to the
-investor” → here “bank” should sit close to “credit”.</p>
+meaning with context. Lecture 8 uses “bank” (slides 7–8):</p>
+<ul>
+<li>“I walked along the <strong>pond</strong>, and noticed that one of
+the trees along the <strong>bank</strong> had fallen into the
+<strong>water</strong>…” → here “bank” should sit close to “water”.</li>
+<li>“Hoping on a high return, the <strong>bank</strong> had issued a lot
+of <strong>credit</strong> to the investor” → here “bank” should sit
+close to “credit”.</li>
+</ul>
 <p><strong>Self-attention</strong> fixes this. For every word, the model
 looks at the other words in the sentence, decides how relevant each one
 is, and mixes their information into a new,
@@ -9988,15 +10056,18 @@ sees that “water” and “pond” have matching name tags, and copies mostly
 their “nature” notes.</p>
 </div>
 <h3 id="the-exam-definition-15">The exam definition</h3>
-<p><strong>Query, Key, Value — the database analogy (slide 12):</strong>
-- <strong>Query</strong>: “the current item you are looking to find more
-information about … the representation of a specific word for which the
-model is trying to determine its contextual relevance”. -
-<strong>Key</strong>: “the searchable items in the database … what the
-query is matched against to find relevant information”. -
-<strong>Value</strong>: “the actual information you want to retrieve …
-the content that is retrieved if their corresponding key matches the
-query”.</p>
+<p><strong>Query, Key, Value — the database analogy (slide
+12):</strong></p>
+<ul>
+<li><strong>Query</strong>: “the current item you are looking to find
+more information about … the representation of a specific word for which
+the model is trying to determine its contextual relevance”.</li>
+<li><strong>Key</strong>: “the searchable items in the database … what
+the query is matched against to find relevant information”.</li>
+<li><strong>Value</strong>: “the actual information you want to retrieve
+… the content that is retrieved if their corresponding key matches the
+query”.</li>
+</ul>
 <p><strong>The three steps (slide 14):</strong> (1)
 <strong>Compatibility score</strong>: dot product of the query with each
 key (multiply matching numbers and add them up); higher = more relevant.
@@ -10074,14 +10145,17 @@ Language Models slower and less efficient” → <strong>False</strong>.</p>
 <p><strong>The Transformer block (slides 18–19):</strong> MultiHead
 Attention → add the input back (residual connection) → Layer Normalize
 (rescale the numbers to a steady range) → Feedforward (a small extra
-calculation on each word) → residual connection → Layer Normalize. -
-Residual connection: “Makes training the Deep Neural Network easier”;
-“Enabling feature reuse and avoiding that important features are lost”.
-- Layer Norm: “Makes training the Deep Neural Network easier”. -
-Feedforward: “Adds non-linearity to the mix (self-attention is linear
-operations)” (linear = only multiplying and adding; non-linearity lets
-the model capture more complex, curved patterns); “Enables richer
-feature representations”.</p>
+calculation on each word) → residual connection → Layer Normalize.</p>
+<ul>
+<li>Residual connection: “Makes training the Deep Neural Network
+easier”; “Enabling feature reuse and avoiding that important features
+are lost”.</li>
+<li>Layer Norm: “Makes training the Deep Neural Network easier”.</li>
+<li>Feedforward: “Adds non-linearity to the mix (self-attention is
+linear operations)” (linear = only multiplying and adding; non-linearity
+lets the model capture more complex, curved patterns); “Enables richer
+feature representations”.</li>
+</ul>
 <p><strong>In words:</strong> first let each word look at all the words
 (multi-head attention), then add the original input back, then tidy the
 numbers with layer normalization.</p>
@@ -10103,14 +10177,18 @@ input to the first block is token embeddings (a one-hot matrix <span class="math
 d\)</span> matrix; slide 5). (In plain words: each of the <span class="math inline">\(N\)</span> tokens picks out its own row from the
 big lookup table <span class="math inline">\(E\)</span>, so you get one
 embedding row per token.) “But, to this input matrix we also add
-so-called positional embeddings.” Why (slide 7): - “The Transformer’s
-self-attention mechanism processes all words in the input sequence
-simultaneously, but does not automatically understand the position or
-order of words in a sentence.” - “E.g., ‘The cat chased the dog’ and
-‘The dog chased the cat’ have the same words but entirely different
-meanings due to the order of those words.” - “By adding these positional
-embeddings to the word embeddings, the Transformer can maintain
-information about the sequence order of the input data.”</p>
+so-called positional embeddings.” Why (slide 7):</p>
+<ul>
+<li>“The Transformer’s self-attention mechanism processes all words in
+the input sequence simultaneously, but does not automatically understand
+the position or order of words in a sentence.”</li>
+<li>“E.g., ‘The cat chased the dog’ and ‘The dog chased the cat’ have
+the same words but entirely different meanings due to the order of those
+words.”</li>
+<li>“By adding these positional embeddings to the word embeddings, the
+Transformer can maintain information about the sequence order of the
+input data.”</li>
+</ul>
 <p>The position vector is <strong>added</strong> (⊕) to the word vector:
 “X = Composite Embeddings (word + position)” (slide 6, example “Janet
 will back the bill”). There are absolute (“this is word 5”) and relative
@@ -10682,8 +10760,8 @@ models.</li>
 <li><strong>General-purpose AI model provider:</strong> a firm that
 offers a model usable for many tasks, like an LLM maker.</li>
 <li><strong>High-risk uses:</strong> uses where mistakes can seriously
-hurt people, such as hiring or credit decisions; stricter rules
-apply.</li>
+hurt people, such as hiring or credit decisions; stricter rules apply
+[Not in course files — general knowledge: the examples].</li>
 <li><strong>Copyright:</strong> the legal right of authors to control
 copies of their work.</li>
 <li><strong>Memorization:</strong> the model storing exact bits of its
@@ -10711,14 +10789,18 @@ has rules about what it may do. An LLM raises the same three kinds of
 worries.</p>
 </div>
 <h3 id="the-exam-definition-16">The exam definition</h3>
-<p><strong>The four headline issues (slide 21, exact):</strong> -
-“<strong>Sustainability</strong>: What resources do training and
-repeated inference consume?” - “<strong>Ownership and Control</strong>:
-Who controls the models, infrastructure, and access?” -
-“<strong>Reliability</strong>: Are outputs accurate, supported by
-evidence, and appropriate for the task?” - “<strong>Privacy and
-Security</strong>: Where does data go, and what can a connected system
-do with it?”</p>
+<p><strong>The four headline issues (slide 21, exact):</strong></p>
+<ul>
+<li>“<strong>Sustainability</strong>: What resources do training and
+repeated inference consume?” (inference = using the model to
+answer)</li>
+<li>“<strong>Ownership and Control</strong>: Who controls the models,
+infrastructure, and access?”</li>
+<li>“<strong>Reliability</strong>: Are outputs accurate, supported by
+evidence, and appropriate for the task?”</li>
+<li>“<strong>Privacy and Security</strong>: Where does data go, and what
+can a connected system do with it?”</li>
+</ul>
 <p><strong>Sustainability (slide 22):</strong> “Both training and
 inference consume electricity; cooling, water use, and chip production
 also matter.” The footprint “varies with model size, hardware, workload,
@@ -10736,16 +10818,19 @@ example: Microsoft’s <strong>Tay chatbot, 2016</strong> (users got it to
 post offensive content <strong>[Not in course files — general
 knowledge]</strong>). “<strong>Prompt injection</strong>: malicious
 instructions in a document or website try to redirect a connected
-assistant.” Remedy: “Restrict tool permissions, review consequential
-actions, and keep records of what happened.”</p>
+assistant.” (A connected assistant is one that can use tools such as
+email or files.) Remedy: “Restrict tool permissions, review
+consequential actions, and keep records of what happened.”</p>
 <p><strong>Dangerous monopoly? (slide 24):</strong> frontier training
-needs “substantial capital, chips, power, data, and expertise. These
-create barriers to entry.” But “the market is not a single monopoly”;
-concentration can occur at “chips, cloud hosting, models, and
-distribution”. “Open weights and smaller models broaden access, but do
-not remove infrastructure costs or dependencies.” Business question:
-“Can you switch provider, export your data, or run an alternative
-model?”</p>
+(building the newest, most powerful models) needs “substantial capital,
+chips, power, data, and expertise. These create barriers to entry.”
+(Barriers to entry = things that make it hard for new firms to compete.)
+But “the market is not a single monopoly”; concentration can occur at
+“chips, cloud hosting, models, and distribution” (a few firms can
+dominate any of these levels). “Open weights and smaller models broaden
+access, but do not remove infrastructure costs or dependencies.”
+Business question: “Can you switch provider, export your data, or run an
+alternative model?”</p>
 <p><strong>Open models (slide 25):</strong> open weights = “downloadable
 model parameters; permissions depend on the license”; they “do not
 necessarily include training data or the full training recipe.”</p>
@@ -10755,14 +10840,15 @@ quotations, and references, even when they sound confident.”
 “<strong>Bias and sensitivity</strong>: Outputs can reflect training
 biases and change with wording or context.” Sources from search/RAG must
 be checked; use a calculator or code for arithmetic; benchmark scores
-“alone do not establish business reliability”. “<strong>Best
-Practice</strong>: Decide how an answer will be checked before relying
-on it.”</p>
+(results on standard AI tests) “alone do not establish business
+reliability”. “<strong>Best Practice</strong>: Decide how an answer will
+be checked before relying on it.”</p>
 <p><strong>Privacy (slide 27):</strong> prompts and uploads “may contain
 personal or confidential information. Use approved services and minimize
-what you share.” Retention, training use and processing location “depend
-on the product and contract; verify them.” Retrieval and agents “should
-only access records the user is authorized to see.”
+what you share.” Retention, training use and processing location (how
+long your data is kept, whether it trains future models, and where it is
+handled) “depend on the product and contract; verify them.” Retrieval
+and agents “should only access records the user is authorized to see.”
 “<strong>Regulation</strong>: GDPR applies to personal data in prompts
 and outputs. The EU AI Act’s obligations for general-purpose AI model
 providers have applied since August 2025; rules for high-risk uses were
@@ -10946,6 +11032,9 @@ question is whether you “can switch provider, export your data, or run
 an alternative model”; open-weight and smaller models broaden access,
 but they do not remove infrastructure costs or dependencies.</li>
 </ol>
+<p><strong>Sources:</strong> Lecture 7
+<code>Lecture_llm_intro.pdf</code>, slides 4, 12, 16, 21–27; 2025 exam
+evaluation guidelines Q4(a).</p>
 <h1 id="part5">Part V — Using LLMs: input/output, training, fine-tuning
 and prompting</h1>
 <h2 id="ch18">18. What goes into and comes out of an LLM</h2>
