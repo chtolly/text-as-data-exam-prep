@@ -5080,7 +5080,7 @@ a.</li>
 another. In the notebook’s quote, how much more a word belongs to one
 party than the other.</li>
 <li><strong>Support Vector Machines, logistic regression, neural
-networks:</strong> other, more complex classifiers, named on slide 29
+networks:</strong> other, more complex classifiers, named on the slides
 but not taught here.</li>
 <li><strong>accuracy:</strong> the share of test documents sorted into
 the right class. 70 right out of 100 = 70%.</li>
@@ -5494,10 +5494,249 @@ Practical day 1)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q2(d) (5 points: what
 topic models are, two methods, intuition and difference); slide 43’s
 “LSA is not probabilistic” is a natural T/F.</p>
-<p><strong>Sources:</strong> Lecture 3 slides 30–59; Interactive
-Notebook 2 cells 21–24, 31; practical_day_1.ipynb cells 16–22 (LDA
-section, from the Part A notes); 2025 exam evaluation guideline
-Q2(d).</p>
+<h3 id="start-from-zero-9">Start from zero</h3>
+<p><strong>The problem.</strong> A newspaper archive holds 50,000
+articles, and nobody has tagged them by subject. A central-bank
+researcher has years of meeting notes and wants to know what the members
+talk about, and how that changes over time. A company has 5,000 open
+answers to a customer survey. In each case you want the computer to sort
+the pile into themes that nobody named in advance, and to say how much
+of each theme is in each text. Nobody gives the computer a list of
+themes or any answers. That is what a topic model does.</p>
+<p><strong>How it works, step by step.</strong></p>
+<ol type="1">
+<li><strong>Make the word-count table.</strong> Rows are documents,
+columns are words, and each cell is how often that word appears in that
+document.</li>
+<li><strong>Notice that some words travel together.</strong> “goal” and
+“match” often show up in the same articles; so do “stock” and “market”.
+A group of words that tend to appear together is a <em>topic</em>.</li>
+<li><strong>Notice that one text can mix themes.</strong> A news story
+about a car factory hit by a volcano is part “cars”, part “natural
+disasters”.</li>
+<li><strong>Choose how many themes you want.</strong> This number is
+called <span class="math inline">\(K\)</span>. The computer does not
+know the “right” number; you pick it.</li>
+<li><strong>Way 1, LSA: pure table arithmetic.</strong> A maths tool
+called SVD splits the big table into three smaller tables. One says how
+much of each theme each document has. One says how important each theme
+is. One says how strongly each word belongs to each theme. Keep only the
+<span class="math inline">\(K\)</span> most important themes and throw
+the rest away as noise.</li>
+<li><strong>Way 2, LDA: a story about how texts are written.</strong>
+Imagine every article was written like this. The writer first picks a
+mix of themes (“80% finance, 20% football”). Then, for each word, the
+writer picks a theme from that mix, and then picks a word from that
+theme’s word list. The computer works backwards: which themes, and which
+mix per article, would best explain the word counts we actually
+see?</li>
+<li><strong>Name the themes yourself.</strong> Look at each theme’s top
+words and give it a name (“finance”, “football”). The computer never
+names them.</li>
+<li><strong>Check stability.</strong> LDA starts from a random guess.
+Run it again with a different random start. Themes that come back both
+times deserve more trust.</li>
+</ol>
+<p><strong>A tiny example by hand.</strong> We reuse the chapter’s own
+two examples and go through them slowly.</p>
+<p><em>LSA.</em> Look at the table in “A tiny worked example (LSA)”
+below. Rows are 4 documents; columns are counts of 4 words. Documents d1
+and d2 talk about stock and market (finance). Documents d3 and d4 talk
+about goal and match (football). d4 also has one stray “market”. SVD
+turns this into two smaller tables, <span class="math inline">\(F\)</span> and <span class="math inline">\(L\)</span>, each with 2 columns (we keep <span class="math inline">\(K = 2\)</span> components).</p>
+<ul>
+<li>In <span class="math inline">\(F\)</span> (rows = documents), look
+at column “comp. 2”: d1 = 2.485 and d2 = 2.389 are positive, while d3 =
+−2.560 and d4 = −2.100 are negative. So component 2 splits finance
+documents from football documents.</li>
+<li>In <span class="math inline">\(L\)</span> (rows = words), column
+“comp. 2”: stock = 0.536 and market = 0.439 are positive, goal = −0.520
+and match = −0.500 are negative. The same split, now for words.</li>
+</ul>
+<p>Now rebuild one cell of the original table out loud: d1’s count of
+“stock”. Multiply d1’s row in <span class="math inline">\(F\)</span> by
+stock’s row in <span class="math inline">\(L\)</span>, number by number,
+and add: 2.504 × 0.456 = 1.142, and 2.485 × 0.536 = 1.332. Total: 1.142
++ 1.332 = 2.474, about 2.47. The real count was 3. It is close but not
+exact, because we threw away the two smallest components. That gap is
+the “noise” we dropped.</p>
+<p><em>LDA.</em> Look at the table in “A tiny worked example (LDA
+mixing)”. Rows are 2 topics; columns are 4 words; each cell is the
+chance that the topic picks that word, so each row adds up to 1. A
+document that is 80% finance and 20% football mixes the two rows. For
+“goal”: 0.8 × 0.05 + 0.2 × 0.50 = 0.04 + 0.10 = 0.14. So in this
+document, about 14 words in every 100 are “goal”.</p>
+<p><strong>What it’s good at / where it breaks.</strong></p>
+<ul>
+<li>Good: no labels and no word lists are needed. It finds themes on its
+own.</li>
+<li>Good: it shrinks thousands of word columns into a few theme columns,
+which you can then use as inputs in a regression (Chapter 8).</li>
+<li>Breaks: you must choose <span class="math inline">\(K\)</span>
+yourself, and the names of the themes are your own interpretation.</li>
+<li>Breaks: LDA can give different themes with a different random start
+(seed). LSA’s numbers can be negative, so they cannot be read as
+shares.</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>topic:</strong> a group of words that tend to appear
+together, like {goal, match, team}.</li>
+<li><strong>topic model:</strong> an unsupervised method that finds
+topics and says how much of each topic is in each document.</li>
+<li><strong>cluster:</strong> a group of things that are alike.</li>
+<li><strong>mixture (of topics):</strong> a document made of several
+topics in different amounts, like a smoothie that is 70% strawberry and
+30% banana.</li>
+<li><strong>latent:</strong> hidden; we never see the topics directly,
+only the words.</li>
+<li><strong>unsupervised:</strong> no answers or labels are given; the
+method finds the structure itself.</li>
+<li><strong>parsimonious:</strong> using as few pieces as possible to
+explain a lot.</li>
+<li><strong>document-term matrix (DTM, <span class="math inline">\(C\)</span>):</strong> the word-count table, rows =
+documents, columns = words.</li>
+<li><strong>matrix:</strong> a table of numbers. Its size is written
+“rows × columns”: <span class="math inline">\(n\times p\)</span> = <span class="math inline">\(n\)</span> rows and <span class="math inline">\(p\)</span> columns.</li>
+<li><strong>sparse / dense:</strong> a sparse table is mostly zeros
+(most words do not appear in most documents). A dense table has few
+zeros.</li>
+<li><strong>dimension / dimension reduction:</strong> each column is a
+dimension. Dimension reduction = summarising many columns with a
+few.</li>
+<li><strong><span class="math inline">\(K\)</span>, and <span class="math inline">\(K \ll p\)</span>:</strong> <span class="math inline">\(K\)</span> is the number of topics (components)
+kept; “<span class="math inline">\(\ll\)</span>” means “much smaller
+than”. 6 topics instead of 10,000 words.</li>
+<li><strong>component / factor:</strong> one hidden theme found by the
+method.</li>
+<li><strong>factors <span class="math inline">\(F\)</span>:</strong> a
+table with one row per document saying how much of each component it has
+(<span class="math inline">\(n\times K\)</span>).</li>
+<li><strong>loadings <span class="math inline">\(L\)</span>:</strong> a
+table with one row per word saying how strongly it belongs to each
+component (<span class="math inline">\(p\times K\)</span>).</li>
+<li><strong>LSA (Latent Semantic Analysis):</strong> the topic method
+that applies SVD (or PCA) to the word-count table.</li>
+<li><strong>PCA (Principal Components Analysis):</strong> a standard
+method that finds the few directions in which the data vary the most.
+For text, it gives the same result as SVD.</li>
+<li><strong>SVD (Singular Value Decomposition):</strong> a maths tool
+that rewrites any table as three tables multiplied together: <span class="math inline">\(U\)</span> (documents), <span class="math inline">\(S\)</span> (importance) and <span class="math inline">\(V&#39;\)</span> (words).</li>
+<li><strong>singular values (<span class="math inline">\(s\)</span>):</strong> the importance numbers on
+the diagonal of <span class="math inline">\(S\)</span>, largest
+first.</li>
+<li><strong>diagonal matrix:</strong> a table that is all zeros except
+on the line from top-left to bottom-right.</li>
+<li><strong>orthogonal / unitary matrix:</strong> a table whose columns
+point in completely separate directions, so they share no
+information.</li>
+<li><strong><span class="math inline">\(U&#39;\)</span>, <span class="math inline">\(V&#39;\)</span> (the prime):</strong> the table
+flipped, so rows become columns.</li>
+<li><strong>identity matrix <span class="math inline">\(I\)</span>:</strong> the “do-nothing” table, with
+1s on the diagonal and 0s elsewhere. Multiplying by it changes nothing,
+like multiplying a number by 1.</li>
+<li><strong>truncation:</strong> keeping only the first <span class="math inline">\(K\)</span> components and dropping the rest.</li>
+<li><strong>rank-2 approximation:</strong> the table rebuilt using only
+the 2 kept components; close to, but not the same as, the original.</li>
+<li><strong>variance / variance explained (<span class="math inline">\(\lambda_l\)</span>):</strong> variance = how much
+numbers spread out around their average. Variance explained = how much
+of that spread a component accounts for. (This <span class="math inline">\(\lambda\)</span> is not the fee <span class="math inline">\(\lambda\)</span> from Chapter 8.)</li>
+<li><strong>centred columns:</strong> each column with its own average
+subtracted, so it averages zero.</li>
+<li><strong>LDA (Latent Dirichlet Allocation):</strong> the
+probabilistic topic model.</li>
+<li><strong>probabilistic model:</strong> a model where every number is
+a chance between 0 and 1, and the chances in a group add up to 1.</li>
+<li><strong>generative model / generative story:</strong> a model that
+tells a step-by-step story of how the text could have been
+produced.</li>
+<li><strong>non-parametric (as used on slide 43):</strong> here, it does
+not assume any probability model with settings to estimate.</li>
+<li><strong>distribution / probability vector:</strong> a list of
+chances that add up to 1, like (0.50, 0.40, 0.05, 0.05) for four
+words.</li>
+<li><strong><span class="math inline">\(\theta_l\)</span> (theta), <span class="math inline">\(\Theta\)</span>:</strong> topic <span class="math inline">\(l\)</span>’s list of word chances; <span class="math inline">\(\Theta\)</span> is all topics stacked
+together.</li>
+<li><strong><span class="math inline">\(v_{il}\)</span>, topic weights,
+<span class="math inline">\(V\)</span>:</strong> the share of document
+<span class="math inline">\(i\)</span> that is topic <span class="math inline">\(l\)</span>; each document’s shares add up to
+1.</li>
+<li><strong><span class="math inline">\(\mathbf q_i\)</span>:</strong>
+document <span class="math inline">\(i\)</span>’s blended list of word
+chances.</li>
+<li><strong><span class="math inline">\(m_i\)</span>:</strong> the
+length of document <span class="math inline">\(i\)</span> (its total
+number of words).</li>
+<li><strong><span class="math inline">\(\sim\)</span>:</strong> “is
+drawn at random from”.</li>
+<li><strong>multinomial distribution (<span class="math inline">\(MN\)</span>):</strong> the chances of getting each
+possible set of counts when you make several draws, like drawing
+coloured balls from an urn several times.</li>
+<li><strong>with replacement:</strong> each ball goes back into the urn
+after it is drawn.</li>
+<li><strong>factorial (<span class="math inline">\(6!\)</span>):</strong> multiply down to 1: <span class="math inline">\(6! = 6\times5\times4\times3\times2\times1 =
+720\)</span>.</li>
+<li><strong>categorical distribution:</strong> one single draw from
+several possible outcomes, like picking one word.</li>
+<li><strong>Dirichlet distribution / Dirichlet prior:</strong> a way of
+drawing a random list of shares that add up to 1. As a prior, it is
+LDA’s starting assumption about which topic mixes (and word lists) are
+likely.</li>
+<li><strong>prior:</strong> what you assume before seeing the data.</li>
+<li><strong><span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> (in LDA):</strong> the two
+Dirichlet settings. Low <span class="math inline">\(\alpha\)</span> →
+each document has few main topics. Low <span class="math inline">\(\beta\)</span> → each topic has few main words.
+(This <span class="math inline">\(\beta\)</span> is not the regression
+coefficient of Chapter 8.)</li>
+<li><strong>sparsity (in LDA):</strong> most chances are near zero, and
+only a few are big.</li>
+<li><strong>Beta distribution:</strong> the two-outcome version of the
+Dirichlet: a random share between 0 and 1.</li>
+<li><strong>conjugate prior:</strong> a prior that fits the multinomial
+so neatly that the maths stays easy.</li>
+<li><strong>Bayesian estimation:</strong> combining a prior with the
+data to get updated beliefs.</li>
+<li><strong>variational Bayes / Gibbs sampling:</strong> two computer
+methods that start from a guess and improve it step by step, many times.
+[Not in course files — general knowledge: the “start from a guess and
+improve” description]</li>
+<li><strong>iterative:</strong> repeated round after round.</li>
+<li><strong>random seed:</strong> the starting number for the computer’s
+random guess. Same seed = same result; a new seed can give different
+topics.</li>
+<li><strong>cosine similarity:</strong> a score of how alike two lists
+of numbers are; 1 = identical pattern.</li>
+<li><strong>marginal likelihood / out-of-sample testing:</strong> how
+probable held-out texts are under the fitted model; higher = the model
+explains new texts better. [Not in course files — general
+knowledge]</li>
+<li><strong>plate diagram:</strong> a box-and-arrow picture of the LDA
+story.</li>
+<li><strong><span class="math inline">\(\varphi_k\)</span> (phi), <span class="math inline">\(\theta_m\)</span>:</strong> the plate diagram’s
+names for the topic-word list and the document-topic mix.</li>
+<li><strong>stem (e.g. “vehicl”):</strong> a word cut to its root, so
+“vehicle” and “vehicles” both become “vehicl”.</li>
+<li><strong>second-stage regression:</strong> a regression that uses the
+topic shares as its inputs.</li>
+<li><strong>polysemy / synonyms:</strong> one word with several meanings
+/ several words with one meaning.</li>
+<li><strong>tf-idf:</strong> a word weight, high for words that are
+frequent here but rare elsewhere. LDA needs plain counts instead.</li>
+<li><strong>Gensim / <code>LdaModel</code> /
+<code>passes</code>:</strong> a Python toolbox for topic models / its
+LDA tool / how many times it goes through all the texts.</li>
+<li><strong><code>filter_extremes</code>, <code>min_df</code>,
+<code>max_df</code>:</strong> settings that drop words that are too rare
+or too common.</li>
+<li><strong><code>components_</code>:</strong> where scikit-learn stores
+each topic’s word weights.</li>
+<li><strong>FOMC:</strong> the US central bank’s committee that sets
+interest rates. [Not in course files — general knowledge]</li>
+<li><strong>dynamic / supervised / correlated topic models:</strong>
+extensions of LDA named on slide 59.</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-9">The idea in plain words</h3>
 <p>A topic model answers “<strong>what is this text about?</strong>”
 without anyone labelling anything (slide 31: “in a parsimonious
@@ -6116,7 +6355,7 @@ perplexity</h2>
 <p><strong>Exam priority:</strong> ★★ Medium — not asked in 2025, but
 taught in 2026 and perfect material for True/False and a small
 calculation.</p>
-<h3 id="start-from-zero-9">Start from zero</h3>
+<h3 id="start-from-zero-10">Start from zero</h3>
 <p><strong>The problem.</strong> You type “see you” on your phone, and
 the keyboard offers “tomorrow” or “soon”. Nobody wrote a rule for every
 sentence, so how does it know? Earlier in the course, text was turned
@@ -6799,7 +7038,7 @@ weights, softmax, loss, gradient descent, backpropagation</h2>
 <p><strong>Exam priority:</strong> ★★ Medium — the one-hot vector was
 2025 Q3(c); softmax, loss and training words come back in the
 transformer and LLM questions.</p>
-<h3 id="start-from-zero-10">Start from zero</h3>
+<h3 id="start-from-zero-11">Start from zero</h3>
 <p><strong>The problem.</strong> The counting machine from Chapter 11
 works, but only with one letter of memory. If you want it to look
 further back, the count grid grows out of control. And many jobs aren’t
@@ -7383,7 +7622,7 @@ vs contextual</h2>
 2025: Q3(a) assumption + PMI matrix, Q3(b) word2vec vs BERT, Q3(c)
 one-hot in word2vec, Q3(d) cosine drawing, plus a True/False item on SVD
 on PMI.</p>
-<h3 id="start-from-zero-11">Start from zero</h3>
+<h3 id="start-from-zero-12">Start from zero</h3>
 <p><strong>The problem.</strong> You’d like a search for “automobile” to
 also find pages that only say “car”. But think back to the word-count
 table: one row per document, one column per word, each cell a count. In
@@ -8387,7 +8626,7 @@ Embeddings” (Thorsrud), slides 2–14, 20–31; notebook
 <h2 id="ch14">14. What a Large Language Model is</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 T/F (b) and (f) came
 straight from this lecture, and it is the base for all of Block 4.</p>
-<h3 id="start-from-zero-12">Start from zero</h3>
+<h3 id="start-from-zero-13">Start from zero</h3>
 <p><strong>The problem.</strong> You type “What is the capital of
 Norway?” into ChatGPT. A second later it writes “The capital of Norway
 is Oslo.” Nobody wrote that answer in advance, and the program is not
@@ -8917,7 +9156,7 @@ with evaluation guidelines
 <h2 id="ch15">15. Tokens and tokenization</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(c) (5 points) and
 T/F (c) asked exactly this.</p>
-<h3 id="start-from-zero-13">Start from zero</h3>
+<h3 id="start-from-zero-14">Start from zero</h3>
 <p><strong>The problem.</strong> A computer cannot read letters. It
 needs numbers. The first idea is to give every word its own number:
 “cat” = 1, “dog” = 2, and so on. But what number do you give a word the
@@ -9449,7 +9688,7 @@ guidelines Q4(c).</p>
 <h2 id="ch16">16. Attention and the Transformer</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(b) and Q4(d) (10
 points) plus T/F (a) and (i) (4 points).</p>
-<h3 id="start-from-zero-14">Start from zero</h3>
+<h3 id="start-from-zero-15">Start from zero</h3>
 <p><strong>The problem.</strong> Read two sentences: “We sat on the
 river bank” and “I put my salary in the bank.” Same word, two very
 different meanings. Older methods gave “bank” one fixed list of numbers,
@@ -10209,9 +10448,250 @@ exam evaluation guidelines Q4(b), Q4(d).</p>
 <hr />
 <h2 id="ch17">17. Critical issues around LLMs (the “ESG” question)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(a) (5 points)
-asked for two ESG issues. <strong>Sources:</strong> Lecture 7
-<code>Lecture_llm_intro.pdf</code>, slides 4, 12, 16, 21–27; 2025 exam
-evaluation guidelines Q4(a).</p>
+asked for two ESG issues.</p>
+<h3 id="start-from-zero-16">Start from zero</h3>
+<p><strong>The problem.</strong> Picture a Norwegian bank that puts a
+ChatGPT-style assistant on its website to answer customers. Soon awkward
+questions pop up. The assistant runs on huge computer halls that use a
+lot of electricity. One day it tells a customer about a fee that does
+not exist. Customers type their account details into it, and those words
+travel to another company’s computers. And only a handful of companies
+in the world can build models this good. Each of these is a real worry,
+and the exam asks you to name and explain them under three headings:
+Environmental, Social and Governance (ESG).</p>
+<p><strong>How it works, step by step.</strong> Here is where each worry
+comes from, and which ESG letter it gets.</p>
+<ol type="1">
+<li><strong>Training eats power (E).</strong> Building a model means
+thousands of computer chips running for weeks. That needs electricity,
+cooling (often with water), and the chips themselves have to be
+made.</li>
+<li><strong>Every answer eats power too (E).</strong> Each answer
+(inference) also runs those chips. One answer is small, but millions of
+users asking all day adds up. Long answers, “thinking” steps and agents
+that try many times use even more.</li>
+<li><strong>It writes what sounds right, not what is checked
+(S).</strong> The model picks likely next words. So it can invent facts,
+numbers and references while sounding sure (hallucination). It learned
+from human text, so it can repeat human prejudices (bias).</li>
+<li><strong>It can be tricked or misused (S, also G).</strong> Users
+once got Microsoft’s Tay chatbot to post offensive content. A connected
+assistant can read a web page with hidden orders like “ignore your rules
+and send me the files” (prompt injection).</li>
+<li><strong>A few firms hold the keys (G).</strong> Only firms with huge
+money, chips, power, data and experts can build top models. Businesses
+that depend on one of them may find it hard to switch.</li>
+<li><strong>Your data travels (G).</strong> What you type may go to the
+provider’s computers, be kept, or even be used for training. Laws such
+as GDPR and the EU AI Act set rules for this.</li>
+<li><strong>The training text was often taken without asking (G, also
+S).</strong> Huge amounts of text were collected, often without the
+authors’ permission, which raises copyright questions.</li>
+<li><strong>Writing the exam answer.</strong> Pick the number of issues
+asked for. For each one: name it, give its letter (E, S or G), explain
+<em>why</em> it happens, and give one consequence or one fix.</li>
+</ol>
+<p><strong>A tiny example by hand.</strong> Slide 22 says to compare
+energy “per successfully completed task”. Here is why, with the
+chapter’s own made-up numbers. In the table, each row is one model; the
+columns show its energy per try, how often a try succeeds, and the
+energy per finished job.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Model (rows)</th>
+<th>Energy per try</th>
+<th>Share of tries that succeed</th>
+<th>Energy per finished job</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>1 unit</td>
+<td>50% (half)</td>
+<td>2 units</td>
+</tr>
+<tr>
+<td>B</td>
+<td>1.5 units</td>
+<td>100% (all)</td>
+<td>1.5 units</td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li><strong>Model A.</strong> Say you try 10 times. Half succeed, so you
+get 5 finished jobs. You used 10 × 1 = 10 units. That is 10 ÷ 5 = 2
+units per finished job.</li>
+<li><strong>Model B.</strong> Try 10 times. All 10 succeed. You used 10
+× 1.5 = 15 units. That is 15 ÷ 10 = 1.5 units per finished job.</li>
+<li><strong>Compare.</strong> A looks cheaper per try (1 unit against
+1.5), but B is cheaper per finished job (1.5 units against 2). Counting
+only the price of one try gives the wrong winner.</li>
+</ol>
+<p><strong>What it’s good at / where it breaks.</strong> (Here “it” is
+the ESG way of sorting the issues.)</p>
+<ul>
+<li><strong>Good at:</strong> giving your answer a clear structure: name
+the issue, give its letter, explain why it happens, add a fix.</li>
+<li><strong>Good at:</strong> covering the main slide topics:
+sustainability, reliability, ownership and control, privacy and
+security.</li>
+<li><strong>Breaks:</strong> the 2026 slides never say “ESG”, so the E,
+S, G sorting is our own reading. Some issues fit two letters (privacy
+can be S or G), so explain your choice.</li>
+<li><strong>Breaks:</strong> copyright was accepted in the 2025 marking
+guide but is not on the 2026 slides, so say where it comes from.</li>
+</ul>
+<div class="callout plain">
+<p><strong>What the words mean (from zero).</strong></p>
+<ul>
+<li><strong>ESG (Environmental, Social, Governance):</strong> three
+headings firms use for non-money risks. E = nature and resources; S =
+people and society; G = rules, control and who is in charge.</li>
+<li><strong>LLM:</strong> Large Language Model, the next-token-guessing
+program from Chapter 14.</li>
+<li><strong>Sustainability:</strong> using resources (power, water,
+materials) in a way the planet can keep up with.</li>
+<li><strong>Resources:</strong> the things used up to run the model:
+electricity, water, chips, money, people’s time.</li>
+<li><strong>Training:</strong> the long, one-off process of building the
+model by adjusting its numbers on huge amounts of text.</li>
+<li><strong>Inference / repeated inference:</strong> using the finished
+model to answer. “Repeated” because it happens again for every question
+from every user.</li>
+<li><strong>Chip / GPU:</strong> the computer parts that do the model’s
+sums. GPUs are chips that do many sums at once [Not in course files —
+general knowledge].</li>
+<li><strong>Data centre:</strong> a big building full of computers that
+run services like LLMs [Not in course files — general knowledge].</li>
+<li><strong>Cooling / water use:</strong> computers get hot; cooling
+them often uses water.</li>
+<li><strong>Carbon footprint:</strong> the amount of greenhouse gas
+released because of something, for example from making the electricity
+it uses.</li>
+<li><strong>Hardware / workload / electricity supply:</strong> hardware
+= the physical computers; workload = how much work they are given;
+electricity supply = where the power comes from (wind and water power vs
+coal).</li>
+<li><strong>Reasoning (at answer time):</strong> the model writing
+hidden “thinking” text before the final answer, which uses more
+computing.</li>
+<li><strong>Long context:</strong> giving the model a lot of text to
+read at once, which costs more computing.</li>
+<li><strong>Agent / agent steps:</strong> a setup where the model
+repeats a loop of deciding and using tools until a job is done. Each
+loop round is a step.</li>
+<li><strong>Efficient model:</strong> a model that does the same job
+with less computing.</li>
+<li><strong>Per successfully completed task:</strong> measuring cost per
+finished job, counting the failed tries and the human checks too.</li>
+<li><strong>Retries:</strong> asking again because the first answer was
+not good enough.</li>
+<li><strong>Rebound effect:</strong> when something gets cheaper, people
+use it much more, so total use can still go up [Not in course files —
+general knowledge].</li>
+<li><strong>Ownership and control:</strong> who owns the models and the
+computers they run on, and who decides who may use them.</li>
+<li><strong>Infrastructure:</strong> the basic equipment everything runs
+on: chips, data centres, cloud services, power lines.</li>
+<li><strong>Frontier model / frontier training:</strong> the newest,
+most powerful models, and the very costly process of training them.</li>
+<li><strong>Capital:</strong> money for investment.</li>
+<li><strong>Barriers to entry:</strong> things that make it hard for new
+firms to join a market, like needing billions of kroner before you can
+start.</li>
+<li><strong>Monopoly:</strong> one firm controlling a whole market.</li>
+<li><strong>Concentration:</strong> a few firms holding most of the
+market at some level, such as chips or cloud hosting.</li>
+<li><strong>Cloud hosting:</strong> renting computing power in someone
+else’s data centre over the internet.</li>
+<li><strong>Distribution:</strong> how the model reaches users, for
+example through apps or built into office software.</li>
+<li><strong>Dependency / vendor lock-in:</strong> relying so much on one
+supplier that switching is hard or costly, like a phone that only works
+with one charger.</li>
+<li><strong>Switching provider / exporting data:</strong> moving to
+another company, and taking your own data with you.</li>
+<li><strong>Open weights:</strong> a model whose learned numbers you can
+download and run yourself. You do not necessarily get its training
+data.</li>
+<li><strong>Licence:</strong> the legal terms saying what you may do
+with something.</li>
+<li><strong>Training data / training recipe:</strong> the text the model
+learned from, and the full step-by-step method used to train it.</li>
+<li><strong>Reliability:</strong> whether answers are correct, backed by
+evidence and fit for the task.</li>
+<li><strong>Hallucination:</strong> the model inventing facts, numbers,
+quotes or references that are not true, while sounding confident.</li>
+<li><strong>Bias:</strong> a systematic slant in the answers, for
+example treating some groups unfairly, learned from the training
+text.</li>
+<li><strong>Sensitivity (to wording):</strong> getting a different
+answer when you ask the same thing in slightly different words.</li>
+<li><strong>Evidence / sources:</strong> the documents or facts that
+back up an answer.</li>
+<li><strong>RAG (retrieval-augmented generation):</strong> first search
+for relevant text, then give it to the model to use in its answer. The
+found sources still need checking.</li>
+<li><strong>Benchmark:</strong> a standard test used to score and
+compare models, like a school exam for AI.</li>
+<li><strong>Verification:</strong> checking an answer against something
+trustworthy before you rely on it.</li>
+<li><strong>Responsibility / harm:</strong> who answers for damage the
+model’s output causes, such as abuse, misleading claims or unfair
+treatment.</li>
+<li><strong>Overly agreeable output:</strong> the model telling users
+what they want to hear instead of what is true.</li>
+<li><strong>Tay chatbot (2016):</strong> a Microsoft chatbot on Twitter
+that users quickly taught to post offensive messages; it was taken down
+[Not in course files — general knowledge: the details].</li>
+<li><strong>Prompt injection:</strong> hidden instructions placed in a
+document or web page that try to take over an assistant that reads
+it.</li>
+<li><strong>Connected assistant / tool permissions:</strong> an
+assistant that can use outside tools (email, files, payments);
+permissions say which tools it may use.</li>
+<li><strong>Consequential action:</strong> an action with real effects,
+like sending money or deleting files.</li>
+<li><strong>Privacy:</strong> keeping personal information about people
+safe and under their control.</li>
+<li><strong>Security:</strong> protecting systems from attack or
+misuse.</li>
+<li><strong>Personal data:</strong> any information about an
+identifiable person, like a name, address or account number.</li>
+<li><strong>Confidential information:</strong> business secrets or
+private material that should not be shared.</li>
+<li><strong>Retention / processing location:</strong> how long the
+provider keeps what you send, and in which country its computers handle
+it.</li>
+<li><strong>Authorized:</strong> officially allowed. An assistant should
+only see records the user is allowed to see.</li>
+<li><strong>GDPR:</strong> the EU’s main law protecting personal data.
+It applies to personal data in prompts and answers.</li>
+<li><strong>EU AI Act:</strong> the EU’s law setting rules for AI
+systems, including duties for firms that provide general-purpose AI
+models.</li>
+<li><strong>General-purpose AI model provider:</strong> a firm that
+offers a model usable for many tasks, like an LLM maker.</li>
+<li><strong>High-risk uses:</strong> uses where mistakes can seriously
+hurt people, such as hiring or credit decisions; stricter rules
+apply.</li>
+<li><strong>Copyright:</strong> the legal right of authors to control
+copies of their work.</li>
+<li><strong>Memorization:</strong> the model storing exact bits of its
+training text and repeating them later.</li>
+<li><strong>Mitigation:</strong> a step that reduces a risk, like human
+checks before payments.</li>
+</ul>
+</div>
 <h3 id="the-idea-in-plain-words-16">The idea in plain words</h3>
 <p>LLMs are useful, but they come with real costs and risks. The course
 groups them into four questions (slide 21): what resources do they use,
@@ -10472,7 +10952,7 @@ and prompting</h1>
 <p><strong>Exam priority:</strong> ★★ Medium — good source of True/False
 items (temperature, greedy decoding, 512 tokens, cross-attention) and
 short “explain” questions.</p>
-<h3 id="start-from-zero-15">Start from zero</h3>
+<h3 id="start-from-zero-17">Start from zero</h3>
 <p><strong>The problem.</strong> When you ask ChatGPT a question, the
 answer appears word by word, as if someone were typing. Behind the
 screen, the program has a strange problem. A computer cannot read words.
@@ -11211,7 +11691,7 @@ fine tuning</em>, slides 4 and 22; Interactive Notebook 4, cells
 <p><strong>Exam priority:</strong> ★★ Medium — 2025 T/F (f) “LLMs are
 estimated using unsupervised learning” (answer: FALSE); training terms
 make easy True/False items.</p>
-<h3 id="start-from-zero-16">Start from zero</h3>
+<h3 id="start-from-zero-18">Start from zero</h3>
 <p><strong>The problem.</strong> Picture a brand-new LLM as a machine
 with billions of little dials, all set at random. Ask it to finish “So
 long and thanks for” and it writes gibberish. To get something like
@@ -11854,7 +12334,7 @@ zero-/few-shot and alignment</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 2025 Q4(e) (fine-tuning vs
 prompt engineering, 5 points) and 2025 T/F (j) (zero-shot); also the
 natural toolbox for the business-case reflection.</p>
-<h3 id="start-from-zero-17">Start from zero</h3>
+<h3 id="start-from-zero-19">Start from zero</h3>
 <p><strong>The problem.</strong> A bank gets thousands of customer
 complaints every week. Some are about card fees, some about the app
 crashing, some about loans. The bank wants an LLM to sort each complaint
@@ -12457,7 +12937,7 @@ Notebook 4)</h2>
 but excellent, concrete material for the business-case reflection (2025
 Block 5, 20 points) and for T/F items on tokens, temperature and
 RAG.</p>
-<h3 id="start-from-zero-18">Start from zero</h3>
+<h3 id="start-from-zero-20">Start from zero</h3>
 <p><strong>The problem.</strong> Reading about LLMs is one thing. Using
 one for real work is another. Imagine a Norwegian company that wants an
 LLM to label customer reviews and to answer staff questions from its
@@ -12655,8 +13135,8 @@ When on, the retrieved chunks are sent to the model to write an
 answer.</li>
 <li><strong>literal-word matching vs dense embeddings:</strong> matching
 the exact same words, versus matching number lists that capture meaning
-(Interactive Notebook 3). Dense embeddings can see that “pensions” and
-“Social Security” are related.</li>
+(Interactive Notebook 3). Dense embeddings can often tell that
+“pensions” and “Social Security” are related.</li>
 <li><strong>paraphrase:</strong> saying the same thing in other
 words.</li>
 <li><strong>hit rate:</strong> how often the retriever finds the right
@@ -12671,8 +13151,9 @@ pitfalls.</li>
 </div>
 <h3 id="the-idea-in-plain-words-20">The idea in plain words</h3>
 <p>The notebook runs a small real LLM,
-<strong>Qwen2.5-0.5B-Instruct</strong>, downloaded once from
-<strong>Hugging Face</strong>, on your own laptop: “no account, no API
+<strong>Qwen2.5-0.5B-Instruct</strong> (half a billion dials, trained to
+follow instructions), downloaded once from <strong>Hugging Face</strong>
+(a website for sharing models), on your own laptop: “no account, no API
 key, no cloud”. It then asks five practical questions a business would
 face:</p>
 <ol type="1">
@@ -12721,7 +13202,8 @@ retrieval misses paraphrases.”</li>
 of the Union corpus is about <strong>2 million tokens</strong>, and the
 model’s window is <strong>32,768 tokens</strong>. So you
 <strong>retrieve</strong> the most relevant chunks with <strong>tf-idf +
-cosine similarity</strong> and feed only those.</p>
+cosine similarity</strong> (word-matching search, see the example above)
+and feed only those.</p>
 <h3 id="a-tiny-worked-example-18">A tiny worked example</h3>
 <p><strong>Q1, tokens (cells 6–9).</strong> The three test texts have
 10, 7 and 8 words (counted with <code>len(text.split())</code>, as the
@@ -12734,16 +13216,17 @@ inflasjonen.”</li>
 <li>Numbers: “Invoice 2024-11-07: NOK 1,234,567.89 due within 30
 days.”</li>
 </ul>
-<p>The tokenizer “was built mostly from English text”. So common English
-words are often a single token, while Norwegian words like
-“Sentralbanken” and number strings get chopped into several pieces. When
-run, the Norwegian sentence shows more <strong>tokens per word</strong>
-than the English one. You pay per token, and the context window is
-counted in tokens. So the <strong>effective price</strong> of a
-Norwegian document is higher, even at the same price per token. That
-answers the notebook’s “Think” question about two providers. A small
-detail from cell 8: a leading space is part of the token, so ” bank” and
-“bank” are different tokens.</p>
+<p>The tokenizer (the tool that cuts text into tokens) “was built mostly
+from English text”. So common English words are often a single token,
+while Norwegian words like “Sentralbanken” and number strings get
+chopped into several pieces. When run, the Norwegian sentence shows more
+<strong>tokens per word</strong> than the English one. You pay per
+token, and the context window is counted in tokens. So the
+<strong>effective price</strong> of a Norwegian document is higher, even
+at the same price per token. That answers the notebook’s “Think”
+question about two providers. A small detail from cell 8: a leading
+space is part of the token, so ” bank” and “bank” are different
+tokens.</p>
 <p><strong>Q5, retrieval: why rewording fails.</strong> This is a toy
 example we made, run with the same tools as cell 24:
 <code>TfidfVectorizer(stop_words=&quot;english&quot;)</code> and
@@ -12797,7 +13280,9 @@ shared words the dot product is 0, so the cosine is 0. The retriever
 finds nothing, and the LLM is then fed irrelevant text. This is the
 notebook’s point: “tf-idf only matches <strong>literal words</strong>.
 Modern RAG systems use <strong>dense embeddings</strong> (Interactive
-Notebook 3) to match <strong>meaning</strong>.”</p>
+Notebook 3) to match <strong>meaning</strong>.” (Dense embeddings are
+number lists that capture what a text means, not which words it
+uses.)</p>
 <h3 id="reading-the-course-code-15">Reading the course code</h3>
 <p>Notebook 4, cell 24 (mini-RAG), key lines simplified:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>tfidf <span class="op">=</span> TfidfVectorizer(stop_words<span class="op">=</span><span class="st">&quot;english&quot;</span>)</span>
@@ -12807,12 +13292,15 @@ Notebook 3) to match <strong>meaning</strong>.”</p>
 <ul>
 <li>Line 1 sets up a tf-idf weighting (chapter on tf-idf) that drops
 English stop words.</li>
-<li>Line 2 builds the document-term matrix of all speech chunks (each
-chunk is <code>CHUNK_SIZE</code> words, labelled “president, year”) and
-weights it by tf-idf.</li>
+<li>Line 2 builds the document-term matrix (a table: one row per chunk,
+one column per word) of all speech chunks (each chunk is
+<code>CHUNK_SIZE</code> words, labelled “president, year”) and weights
+it by tf-idf.</li>
 <li>Line 3 turns the question into a tf-idf vector with the same
 vocabulary and computes its cosine similarity with every chunk.</li>
-<li>Line 4 keeps the <code>TOP_K</code> most similar chunks.</li>
+<li>Line 4 sorts the scores (<code>argsort</code>, then reversed so the
+biggest comes first) and keeps the <code>TOP_K</code> most similar
+chunks.</li>
 </ul>
 <p>If <code>GENERATE = True</code>, these chunks are pasted into the
 prompt with the system instruction “Answer using ONLY the provided
@@ -12823,18 +13311,19 @@ index knows”.</p>
 <p>The other experiments, briefly:</p>
 <ul>
 <li><strong>Q2, temperature (cells 10–13):</strong> the same question is
-asked <code>N_SAMPLES = 3</code> times with different seeds, and the
-cell prints “k distinct answers out of N”. At T = 0 (greedy) all answers
-are identical. They become more varied as T rises, and stop making sense
-at high T (try 2.0).</li>
+asked <code>N_SAMPLES = 3</code> times with different seeds (different
+starting points for the random dice), and the cell prints “k distinct
+answers out of N”. At T = 0 (greedy) all answers are identical. They
+become more varied as T rises, and stop making sense at high T (try
+2.0).</li>
 <li><strong>Q3, JSON (cells 14–17):</strong> a checker
-(<code>json.loads</code> plus key and label checks) scores how many of 4
-reviews give usable output. You improve the score with T = 0, an exact
-format, a few-shot example and edge-case rules (chapter 20). The hard
-case is “The app is fine, I guess. Nothing special.” It is lukewarm, so
-it fits none of positive/negative/mixed neatly. That is a
-<strong>label-set decision</strong>, “a business decision, not a coding
-one”.</li>
+(<code>json.loads</code>, which tries to read the reply as JSON, plus
+key and label checks) scores how many of 4 reviews give usable output.
+You improve the score with T = 0, an exact format, a few-shot example
+and edge-case rules (chapter 20). The hard case is “The app is fine, I
+guess. Nothing special.” It is lukewarm, so it fits none of
+positive/negative/mixed neatly. That is a <strong>label-set
+decision</strong>, “a business decision, not a coding one”.</li>
 <li><strong>Q4, hallucination (cells 18–21):</strong> the model is asked
 to quote <strong>Gerald Ford’s 1975</strong> address; the scoreboard
 checks for his real words “not good”. With <strong>no</strong> context
@@ -12856,14 +13345,16 @@ extraction or classification (invoice amounts, review labels). Use a
 higher value for creative work (ten campaign slogans).</li>
 <li><strong>Build checks around the model.</strong> 4 out of 4 valid
 JSON does not prove 100,000 out of 100,000 (cell 17 “Think”). Add a
-format checker, a hand-labelled validation sample, and a benchmark
-(e.g. Naive Bayes, or “always guess the biggest class”). This matches L7
-slide 18 (“Verifiable Results”, “Manageable Errors”).</li>
+format checker, a hand-labelled validation sample, and a benchmark (a
+simple method to beat, e.g. Naive Bayes, or “always guess the biggest
+class”). This matches L7 slide 18 (“Verifiable Results”, “Manageable
+Errors”).</li>
 <li><strong>Ground the model, and test the retriever.</strong>
 Hallucinations “sound confident” (L7 slide 26). The <em>wrong</em>
 context can be worse than none, so measure the retrieval <strong>hit
-rate</strong> for literal and reworded questions (Assignment 4.2 a).
-Consider embedding-based retrieval for paraphrases.</li>
+rate</strong> (how often the right chunk is found) for literal and
+reworded questions (Assignment 4.2 a). Consider embedding-based
+retrieval for paraphrases.</li>
 <li><strong>Weigh the risk against how easy errors are to check</strong>
 (L7 slide 19). Summarising survey feedback is low-consequence but hard
 to check, so inspect examples. Anything that triggers payments needs
@@ -12945,12 +13436,18 @@ benefits”. Embedding-based retrieval and a test of the hit rate on
 reworded questions reduce this. Norwegian text also costs more tokens
 per word, which raises cost and fills the context window faster.</li>
 </ol>
+<p><strong>Sources:</strong> Interactive Notebook 4 <em>A Real LLM on
+Your Laptop</em>
+(GRA4164_Interactive_4_A_real_LLM_on_your_laptop.ipynb), cells 0–28;
+Assignments 2026 slides 20–24; Lecture 7 slides 18–20, 26. The notebook
+has <strong>no saved outputs</strong>, so no token counts or scores from
+it appear here.</p>
 <h1 id="part6">Part VI — Putting it together</h1>
 <h2 id="ch22">22. Choosing the right method for a business case (the
 reflection question)</h2>
 <p><strong>Exam priority:</strong> ★★★ High — 20 of 100 points in 2025,
 and the question that most separates a C from an A.</p>
-<h3 id="start-from-zero-19">Start from zero</h3>
+<h3 id="start-from-zero-21">Start from zero</h3>
 <p><strong>The problem.</strong> A company has a pile of text it can’t
 read by hand: 1,000 survey answers, 50,000 product reviews, or years of
 news articles. Management asks a simple question, like “do customers
