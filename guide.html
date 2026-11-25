@@ -3969,52 +3969,134 @@ them</td>
 is what makes it unsupervised. (Illustration made up for this guide; the
 method labels are from slides 4–30.)</p>
 <div class="callout exam">
-<p><strong>How this shows up on the exam</strong> As True/False
-(“Dictionary methods are unsupervised” → False, slide 7; “LDA is an
-unsupervised method” → True, slide 30 and Notebook 2 cell 21). In 2025,
-T/F (f) “Large Language Models are estimated using unsupervised
-learning” was False (the guideline gives only “False”; the reason is in
-the LLM training lecture, slide 4: “Training LLMs is often called
-self-supervised training” (the answers come from the text itself: the
-model guesses the next word, and the real next word is the answer)) —
-the same “wrong learning type” trap. In the reflection question, saying
-which branch your method is in, and why that fits the data you have
-(labels or no labels), shows judgement.</p>
+<p><strong>How this shows up on the exam</strong></p>
+<ul>
+<li>Mostly as True/False statements that put a method in the right or
+wrong box. Two examples: “Dictionary methods are unsupervised” → False
+(Source: slide 7). “LDA is an unsupervised method” → True (LDA is the
+topic model from Chapter 10) (Source: slide 30 and Notebook 2 cell
+21).</li>
+<li>In 2025, T/F (f) said “Large Language Models are estimated using
+unsupervised learning”. The answer was False. Large Language Models
+(LLMs) are the text-predicting models behind chatbots. The official
+guideline gives only “False”. The reason is in the LLM training lecture,
+slide 4: “Training LLMs is often called self-supervised training”. That
+means the answers come from the text itself: the model guesses the next
+word, and the real next word is the answer. It is the same trap as
+above: the statement puts a method in the wrong learning type.</li>
+<li>In the reflection question (the open question where you plan your
+own text study), say which box your method belongs to. Then say why that
+fits your data: do your texts come with answers (labels) or not? This
+shows the examiner good judgement.</li>
+</ul>
 </div>
 <div class="callout top">
-<p><strong>What a top-grade answer must include</strong> The
-supervised/unsupervised definition in one line each; the correct branch
-for each method; the slide-7 reason why dictionaries are “supervised”
-(known functional form); and the direction of the model (<span class="math inline">\(p(y\mid c)\)</span> vs <span class="math inline">\(p(c\mid y)\)</span> vs latent <span class="math inline">\(v\)</span>).</p>
+<p><strong>What a top-grade answer must include</strong></p>
+<ul>
+<li>One line defining supervised (the computer learns from texts that
+come with answers) and one line defining unsupervised (no answers; the
+computer finds groups on its own).</li>
+<li>The correct box for each method.</li>
+<li>The reason from slide 7 why dictionaries count as “supervised”: the
+rule is fixed in advance. The slide calls this a “known functional form”
+(you already know the formula that turns a text into a score).</li>
+<li>Which way each model points:
+<ul>
+<li>text regression guesses the outcome from the words (<span class="math inline">\(p(y\mid c)\)</span>, “the chance of outcome <span class="math inline">\(y\)</span> given the words <span class="math inline">\(c\)</span>”);</li>
+<li>Naive Bayes describes the words from the class (<span class="math inline">\(p(c\mid y)\)</span>, “the chance of these words
+given the class”);</li>
+<li>topic models have no outcome at all. They use a hidden variable
+instead (latent <span class="math inline">\(v\)</span>, for example a
+document’s mix of topics, which nobody observes).</li>
+</ul></li>
+</ul>
 </div>
 <div class="callout mistake">
-<p><strong>Common mistakes that lose marks</strong> Calling dictionaries
-“unsupervised because there is no <span class="math inline">\(y\)</span>”. Mixing up text regression (<span class="math inline">\(p(y_i\mid c_i)\)</span>) with Naive Bayes (<span class="math inline">\(p(c_i\mid y_i)\)</span>). Putting LSA under
-supervised because it uses “regression-like” algebra.</p>
+<p><strong>Common mistakes that lose marks</strong></p>
+<ul>
+<li>Calling dictionaries “unsupervised because there is no <span class="math inline">\(y\)</span>” (no answer column). The course still
+puts them in the supervised box, because the rule is known.</li>
+<li>Mixing up text regression (<span class="math inline">\(p(y_i\mid
+c_i)\)</span>: guess the outcome from the words) with Naive Bayes (<span class="math inline">\(p(c_i\mid y_i)\)</span>: describe the words given
+the class).</li>
+<li>Putting LSA (the other topic model from Chapter 10) in the
+supervised box because its maths looks a bit like regression maths.</li>
+</ul>
 </div>
 <div class="callout terms">
-<p><strong>Key terms to use</strong> supervised, unsupervised,
-semi-supervised, latent variable <span class="math inline">\(v_i\)</span>, known functional form <span class="math inline">\(f()\)</span>, document-term matrix <span class="math inline">\(C\)</span>, <span class="math inline">\(p(y_i\mid
-c_i)\)</span>, <span class="math inline">\(p(c_i\mid y_i)\)</span>,
-topic model.</p>
+<p><strong>Key terms to use</strong></p>
+<ul>
+<li>supervised (learns from texts with answers, or a fixed rule)</li>
+<li>unsupervised (no answers; finds groups by itself)</li>
+<li>semi-supervised (the answers come from the text itself)</li>
+<li>latent variable <span class="math inline">\(v_i\)</span> (hidden
+thing we never observe directly)</li>
+<li>known functional form <span class="math inline">\(f()\)</span> (the
+text-to-score rule is fixed in advance)</li>
+<li>document-term matrix <span class="math inline">\(C\)</span> (table:
+documents as rows, word counts as columns)</li>
+<li><span class="math inline">\(p(y_i\mid c_i)\)</span> (chance of the
+outcome, given the words)</li>
+<li><span class="math inline">\(p(c_i\mid y_i)\)</span> (chance of the
+words, given the class)</li>
+<li>topic model (finds themes in texts without any answers)</li>
+</ul>
 </div>
 <h3 id="quick-self-test-5">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “Boolean and dictionary methods are called
-supervised because we observe the outcome <span class="math inline">\(y\)</span>.” — <strong>False.</strong> We do
-<em>not</em> observe the outcome; they are called supervised because the
-function <span class="math inline">\(f()\)</span> is known (slide
-7).</li>
-<li><strong>T/F:</strong> “Text regression models <span class="math inline">\(p(y_i \mid c_i)\)</span> while Naive Bayes models
-<span class="math inline">\(p(c_i \mid y_i)\)</span>.” —
-<strong>True</strong> (slides 13 and 21).</li>
-<li><strong>T/F:</strong> “LSA is a probabilistic model of how text is
-generated.” — <strong>False.</strong> Slide 30 labels it <span class="math inline">\(f(c_i\mid v_i)\)</span> and slide 43 says it is
-“not a probabilistic model”.</li>
-<li><strong>Explain (2–5 sentences):</strong> What is the difference
+<li><p><strong>T/F:</strong> “Boolean and dictionary methods are called
+supervised because we observe the outcome <span class="math inline">\(y\)</span>.”</p>
+<p><em>What it’s asking, in plain words:</em> Boolean and dictionary
+methods are the “count the keywords on my list” methods (Chapter 7).
+“Supervised” is the box for methods that learn from answers or follow a
+fixed rule. “Observe the outcome <span class="math inline">\(y\)</span>”
+means we have the true answer (like the star rating) in our data. So the
+statement says: “they are in the supervised box because we have the
+answers”.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> We do <em>not</em> have
+the answers. They are in the supervised box for a different reason: the
+researcher writes the rule (the function <span class="math inline">\(f()\)</span>, the formula from text to score) in
+advance, so we know exactly what comes out for any text. Think of a
+recipe you wrote yourself. Nobody taught you with examples, but you know
+what the cake will be. (Source: slide 7.)</p></li>
+<li><p><strong>T/F:</strong> “Text regression models <span class="math inline">\(p(y_i \mid c_i)\)</span> while Naive Bayes models
+<span class="math inline">\(p(c_i \mid y_i)\)</span>.”</p>
+<p><em>What it’s asking, in plain words:</em> <span class="math inline">\(p(A\mid B)\)</span> reads “the chance of A, given
+that we know B”. <span class="math inline">\(y_i\)</span> is the answer
+for document number <span class="math inline">\(i\)</span> (its outcome
+or class). <span class="math inline">\(c_i\)</span> is that document’s
+word counts. So the statement says: text regression asks “given these
+words, what is the outcome?”, while Naive Bayes asks “given this class,
+how likely are these words?”</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> Text regression goes
+from words to outcome, like guessing a house’s price from its features.
+Naive Bayes goes the other way first. It learns which words each class
+tends to use (football fans say “goal” a lot), then uses Bayes’ rule to
+flip it round and pick the most likely class. (Source: slides 13 and
+21.)</p></li>
+<li><p><strong>T/F:</strong> “LSA is a probabilistic model of how text
+is generated.”</p>
+<p><em>What it’s asking, in plain words:</em> LSA is a topic model
+(Chapter 10) that finds themes by breaking the big word-count table into
+smaller tables. A “probabilistic model of how text is generated” is a
+story, told in chances, of how each word got written, such as “pick a
+topic, then pick a word from that topic”. Does LSA tell such a
+story?</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> LSA is pure table
+maths. It summarises the table but gives no chance-based story of how
+the words came about. That is why the slide writes it with a plain
+function <span class="math inline">\(f(c_i\mid v_i)\)</span> and not
+with a probability <span class="math inline">\(p\)</span>. It is like a
+map that summarises a city without explaining how the city was built.
+LDA is the topic model that does tell the story. (Source: slide 30, and
+slide 43 says it is “not a probabilistic model”.)</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> “What is the difference
 between supervised and unsupervised text methods? Give one example of
-each. <em>Model answer:</em> In supervised methods we know the outcome
-(or the mapping) and learn or apply the link between the text and that
+each.”</p>
+<p><em>What it’s asking, in plain words:</em> Explain the two boxes of
+the method map, and name one method from each box.</p>
+<p><em>Model answer:</em> In supervised methods we know the outcome (or
+the mapping) and learn or apply the link between the text and that
 outcome, like a regression <span class="math inline">\(y=\beta
 x+e\)</span>; e.g. Naive Bayes learns from speeches labelled by party to
 classify new speeches. In unsupervised methods there is no outcome; the
@@ -4022,7 +4104,16 @@ algorithm finds structure in the text itself, e.g. LDA finds topics
 (clusters of words) and each document’s topic mix. Dictionary methods
 are also counted as supervised: there is no observed outcome, but the
 researcher fixes the function <span class="math inline">\(f()\)</span>,
-so the output for any input is known (L3 slide 7).</li>
+so the output for any input is known (L3 slide 7).</p>
+<p><em>What this answer is saying, in plain words:</em> Supervised means
+the computer has answers (or a fixed rule) and learns the link from text
+to answer. <span class="math inline">\(y=\beta x+e\)</span> is the
+straight-line formula: outcome = weight × input + error. Example: Naive
+Bayes studies speeches marked with the speaker’s party, then guesses the
+party of new speeches. Unsupervised means there are no answers, so the
+computer finds groups of words by itself, like LDA finding topics;
+dictionaries still count as supervised because you write the rule
+yourself.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 3 “Bag-of-words based methods”
 (Lecture_bow_based_methods.pdf), slides 4–7, 13, 21, 30; Interactive
@@ -4559,70 +4650,153 @@ outputs; when run, it would show a time series (one value per year, in
 time order) of State of the Union tone and a list of the words behind
 most hits (the notebook hints that “war” dominates).</p>
 <div class="callout exam">
-<p><strong>How this shows up on the exam</strong> 2025 Q2(c), 5 points:
-“Describe what is meant by a Boolean search-based method in NLP. Use a
-concrete example discussed in this course.” 2025 T/F (h):
-“Dictionary-based methods allow you to capture polysemy in text well” →
-<strong>False</strong> (slide 12 lists polysemy as a problem). In the
-reflection question (customer survey texts), a sentiment dictionary is
-an obvious first method — but name Loughran–McDonald-style domain
-issues, negation and subjectivity as pitfalls.</p>
+<p><strong>How this shows up on the exam</strong></p>
+<ul>
+<li>2025 Q2(c), worth 5 points, asked: “Describe what is meant by a
+Boolean search-based method in NLP. Use a concrete example discussed in
+this course.” (Boolean = combining keywords with AND, OR, NOT. NLP =
+getting computers to work with human language.)</li>
+<li>2025 T/F (h) said: “Dictionary-based methods allow you to capture
+polysemy in text well” → <strong>False</strong>. Polysemy means one word
+with several meanings, like “bank” (river bank or money bank). Slide 12
+lists it as a problem for dictionaries.</li>
+<li>In the reflection question (the open question about customer survey
+texts), a sentiment dictionary (a list of happy words and unhappy words)
+is an obvious first method. But name the pitfalls:
+Loughran–McDonald-style domain issues (a word can mean something else in
+a special field, e.g. “liability” is a normal word in a company report,
+not bad news), negation (“not good” contains “good”) and subjectivity
+(the word list depends on the researcher’s own choices).</li>
+</ul>
 </div>
 <div class="callout top">
-<p><strong>What a top-grade answer must include</strong> For Q2(c): (1)
-start from the document-term matrix / the documents; (2) choose keywords
-(a dictionary); (3) combine them with logical operators AND/OR/NOT; (4)
-count the documents (or words) that match; (5)
-<strong>normalise</strong> (by number of articles / words; EPU rescaled
-to mean 100); (6) the EPU example with its three groups — economy,
-policy, uncertainty — all in the same article. A top answer adds one
-weakness (subjective word choice, synonyms, polysemy).</p>
+<p><strong>What a top-grade answer must include</strong></p>
+<p>For Q2(c), go through these steps in order:</p>
+<ol type="1">
+<li>Start from the documents (or the document-term matrix, the
+word-count table).</li>
+<li>Choose keywords (a dictionary, i.e. your fixed word list).</li>
+<li>Combine them with the logical operators AND, OR, NOT.</li>
+<li>Count the documents (or words) that match the rule.</li>
+<li><strong>Normalise</strong>: divide by the number of articles or
+words, so a month with more news does not look bigger only because there
+was more news. The EPU index is also rescaled so its average is
+100.</li>
+<li>Give the EPU example with its three word groups (economy, policy,
+uncertainty), which must all appear in the same article.</li>
+</ol>
+<p>A top answer also adds one weakness: the word choice is subjective,
+synonyms (different words with the same meaning) are missed, and
+polysemy (one word, several meanings) confuses it.</p>
 </div>
 <div class="callout mistake">
-<p><strong>Common mistakes that lose marks</strong> Forgetting
-normalisation (the 2025 guideline says “Think about normalization
-issues”). Saying an EPU article needs just one of the words (it needs
-one from <em>each</em> group). Inventing your own example when the
-question asks for a course example. Claiming dictionaries handle
-polysemy or synonyms well.</p>
+<p><strong>Common mistakes that lose marks</strong></p>
+<ul>
+<li>Forgetting normalisation. The 2025 guideline says “Think about
+normalization issues”.</li>
+<li>Saying an EPU article needs only one of the words. It needs one word
+from <em>each</em> of the three groups.</li>
+<li>Inventing your own example when the question asks for an example
+from the course.</li>
+<li>Claiming dictionaries handle polysemy (one word, several meanings)
+or synonyms (several words, one meaning) well.</li>
+</ul>
 </div>
 <div class="callout terms">
-<p><strong>Key terms to use</strong> Boolean operators (AND, OR, NOT),
-keyword list / dictionary, count and normalise, Economic Policy
-Uncertainty (EPU) index, Baker, Bloom and Davis (2016), General
-Inquirer, Loughran and McDonald (2011), tone = positive − negative,
-polysemy, synonyms, negation, subjective.</p>
+<p><strong>Key terms to use</strong></p>
+<ul>
+<li>Boolean operators (AND, OR, NOT) (words that combine search
+terms)</li>
+<li>keyword list / dictionary (the fixed list of words you count)</li>
+<li>count and normalise (count matches, then divide by the total)</li>
+<li>Economic Policy Uncertainty (EPU) index (monthly newspaper measure
+of policy uncertainty)</li>
+<li>Baker, Bloom and Davis (2016) (the economists who built the EPU
+index)</li>
+<li>General Inquirer (an older, general-purpose positive/negative word
+list)</li>
+<li>Loughran and McDonald (2011) (word list made for finance
+reports)</li>
+<li>tone = positive − negative (happy-word count minus unhappy-word
+count)</li>
+<li>polysemy (one word, several meanings)</li>
+<li>synonyms (different words, same meaning)</li>
+<li>negation (“not” flips the meaning of a word)</li>
+<li>subjective (depends on the researcher’s own choices)</li>
+</ul>
 </div>
 <h3 id="quick-self-test-6">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “Dictionary-based methods allow you to capture
-polysemy in text well.” — <strong>False.</strong> Polysemy is listed as
-a problem for dictionaries (slide 12; 2025 T/F h).</li>
-<li><strong>T/F:</strong> “An article enters the EPU count if it
-contains ‘uncertainty’ and ‘economy’, even without a policy term.” —
-<strong>False.</strong> One term from each of the three groups is needed
-(slide 8 figure note).</li>
-<li><strong>T/F:</strong> “Boolean/dictionary methods are by far the
-most used approach in economics and finance.” — <strong>True</strong>
-(slide 7).</li>
-<li><strong>T/F:</strong> “General-purpose sentiment dictionaries work
-well for 10-K reports.” — <strong>False.</strong> Words like
-<em>liability</em>, <em>tax</em>, <em>cost</em> are misclassified; hence
-Loughran–McDonald (Notebook 2 cell 10).</li>
-<li><strong>Explain (2–5 sentences):</strong> Describe a Boolean search
-method with a course example. <em>Model answer:</em> A Boolean method
-starts from the documents (the document-term matrix), picks keywords of
-interest and combines them with logical operators (AND, OR, NOT) into a
-search rule; we then count the documents that satisfy the rule and
-normalise the count (e.g. by the total number of articles). The course
-example is the Economic Policy Uncertainty index of Baker et al. (2016):
-a newspaper article counts if it contains “uncertain” or “uncertainty”,
-AND “economic” or “economy”, AND at least one policy term such as
-“congress”, “deficit” or “white house”. The monthly counts from 10 US
-newspapers are scaled and normalised to mean 100 over 1985–2009, and the
-index spikes at events like 9/11 and the debt-ceiling dispute. The
-method is simple and transparent, but subjective: it only finds the
-words you thought of, and cannot handle synonyms or polysemy.</li>
+<li><p><strong>T/F:</strong> “Dictionary-based methods allow you to
+capture polysemy in text well.”</p>
+<p><em>What it’s asking, in plain words:</em> Dictionary methods count
+words from a fixed list. Polysemy means one word has several meanings,
+like “bank” (river or money). The statement says these methods handle
+such words well.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> A dictionary only sees
+the spelling of a word, never its meaning. It counts “bank” the same way
+in “river bank” and “bank loan”. It is like a metal detector that beeps
+at bottle caps and coins alike. (Source: slide 12; 2025 T/F h.)</p></li>
+<li><p><strong>T/F:</strong> “An article enters the EPU count if it
+contains ‘uncertainty’ and ‘economy’, even without a policy term.”</p>
+<p><em>What it’s asking, in plain words:</em> The EPU index counts
+newspaper articles about economic policy uncertainty. The statement says
+an article is counted if it has an uncertainty word and an economy word,
+even with no policy word (like “congress” or “deficit”).</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> The rule joins the
+groups with AND, so the article needs one word from each of the three
+groups: uncertainty, economy <em>and</em> policy. It is like a cake that
+needs flour, eggs and sugar: two out of three is not the cake. (Source:
+slide 8 figure note.)</p></li>
+<li><p><strong>T/F:</strong> “Boolean/dictionary methods are by far the
+most used approach in economics and finance.”</p>
+<p><em>What it’s asking, in plain words:</em> Are the “count the
+keywords” methods the most common way economists and finance researchers
+study text?</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> The slide says so
+directly. They are popular because they are simple and transparent:
+anyone can see which words were counted. (Source: slide 7.)</p></li>
+<li><p><strong>T/F:</strong> “General-purpose sentiment dictionaries
+work well for 10-K reports.”</p>
+<p><em>What it’s asking, in plain words:</em> A general-purpose
+sentiment dictionary is an everyday list of positive and negative words,
+built for normal text. 10-K reports are the yearly reports that US
+companies must publish. The statement says the everyday list works well
+on these reports.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> In company reports,
+words like <em>liability</em>, <em>tax</em> and <em>cost</em> are normal
+business words, not bad news. The everyday list still marks them as
+negative, so the score is wrong. That is why Loughran and McDonald built
+a special word list for finance. It is like reading a medical test that
+comes back “positive” as good news, when in medicine it often is not.
+(Source: Notebook 2 cell 10.)</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> “Describe a Boolean
+search method with a course example.”</p>
+<p><em>What it’s asking, in plain words:</em> Explain how a keyword
+search with AND, OR, NOT works, and use the example from the lectures
+(the EPU index).</p>
+<p><em>Model answer:</em> A Boolean method starts from the documents
+(the document-term matrix), picks keywords of interest and combines them
+with logical operators (AND, OR, NOT) into a search rule; we then count
+the documents that satisfy the rule and normalise the count (e.g. by the
+total number of articles). The course example is the Economic Policy
+Uncertainty index of Baker et al. (2016): a newspaper article counts if
+it contains “uncertain” or “uncertainty”, AND “economic” or “economy”,
+AND at least one policy term such as “congress”, “deficit” or “white
+house”. The monthly counts from 10 US newspapers are scaled and
+normalised to mean 100 over 1985–2009, and the index spikes at events
+like 9/11 and the debt-ceiling dispute. The method is simple and
+transparent, but subjective: it only finds the words you thought of, and
+cannot handle synonyms or polysemy.</p>
+<p><em>What this answer is saying, in plain words:</em> You pick some
+words, join them with AND, OR, NOT into a search rule, count how many
+articles match, and divide by the total so months can be compared
+fairly. The EPU index does this with US newspapers: an article counts
+only if it has an uncertainty word, an economy word and a policy word.
+The final numbers are scaled so their average is 100, and they jump at
+big shocks like 9/11. The method is easy to understand, but it only
+finds the exact words you chose, so it misses other words with the same
+meaning and is fooled by words with two meanings.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 3 slides 6–12 (recipe on the
 slide-8 figure note); Interactive Notebook 2 cells 4, 7–10, 31; 2025
@@ -5239,53 +5413,149 @@ and a bar chart of the 8 most positive and 8 most negative word
 coefficients. The notebook uses <strong>Ridge</strong>; the slides write
 the <strong>Lasso</strong> formula. Both are penalised regressions.</p>
 <div class="callout exam">
-<p><strong>How this shows up on the exam</strong> 2025 T/F (e): “In text
-regressions usage of regularization techniques help overcome the curse
-of dimensionality.” → <strong>True.</strong> Likely variants: “With λ =
-0 the Lasso equals OLS” (True); “A high in-sample R² proves the text
-predicts the outcome” (False); “λ is chosen by cross-validation” (True);
-“Text regressions typically have n ≫ p” (False — it is <span class="math inline">\(n \ll p\)</span>).</p>
+<p><strong>How this shows up on the exam</strong></p>
+<p>2025 T/F (e) said: “In text regressions usage of regularization
+techniques help overcome the curse of dimensionality.” →
+<strong>True.</strong> A text regression predicts a number (like GDP
+growth) from word counts. Regularization means adding a penalty that
+keeps the word weights small. The curse of dimensionality is the problem
+of having far more columns (words) than rows (documents), so the model
+can fit anything.</p>
+<p>Likely variants of this question:</p>
+<ul>
+<li>“With λ = 0 the Lasso equals OLS” → True. λ (the strength of the
+penalty dial) at 0 means no penalty, so you are back to OLS (ordinary
+least squares, the plain line-fitting regression).</li>
+<li>“A high in-sample R² proves the text predicts the outcome” → False.
+R² (a 0-to-1 score of how well the model fits) measured in-sample (on
+the same documents the model learned from) proves nothing.</li>
+<li>“λ is chosen by cross-validation” → True. Cross-validation means
+testing on documents held back from training.</li>
+<li>“Text regressions typically have n ≫ p” → False. It is <span class="math inline">\(n \ll p\)</span>: the number of documents (<span class="math inline">\(n\)</span>) is much smaller than the number of
+words (<span class="math inline">\(p\)</span>).</li>
+</ul>
 </div>
 <div class="callout top">
-<p><strong>What a top-grade answer must include</strong> <span class="math inline">\(n \ll p\)</span> (more word columns than
-documents) → OLS fails (more unknowns than equations; perfect but
-meaningless fit). Penalised regression adds <span class="math inline">\(n\lambda\sum_j\omega_j|\beta_j|\)</span>; λ
-controls shrinkage; λ = 0 gives OLS; Lasso sets some coefficients to
-exactly zero. Choose λ by cross-validation on held-out data, and judge
-the model on out-of-sample, not in-sample, <span class="math inline">\(R^2\)</span>.</p>
+<p><strong>What a top-grade answer must include</strong></p>
+<ul>
+<li><span class="math inline">\(n \ll p\)</span>: there are far more
+word columns than documents. Then OLS (plain line-fitting) fails: there
+are more unknowns than equations, so it fits the data perfectly but
+meaninglessly.</li>
+<li>Penalised regression adds a fee for big weights: <span class="math inline">\(n\lambda\sum_j\omega_j|\beta_j|\)</span>. In
+words: take the size of each word’s weight (<span class="math inline">\(|\beta_j|\)</span>), multiply by that word’s own
+cost factor (<span class="math inline">\(\omega_j\)</span>), add them
+all up, and multiply by λ and by the number of documents <span class="math inline">\(n\)</span>.</li>
+<li>λ (the strength of the penalty dial) controls shrinkage (how hard
+the weights are pushed towards zero). λ = 0 gives back OLS.</li>
+<li>Lasso (one type of penalised regression) sets some weights to
+exactly zero, so those words drop out.</li>
+<li>Choose λ by cross-validation on held-out data (documents kept aside
+during training). Judge the model on out-of-sample <span class="math inline">\(R^2\)</span> (fit on documents it has not seen),
+not in-sample <span class="math inline">\(R^2\)</span>.</li>
+</ul>
 </div>
 <div class="callout mistake">
-<p><strong>Common mistakes that lose marks</strong> Writing <span class="math inline">\(n \gg p\)</span>. Saying λ = 0 is “maximum
-penalty” (it is no penalty). Confusing sklearn’s <code>alpha</code> with
-the intercept. Trusting in-sample <span class="math inline">\(R^2\)</span>. Claiming Ridge sets coefficients
-exactly to zero.</p>
+<p><strong>Common mistakes that lose marks</strong></p>
+<ul>
+<li>Writing <span class="math inline">\(n \gg p\)</span> (more documents
+than words). It is the other way round.</li>
+<li>Saying λ = 0 is “maximum penalty”. It is no penalty at all.</li>
+<li>Confusing the code’s <code>alpha</code> (in the sklearn library,
+<code>alpha</code> is the penalty dial λ) with the intercept <span class="math inline">\(\alpha\)</span> on the slides (the starting value
+of the prediction).</li>
+<li>Trusting in-sample <span class="math inline">\(R^2\)</span> (the
+score on the training documents).</li>
+<li>Claiming Ridge sets weights to exactly zero. It only shrinks them;
+Lasso is the one that sets some to zero.</li>
+</ul>
 </div>
 <div class="callout terms">
-<p><strong>Key terms to use</strong> document-term matrix as regressors,
-<span class="math inline">\(n \ll p\)</span>, curse of dimensionality,
-overfitting, penalised / regularised regression, Lasso, Ridge, Elastic
-net, penalty λ, rare feature upweighting (<span class="math inline">\(\omega_j\)</span>), shrinkage, cross-validation,
-train/test split, out-of-sample <span class="math inline">\(R^2\)</span>, placebo test, dimension reduction
-(PCA, PLS).</p>
+<p><strong>Key terms to use</strong></p>
+<ul>
+<li>document-term matrix as regressors (word counts used as model
+inputs)</li>
+<li><span class="math inline">\(n \ll p\)</span> (far fewer documents
+than words)</li>
+<li>curse of dimensionality (too many columns, model fits anything)</li>
+<li>overfitting (memorises training data, fails on new data)</li>
+<li>penalised / regularised regression (regression with a fee for big
+weights)</li>
+<li>Lasso (penalty that can set weights exactly zero)</li>
+<li>Ridge (penalty that shrinks weights but keeps all)</li>
+<li>Elastic net (a mix of Lasso and Ridge)</li>
+<li>penalty λ (dial for how strong the fee is)</li>
+<li>rare feature upweighting (<span class="math inline">\(\omega_j\)</span>) (each word gets its own penalty
+cost)</li>
+<li>shrinkage (pushing weights towards zero)</li>
+<li>cross-validation (repeatedly test on held-back documents)</li>
+<li>train/test split (learn on one part, test on another)</li>
+<li>out-of-sample <span class="math inline">\(R^2\)</span> (fit score on
+unseen documents)</li>
+<li>placebo test (shuffle the answers; honest score should
+collapse)</li>
+<li>dimension reduction (PCA, PLS) (squeeze many word columns into a
+few)</li>
+</ul>
 </div>
 <h3 id="quick-self-test-7">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “In text regressions, regularisation helps
-overcome the curse of dimensionality.” — <strong>True</strong> (2025 T/F
-e; slides 17, 19, 34).</li>
-<li><strong>T/F:</strong> “With λ = 0, the penalised regression on slide
-16 becomes standard OLS.” — <strong>True</strong> (slide 16).</li>
-<li><strong>T/F:</strong> “In Lasso, high values of λ make coefficients
-larger.” — <strong>False.</strong> High λ shrinks coefficients to zero
-(slide 17).</li>
-<li><strong>T/F:</strong> “If a Ridge regression of a shuffled (placebo)
-target on word counts gives an in-sample R² near 1, the words are
-informative.” — <strong>False.</strong> With p ≫ n even a scrambled
-target fits almost perfectly; only out-of-sample R² counts (Notebook 2
-cell 31).</li>
-<li><strong>Explain (2–5 sentences):</strong> Why do we need
-regularisation in text regressions, and how is the penalty chosen?
-<em>Model answer:</em> In a text regression the regressors are the
+<li><p><strong>T/F:</strong> “In text regressions, regularisation helps
+overcome the curse of dimensionality.”</p>
+<p><em>What it’s asking, in plain words:</em> A text regression predicts
+a number from word counts. Regularisation means adding a fee for big
+word weights. The curse of dimensionality is having far more words
+(columns) than documents (rows). Does the fee help with that
+problem?</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> With thousands of words
+and only a few dozen documents, the model can bend itself to fit
+anything. The fee forces it to keep most weights small, so only words
+that really matter keep a big weight. It is like a packing limit for a
+trip: you can only bring what you really need. (Source: 2025 T/F e;
+slides 17, 19, 34.)</p></li>
+<li><p><strong>T/F:</strong> “With λ = 0, the penalised regression on
+slide 16 becomes standard OLS.”</p>
+<p><em>What it’s asking, in plain words:</em> λ is the strength of the
+penalty dial. OLS (ordinary least squares) is the plain regression with
+no penalty. If you turn the dial to 0, do you get plain regression
+back?</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> The fee is λ times the
+size of the weights. If λ is 0, the fee is always 0, so only the fit
+counts, and that is exactly OLS. Like a speed camera switched off: it is
+still there, but it never charges you. (Source: slide 16.)</p></li>
+<li><p><strong>T/F:</strong> “In Lasso, high values of λ make
+coefficients larger.”</p>
+<p><em>What it’s asking, in plain words:</em> Lasso is a regression with
+a fee for big weights. Coefficients are the word weights. λ is the
+strength of the fee. The statement says a stronger fee makes the weights
+bigger.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> A higher fee makes big
+weights more expensive, so the model shrinks them, and with a high
+enough λ they become zero. It is like a tax on luggage weight: the
+higher the tax, the less you pack. (Source: slide 17.)</p></li>
+<li><p><strong>T/F:</strong> “If a Ridge regression of a shuffled
+(placebo) target on word counts gives an in-sample R² near 1, the words
+are informative.”</p>
+<p><em>What it’s asking, in plain words:</em> Ridge is a regression with
+a fee for big weights. The target is the number we try to predict (here
+GDP growth). “Shuffled (placebo)” means we mixed up the target values
+randomly between years, so the words cannot possibly hold real
+information about them. In-sample R² near 1 means the model fits the
+documents it learned from almost perfectly. The statement says this
+perfect fit proves the words are useful.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> With far more words
+than documents (p ≫ n), the model can fit almost any target, even a
+random one. A student given 70 questions with random answers can
+memorise them and score 100% on those same questions, but that proves
+memorising, not understanding; the honest test is new questions. Only
+out-of-sample R² (the score on documents the model has not seen) counts.
+(Source: Notebook 2 cell 31.)</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> “Why do we need
+regularisation in text regressions, and how is the penalty chosen?”</p>
+<p><em>What it’s asking, in plain words:</em> Why do we add a fee for
+big word weights, and how do we decide how strong that fee should
+be?</p>
+<p><em>Model answer:</em> In a text regression the regressors are the
 columns of the document-term matrix, so we usually have far more words
 than documents (<span class="math inline">\(n \ll p\)</span>), i.e. more
 unknowns than equations, and OLS cannot be estimated or fits the
@@ -5296,7 +5566,17 @@ exactly to zero), so only informative words keep weight; λ = 0 gives
 back OLS. The penalty λ is chosen by cross-validation: estimate the
 model on training data for different λ values and pick the one that
 predicts held-out test data best (or use an information criterion such
-as AIC/BIC).</li>
+as AIC/BIC).</p>
+<p><em>What this answer is saying, in plain words:</em> In a text
+regression every word is an input, so there are far more inputs than
+documents, and plain regression either breaks or fits the training data
+perfectly without learning anything real. Lasso and similar methods add
+a fee for big word weights, so most weights shrink towards zero and only
+the useful words keep weight; with no fee (λ = 0) you are back to plain
+regression. To pick the fee, you try several values, train on part of
+the data, and keep the value that predicts the held-back part best. AIC
+and BIC are fit scores that charge for every extra weight, and can be
+used instead.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 3 slides 13–20 and 34; Interactive
 Notebook 2 cells 11–14, 31.</p>
@@ -5347,35 +5627,130 @@ spam, given these words?”</li>
 <em>not</em> in the training pile, and compare with a lazy baseline like
 “always say not spam”.</li>
 </ol>
-<p><strong>A tiny example by hand.</strong> We reuse the chapter’s own
-example (slides 24 and 26) and go through it slowly. In the data table
-further down, each row is one short document, and the columns are its
-words and its class. Classes “a” and “b” are two labels, like “spam” and
-“not spam”. Documents 1–4 are the training set. Document 5, “inflation
-norway high”, is the new one we must sort.</p>
-<p><em>Prior.</em> 3 of the 4 training documents are class a, so the
-prior for a is 3/4. 1 of the 4 is class b, so the prior for b is
-1/4.</p>
-<p><em>Counting words.</em> Class a’s three documents together have 9
-words: “growth high trump” (3), “trump rocket man” (3), “trump trump
-trump” (3). “trump” shows up 1 + 1 + 3 = 5 times. Class b’s one document
-has 3 words: trump, inflation, norway. Across all training documents
-there are 7 different words: growth, high, trump, rocket, man,
-inflation, norway.</p>
-<p><em>One table cell out loud.</em> In the likelihood table, rows are
-the words of document 5 and columns are the two classes. Take
-“inflation” in class a. It appears 0 times in class a. Add 1 for
-smoothing: 0 + 1 = 1 on top. On the bottom, class a has 9 words; add 7
-(one extra for each of the 7 different words): 9 + 7 = 16. So the chance
-is 1/16. Another one: “high” in class b appears 0 times, so the top is 0
-+ 1 = 1. The bottom is 3 + 7 = 10. So 1/10.</p>
-<p><em>Scores.</em> Class a: 3/4 × 1/16 × 1/16 × 1/8 = 3/8192, about
-0.000366. Class b: 1/4 × 1/5 × 1/5 × 1/10 = 1/1000 = 0.001. Class b’s
-score is bigger.</p>
-<p><em>Chances.</em> Add the two scores: 0.000366 + 0.001 = 0.001366.
-Class b’s chance = 0.001 ÷ 0.001366 ≈ 0.73, so about 73%. Class a’s
-chance ≈ 0.27, about 27%. Document 5 goes to class b. The reason: its
-words “inflation” and “norway” were only ever seen in class b.</p>
+<p><strong>A tiny example by hand.</strong> This is the chapter’s own
+example (slides 24 and 26), done slowly.</p>
+<p><em>The situation.</em> Four short texts are already sorted into two
+groups, <strong>a</strong> and <strong>b</strong>. Think of them as two
+people’s notes:</p>
+<table>
+<thead>
+<tr>
+<th>Text</th>
+<th>Group</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“growth high trump”</td>
+<td>a</td>
+</tr>
+<tr>
+<td>“trump rocket man”</td>
+<td>a</td>
+</tr>
+<tr>
+<td>“trump trump trump”</td>
+<td>a</td>
+</tr>
+<tr>
+<td>“trump inflation norway”</td>
+<td>b</td>
+</tr>
+</tbody>
+</table>
+<p>A <strong>new</strong> text arrives: <strong>“inflation norway
+high”</strong>. Which group does it belong to? Naive Bayes works like a
+detective with two questions:</p>
+<ol type="1">
+<li>How common is each group in general?</li>
+<li>How typical are the new text’s words for each group?</li>
+</ol>
+<p><em>Question 1: how common is each group? (the “prior”)</em> 3 of the
+4 texts are group a, and 1 of the 4 is group b. So group a starts with
+<strong>3/4</strong> and group b with <strong>1/4</strong>. Before
+reading a single word, group a looks more likely, because it is more
+common.</p>
+<p><em>Question 2: how typical is each word for each group? (the
+“likelihood”)</em> First, count all the words in each group:</p>
+<ul>
+<li><strong>Group a</strong> has 9 words in total (3 texts × 3 words):
+growth 1, high 1, trump 5, rocket 1, man 1.</li>
+<li><strong>Group b</strong> has 3 words: trump 1, inflation 1, norway
+1.</li>
+</ul>
+<p>Now take each word of the new text and ask, for each group: what
+share of this group’s words is this word?</p>
+<p>One fix first. Group a never uses “inflation”, so its share would be
+0 out of 9. Multiplying by 0 would kill group a’s score because of one
+missing word. So we <strong>pretend every word was seen one extra
+time</strong> (that is the “+1”, called <em>Laplace smoothing</em>).
+There are 7 different words in total, so each group’s total also goes up
+by 7: group a’s becomes 9 + 7 = <strong>16</strong>, and group b’s
+becomes 3 + 7 = <strong>10</strong>.</p>
+<table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr>
+<th>New word (rows)</th>
+<th>Times in group a, +1</th>
+<th>Share in a</th>
+<th>Times in group b, +1</th>
+<th>Share in b</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inflation</td>
+<td>0 + 1 = 1</td>
+<td><strong>1/16</strong></td>
+<td>1 + 1 = 2</td>
+<td>2/10 = <strong>1/5</strong></td>
+</tr>
+<tr>
+<td>norway</td>
+<td>0 + 1 = 1</td>
+<td><strong>1/16</strong></td>
+<td>1 + 1 = 2</td>
+<td>2/10 = <strong>1/5</strong></td>
+</tr>
+<tr>
+<td>high</td>
+<td>1 + 1 = 2</td>
+<td>2/16 = <strong>1/8</strong></td>
+<td>0 + 1 = 1</td>
+<td><strong>1/10</strong></td>
+</tr>
+</tbody>
+</table>
+<p><em>Put it together: the score.</em> <strong>Score = how common the
+group is × how typical each word is</strong>, all multiplied:</p>
+<ul>
+<li><strong>Group a:</strong> 3/4 × 1/16 × 1/16 × 1/8 = 3/8192 ≈
+<strong>0.000366</strong></li>
+<li><strong>Group b:</strong> 1/4 × 1/5 × 1/5 × 1/10 = 1/1000 =
+<strong>0.001</strong></li>
+</ul>
+<p>Both numbers are tiny, because you multiply lots of small fractions.
+That is normal; only <strong>which one is bigger</strong> matters. Group
+b’s score is bigger, so the new text goes to <strong>group
+b</strong>.</p>
+<p><em>Turning scores into percentages.</em> Add the two scores:
+0.000366 + 0.001 = 0.001366. Each group’s share of that total is its
+chance: group b = 0.001 ÷ 0.001366 ≈ <strong>73%</strong>, and group a ≈
+<strong>27%</strong>.</p>
+<p><em>The one-sentence intuition.</em> Group a is more common (3 of 4
+texts), but “inflation” and “norway” only ever appeared in group b’s
+text, and that evidence outweighs group a’s head start.</p>
+<p><em>Why “naive”.</em> It scores each word separately and multiplies,
+as if the words had nothing to do with each other, ignoring order and
+phrases. That is a simplification, but it works surprisingly well, which
+is why spam filters have used it for years.</p>
 <p><strong>What it’s good at / where it breaks.</strong></p>
 <ul>
 <li>Good: fast and needs only counting. Despite being so basic, it
@@ -5805,73 +6180,182 @@ next to the majority-class baseline, the test presidents and the most
 party-typical words. With a random split, the notebook hints these are
 often names and events.</p>
 <div class="callout exam">
-<p><strong>How this shows up on the exam</strong> 2025 T/F (g): “The
-Naive Bayes Classifier is great for capturing the relationship between
-two continuous variables.” → <strong>False</strong>: it is a classifier
-for a <em>categorical</em> outcome (slide 22), and it works on word
-counts. Likely variants: why “naive” / why “Bayes”; what Laplace
-smoothing does; regression vs classification; a short posterior
-calculation like slide 26; or the evaluation trap (random vs grouped
-split).</p>
+<p><strong>How this shows up on the exam</strong></p>
+<ul>
+<li><p>2025 T/F (g) said: “The Naive Bayes Classifier is great for
+capturing the relationship between two continuous variables.” →
+<strong>False</strong>. Naive Bayes is a classifier for a
+<em>categorical</em> outcome (an answer that is one of a few groups,
+like “spam / not spam” or “party a / party b”), and it works on word
+counts. Continuous variables are numbers that can take any value, like
+height or GDP growth (slide 22).</p></li>
+<li><p>Likely variants:</p>
+<ul>
+<li>why it is called “naive” and why “Bayes”;</li>
+<li>what Laplace smoothing (adding 1 to every word count) does;</li>
+<li>regression (guessing a number) vs classification (guessing a
+group);</li>
+<li>a short posterior calculation (working out the chance of each class
+for a new document) like slide 26;</li>
+<li>the evaluation trap: a random split vs a grouped split (keeping all
+speeches by one person on the same side of the train/test line).</li>
+</ul></li>
+</ul>
 </div>
 <div class="callout top">
-<p><strong>What a top-grade answer must include</strong> Categorical
-outcome; learn <span class="math inline">\(p(c\mid v)\)</span> from
-labelled training data and flip it with Bayes’ rule to get <span class="math inline">\(p(v\mid c)\)</span>; “naive” = bag-of-words +
-words independent given the class; prior <span class="math inline">\(n_k/n\)</span>; likelihood = smoothed word
-frequency in the class; +1/+p Laplace smoothing avoids zero
-probabilities; choose the class with the highest posterior; evaluate on
-held-out data against a baseline, holding out whole groups
-(e.g. presidents) to avoid leakage.</p>
+<p><strong>What a top-grade answer must include</strong></p>
+<ul>
+<li>The outcome is categorical (a group label, not a number).</li>
+<li>From labelled training data (documents that come with their correct
+class), learn the chance of the words given the class (<span class="math inline">\(p(c\mid v)\)</span>). Then flip it with Bayes’
+rule to get the chance of the class given the words (<span class="math inline">\(p(v\mid c)\)</span>).</li>
+<li>“Naive” = the bag-of-words assumption (word order is ignored) plus
+the assumption that words are independent given the class (each word is
+treated as if it tells you nothing about the other words).</li>
+<li>The prior (how common each class is before reading the document) is
+<span class="math inline">\(n_k/n\)</span>: the number of training
+documents in class <span class="math inline">\(k\)</span> divided by all
+training documents.</li>
+<li>The likelihood is the smoothed share of that word among all words in
+the class.</li>
+<li>Laplace smoothing adds 1 to each word count (top of the fraction)
+and <span class="math inline">\(p\)</span>, the number of different
+words in the vocabulary, to the bottom. This avoids zero chances.</li>
+<li>Choose the class with the highest posterior (the chance of the class
+after reading the document).</li>
+<li>Evaluate on held-out data (documents the model did not learn from)
+and compare with a baseline (a dumb rule such as always guessing the
+biggest class). Hold out whole groups (e.g. all speeches by one
+president) to avoid leakage (test information sneaking into
+training).</li>
+</ul>
 </div>
 <div class="callout mistake">
-<p><strong>Common mistakes that lose marks</strong> Using Naive Bayes
-for continuous outcomes. Saying “naive because it is simple” (it is
-naive because of the independence assumption). Forgetting smoothing, or
-adding 1 to the denominator instead of <span class="math inline">\(p\)</span>. Forgetting the prior. Stopping at the
-unnormalised products without saying which class wins. Reporting
-accuracy from a random split as proof the model learned “party”.</p>
+<p><strong>Common mistakes that lose marks</strong></p>
+<ul>
+<li>Using Naive Bayes for continuous outcomes (numbers like GDP
+growth).</li>
+<li>Saying “naive because it is simple”. It is naive because of the
+independence assumption (words treated as unrelated given the
+class).</li>
+<li>Forgetting smoothing, or adding 1 to the bottom of the fraction
+instead of <span class="math inline">\(p\)</span> (the number of
+different words).</li>
+<li>Forgetting the prior (how common each class is).</li>
+<li>Stopping at the raw products (before dividing by their total)
+without saying which class wins.</li>
+<li>Reporting accuracy from a random split as proof that the model
+learned “party”. It may have only learned names and events of each
+president.</li>
+</ul>
 </div>
 <div class="callout terms">
-<p><strong>Key terms to use</strong> classification, categorical
-outcome, Bayes’ rule, prior, likelihood, posterior, maximum a posteriori
-(argmax), conditional independence, bag-of-words assumption, Multinomial
-Naive Bayes, Laplace smoothing, training/test data, accuracy,
-majority-class baseline, data leakage, grouped split.</p>
+<p><strong>Key terms to use</strong></p>
+<ul>
+<li>classification (guessing which group a document belongs to)</li>
+<li>categorical outcome (answer is a group, not a number)</li>
+<li>Bayes’ rule (formula that flips “words given class” round)</li>
+<li>prior (how common each class is beforehand)</li>
+<li>likelihood (how typical these words are for a class)</li>
+<li>posterior (chance of a class after reading the words)</li>
+<li>maximum a posteriori (argmax) (pick the class with the highest
+posterior)</li>
+<li>conditional independence (words treated as unrelated within a
+class)</li>
+<li>bag-of-words assumption (word order is ignored; only counts
+matter)</li>
+<li>Multinomial Naive Bayes (the word-count version of Naive Bayes)</li>
+<li>Laplace smoothing (add 1 so no chance is zero)</li>
+<li>training/test data (learn on one part, check on another)</li>
+<li>accuracy (share of documents classified correctly)</li>
+<li>majority-class baseline (always guess the most common class)</li>
+<li>data leakage (test information sneaking into training)</li>
+<li>grouped split (keep each group wholly in train or test)</li>
+</ul>
 </div>
 <h3 id="quick-self-test-8">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “The Naive Bayes classifier is great for
-capturing the relationship between two continuous variables.” —
-<strong>False.</strong> It classifies categorical outcomes (slide 22;
-2025 T/F g).</li>
-<li><strong>T/F:</strong> “Naive Bayes is called naive because it
-assumes the words in a document are independent (bag-of-words).” —
-<strong>True</strong> (slide 22).</li>
-<li><strong>T/F:</strong> “Laplace smoothing adds 1 to every word count
-so that unseen words do not give zero probability.” —
-<strong>True</strong> (slide 25; +1 in numerator, +p in
-denominator).</li>
-<li><strong>Calculation:</strong> using the slide-24 training data,
-classify a new document containing only “trump”. <em>Answer:</em> a:
-<span class="math inline">\(\tfrac34\times\tfrac{5+1}{9+7} =
+<li><p><strong>T/F:</strong> “The Naive Bayes classifier is great for
+capturing the relationship between two continuous variables.”</p>
+<p><em>What it’s asking, in plain words:</em> Naive Bayes is a method
+that sorts documents into groups. Continuous variables are numbers that
+can take any value, like height and weight. The statement says Naive
+Bayes is good at linking two such numbers.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> Naive Bayes is built to
+pick a group (a categorical outcome, like “spam” or “not spam”), using
+word counts. Linking two numbers is a job for regression. It is like
+using a letter-sorting machine to measure parcels: wrong tool. (Source:
+slide 22; 2025 T/F g.)</p></li>
+<li><p><strong>T/F:</strong> “Naive Bayes is called naive because it
+assumes the words in a document are independent (bag-of-words).”</p>
+<p><em>What it’s asking, in plain words:</em> “Independent” means each
+word is treated as if it tells you nothing about the other words in the
+document. Bag-of-words means we ignore word order and only count words,
+as if the words were shaken up in a bag. Is that the reason for the name
+“naive”?</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> In real text, words
+clearly depend on each other (“New” is often followed by “York”).
+Pretending they do not is a naive (overly simple) assumption, hence the
+name. It still works well in practice. (Source: slide 22.)</p></li>
+<li><p><strong>T/F:</strong> “Laplace smoothing adds 1 to every word
+count so that unseen words do not give zero probability.”</p>
+<p><em>What it’s asking, in plain words:</em> If a word never appeared
+in a class’s training documents, its chance for that class would be 0.
+Because Naive Bayes multiplies all word chances together, one 0 makes
+the whole result 0. The statement says Laplace smoothing fixes this by
+adding 1 to every count.</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> Adding 1 to every count
+means no word ever has a chance of exactly 0. To keep the shares adding
+up properly, you also add <span class="math inline">\(p\)</span> (the
+number of different words in the vocabulary) to the bottom of each
+fraction. Think of it as giving every word one free “starter” sighting,
+so one missing word cannot veto all the other evidence. (Source: slide
+25; +1 in numerator, +p in denominator.)</p></li>
+<li><p><strong>Calculation:</strong> “Using the slide-24 training data,
+classify a new document containing only ‘trump’.”</p>
+<p><em>What it’s asking, in plain words:</em> Use the small
+four-document example from the worked example above. Class a has 3 of
+the 4 training documents and 9 words in total, 5 of them “trump”. Class
+b has 1 document with 3 words, 1 of them “trump”. There are 7 different
+words overall. Which class does a new document that says only “trump”
+belong to?</p>
+<p><em>Answer:</em> a: <span class="math inline">\(\tfrac34\times\tfrac{5+1}{9+7} =
 \tfrac34\times\tfrac38 = 0.281\)</span>; b: <span class="math inline">\(\tfrac14\times\tfrac{1+1}{3+7} =
 \tfrac14\times\tfrac15 = 0.05\)</span>. Normalised: a ≈ 0.85, b ≈ 0.15 →
-<strong>class a</strong>.</li>
-<li><strong>Explain (2–5 sentences):</strong> How does Naive Bayes
-classify a document, and why is it called “naive” and “Bayes”? <em>Model
-answer:</em> From labelled training documents, Naive Bayes estimates the
-prior share of each class (<span class="math inline">\(n_k/n\)</span>)
-and, for each class, the probability of each word (its smoothed
-frequency among all words in that class, with +1/+p Laplace smoothing so
-unseen words do not give zero). For a new document it multiplies the
-class prior by the probabilities of all the document’s words and picks
-the class with the largest result. It is “Bayes” because it uses Bayes’
-rule to turn <span class="math inline">\(p(\text{words}\mid\text{class})\)</span> into
+<strong>class a</strong>.</p>
+<p><em>What this answer is saying, in plain words:</em> For each class,
+multiply how common the class is (the prior: 3/4 or 1/4) by the smoothed
+chance of “trump” in that class (count + 1, divided by the class’s word
+total + 7). Class a scores 0.281 and class b scores 0.05. Dividing each
+by their sum gives chances of about 85% for a and 15% for b, so the
+document goes to class a. That makes sense: “trump” is the typical
+class-a word, and class a is also the more common class.</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> “How does Naive Bayes
+classify a document, and why is it called ‘naive’ and ‘Bayes’?”</p>
+<p><em>What it’s asking, in plain words:</em> Walk through the steps
+Naive Bayes uses to put a document in a group, and explain both parts of
+its name.</p>
+<p><em>Model answer:</em> From labelled training documents, Naive Bayes
+estimates the prior share of each class (<span class="math inline">\(n_k/n\)</span>) and, for each class, the
+probability of each word (its smoothed frequency among all words in that
+class, with +1/+p Laplace smoothing so unseen words do not give zero).
+For a new document it multiplies the class prior by the probabilities of
+all the document’s words and picks the class with the largest result. It
+is “Bayes” because it uses Bayes’ rule to turn <span class="math inline">\(p(\text{words}\mid\text{class})\)</span> into
 <span class="math inline">\(p(\text{class}\mid\text{words})\)</span>,
 and “naive” because it uses the bag-of-words assumption that words are
 independent given the class. It is for categorical outcomes (spam/not
-spam), not continuous ones.</li>
+spam), not continuous ones.</p>
+<p><em>What this answer is saying, in plain words:</em> First it learns
+from documents that already have their correct group: how common each
+group is, and how often each word shows up in each group (with 1 added
+to every count so nothing is zero). For a new document, it multiplies
+the group’s share by the chances of all the document’s words, and picks
+the group with the biggest result. “Bayes” is the rule that flips “how
+likely are these words in this group?” into “how likely is this group,
+given these words?”. “Naive” is the simplifying belief that words do not
+depend on each other; and it sorts into groups, it does not predict
+numbers.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 3 slides 21–29; Interactive
 Notebook 2 cells 15–20, 31.</p>
@@ -6696,74 +7180,180 @@ topic as a cluster of words and a document as a mix of topics</td>
 </tbody>
 </table>
 <div class="callout exam">
-<p><strong>How this shows up on the exam</strong> 2025 Q2(d), 5 points:
-“what is meant by topic models? Mention at least two methods for
-estimating topics and the underlying intuition and difference/similarity
-of these methods.” Likely T/F: “LSA is a probabilistic generative model”
-(False, slide 43); “In LDA each document’s topic weights sum to one”
-(True, slide 48); “Lower α in LDA gives each document fewer dominant
-topics” (True, slide 57); “LDA always gives the same topics regardless
-of the random seed” (False, Notebook 2). In the reflection question, LDA
-on open survey answers is a strong method for “what do customers talk
-about”; name K-choice and seed instability as pitfalls.</p>
+<p><strong>How this shows up on the exam</strong></p>
+<ul>
+<li><p>2025 Q2(d), worth 5 points, asked: “what is meant by topic
+models? Mention at least two methods for estimating topics and the
+underlying intuition and difference/similarity of these
+methods.”</p></li>
+<li><p>Likely True/False statements:</p>
+<ul>
+<li>“LSA is a probabilistic generative model” → False. LSA is table
+maths with no chance-based story of how words get written (slide
+43).</li>
+<li>“In LDA each document’s topic weights sum to one” → True. Each
+document’s topic mix is a set of shares, like 70% sport + 30% money
+(slide 48).</li>
+<li>“Lower α in LDA gives each document fewer dominant topics” → True. α
+is the dial for how spread out a document’s topics are (slide 57).</li>
+<li>“LDA always gives the same topics regardless of the random seed” →
+False. The random seed is the starting point of the computer’s random
+guessing; a different start can give different topics (Notebook 2).</li>
+</ul></li>
+<li><p>In the reflection question (the open question about customer
+survey answers), LDA is a strong method for “what do customers talk
+about”. Name two pitfalls: choosing K (the number of topics, which you
+must pick yourself) and seed instability (topics can change from run to
+run).</p></li>
+</ul>
 </div>
 <div class="callout top">
-<p><strong>What a top-grade answer must include</strong> For Q2(d): (1)
-topics = clusters of words; documents = mixtures of topics with
-different weights; unsupervised; explains the big <span class="math inline">\(n\times p\)</span> DTM with <span class="math inline">\(K \ll p\)</span> factors. (2) LSA: SVD/PCA of the
-DTM, <span class="math inline">\(C \approx U_K S_K V_K&#39;\)</span>,
-factors <span class="math inline">\(F\)</span> (documents × topics) and
-loadings <span class="math inline">\(L\)</span> (words × topics),
-unrestricted values, non-probabilistic. (3) LDA: probabilistic; topics
-are distributions over words, documents are distributions over topics
-(rows/columns sum to 1); generative story; Dirichlet priors for
-sparsity. (4) One explicit sentence on difference and similarity: “Both
-decompose the DTM into document–topic and topic–word parts; LSA does it
-as a matrix factorisation, LDA as a probability model.”</p>
+<p><strong>What a top-grade answer must include</strong></p>
+<p>For Q2(d), cover these four parts:</p>
+<ol type="1">
+<li><strong>The idea.</strong> Topics are clusters of words that tend to
+appear together. Each document is a mix of topics with different
+weights. It is unsupervised (no answers needed). It summarises the big
+word-count table (<span class="math inline">\(n\times p\)</span> DTM:
+<span class="math inline">\(n\)</span> documents by <span class="math inline">\(p\)</span> words) with a small number of topics
+(<span class="math inline">\(K \ll p\)</span>, far fewer topics than
+words).</li>
+<li><strong>LSA.</strong> It runs SVD/PCA (a standard way to break a
+table into a few main patterns) on the DTM: <span class="math inline">\(C \approx U_K S_K V_K&#39;\)</span>, i.e. the
+table is roughly rebuilt from <span class="math inline">\(K\)</span>
+patterns. This gives factors <span class="math inline">\(F\)</span> (a
+documents × topics table) and loadings <span class="math inline">\(L\)</span> (a words × topics table). The values
+can be any number, even negative, and there are no probabilities.</li>
+<li><strong>LDA.</strong> It is probabilistic. A topic is a set of
+chances over words; a document is a set of chances over topics (so the
+rows/columns add up to 1). It tells a story of how each word is
+generated. Dirichlet priors (settings that push the model towards few
+topics per document and few main words per topic) give sparsity.</li>
+<li><strong>One clear sentence on how they differ and how they are
+alike:</strong> “Both decompose the DTM into document–topic and
+topic–word parts; LSA does it as a matrix factorisation, LDA as a
+probability model.”</li>
+</ol>
 </div>
 <div class="callout mistake">
-<p><strong>Common mistakes that lose marks</strong> Naming the methods
-without the intuition (topics = word clusters, documents = topic
-mixtures). Calling LSA probabilistic. Saying LDA needs labelled data.
-Mixing up α (document–topic) and β (topic–word). Forgetting that <span class="math inline">\(K\)</span> must be chosen and that LDA results
-depend on the seed. Feeding tf-idf into LDA (it models counts).</p>
+<p><strong>Common mistakes that lose marks</strong></p>
+<ul>
+<li>Naming the methods without the intuition: topics = clusters of
+words, documents = mixtures of topics.</li>
+<li>Calling LSA probabilistic.</li>
+<li>Saying LDA needs labelled data (texts with answers). It does not; it
+is unsupervised.</li>
+<li>Mixing up α (the document–topic dial: how many topics per document)
+and β (the topic–word dial: how many main words per topic).</li>
+<li>Forgetting that <span class="math inline">\(K\)</span> (the number
+of topics) must be chosen by you, and that LDA results depend on the
+seed (the random starting point).</li>
+<li>Feeding tf-idf (re-weighted word scores) into LDA. LDA models plain
+word counts.</li>
+</ul>
 </div>
 <div class="callout terms">
-<p><strong>Key terms to use</strong> topic model, latent topics,
-unsupervised, dimension reduction (<span class="math inline">\(K \ll
-p\)</span>), Latent Semantic Analysis (LSA), PCA, Singular Value
-Decomposition <span class="math inline">\(C = USV&#39;\)</span>,
-truncation, factors <span class="math inline">\(F\)</span>, loadings
-<span class="math inline">\(L\)</span>, variance explained, Latent
-Dirichlet Allocation (LDA), generative model, multinomial distribution,
-topic weights <span class="math inline">\(v_i\)</span>, topic–word
-distribution <span class="math inline">\(\theta_l\)</span>, Dirichlet
-prior α and β, sparsity, Gibbs sampling, number of topics <span class="math inline">\(K\)</span>, random seed, polysemy, synonyms.</p>
+<p><strong>Key terms to use</strong></p>
+<ul>
+<li>topic model (finds themes in texts without answers)</li>
+<li>latent topics (hidden themes, never observed directly)</li>
+<li>unsupervised (no answers or labels needed)</li>
+<li>dimension reduction (<span class="math inline">\(K \ll p\)</span>)
+(summarise many words with few topics)</li>
+<li>Latent Semantic Analysis (LSA) (topic model built on table
+maths)</li>
+<li>PCA (finds the few main patterns in a table)</li>
+<li>Singular Value Decomposition <span class="math inline">\(C =
+USV&#39;\)</span> (splits the table into three simpler tables)</li>
+<li>truncation (keep only the <span class="math inline">\(K\)</span>
+biggest patterns)</li>
+<li>factors <span class="math inline">\(F\)</span> (each document’s
+score on each topic)</li>
+<li>loadings <span class="math inline">\(L\)</span> (each word’s weight
+in each topic)</li>
+<li>variance explained (how much of the table a pattern captures)</li>
+<li>Latent Dirichlet Allocation (LDA) (topic model built on
+chances)</li>
+<li>generative model (a story of how the words were written)</li>
+<li>multinomial distribution (chances for drawing one item from
+many)</li>
+<li>topic weights <span class="math inline">\(v_i\)</span> (document
+<span class="math inline">\(i\)</span>’s mix of topics)</li>
+<li>topic–word distribution <span class="math inline">\(\theta_l\)</span> (chances of each word in topic
+<span class="math inline">\(l\)</span>)</li>
+<li>Dirichlet prior α and β (dials for how concentrated the mixes
+are)</li>
+<li>sparsity (only a few topics or words dominate)</li>
+<li>Gibbs sampling (step-by-step random guessing that estimates
+LDA)</li>
+<li>number of topics <span class="math inline">\(K\)</span> (how many
+topics you ask for)</li>
+<li>random seed (the starting point of the random guessing)</li>
+<li>polysemy (one word, several meanings)</li>
+<li>synonyms (different words, same meaning)</li>
+</ul>
 </div>
 <h3 id="quick-self-test-9">Quick self-test</h3>
 <ol type="1">
-<li><strong>T/F:</strong> “LSA is not a probabilistic model and is not
-seen as a plausible generative model for text.” — <strong>True</strong>
-(slide 43).</li>
-<li><strong>T/F:</strong> “In LDA, each row of the document–topic matrix
-sums to one.” — <strong>True</strong> (slide 48).</li>
-<li><strong>T/F:</strong> “In LDA, a higher α gives each document fewer
-high-probability topics.” — <strong>False.</strong> <em>Lower</em> α
-gives more sparsity, i.e. fewer dominant topics per document (slide
-57).</li>
-<li><strong>T/F:</strong> “Running LDA twice with different random seeds
-always gives exactly the same topics.” — <strong>False.</strong> Topics
-depend on the seed and on K; trust topics that recur (Notebook 2 cells
-21, 31).</li>
-<li><strong>Explain (2–5 sentences):</strong> What is a topic model?
-Describe two methods and how they differ. <em>Model answer:</em> A topic
-model is an unsupervised method that explains what texts are about:
-topics are clusters of words that tend to occur together, and each
-document is a mixture of topics with different weights, so the large
-<span class="math inline">\(n\times p\)</span> document-term matrix is
-summarised by <span class="math inline">\(K \ll p\)</span> latent
-factors. LSA applies the singular value decomposition <span class="math inline">\(C = USV&#39;\)</span> to the DTM and keeps the
-<span class="math inline">\(K\)</span> largest components, giving
+<li><p><strong>T/F:</strong> “LSA is not a probabilistic model and is
+not seen as a plausible generative model for text.”</p>
+<p><em>What it’s asking, in plain words:</em> LSA is a topic model that
+breaks the word-count table into smaller tables. A “probabilistic model”
+works with chances. A “plausible generative model” is a believable story
+of how each word in a text came to be written. The statement says LSA is
+neither of these.</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> LSA is pure table maths.
+Its numbers can be any value, even negative, so they cannot be chances,
+and they tell no story of how words were written. It is like a summary
+of a book’s word list, not a story of how the author wrote it. (Source:
+slide 43.)</p></li>
+<li><p><strong>T/F:</strong> “In LDA, each row of the document–topic
+matrix sums to one.”</p>
+<p><em>What it’s asking, in plain words:</em> LDA is the chance-based
+topic model. The document–topic matrix is a table with one row per
+document and one column per topic, showing how much of each topic is in
+each document. The statement says the numbers in each row add up to
+1.</p>
+<p><strong>Answer: True.</strong> <em>Why:</em> Each row is a document’s
+topic mix written as shares, like a pie chart: 0.7 sport + 0.3 money =
+1. The slices of one pie always make a whole pie. (Source: slide
+48.)</p></li>
+<li><p><strong>T/F:</strong> “In LDA, a higher α gives each document
+fewer high-probability topics.”</p>
+<p><em>What it’s asking, in plain words:</em> α is a dial in LDA that
+controls how spread out each document’s topic mix is. “Fewer
+high-probability topics” means each document is mostly about one or two
+topics. The statement says turning α up makes documents more
+focused.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> It is the other way
+round. A <em>lower</em> α gives more sparsity: each document is
+dominated by a few topics. A higher α spreads each document over many
+topics. Think of α as how much a cook mixes the ingredients: low α gives
+a dish with one or two main flavours, high α gives a stew of everything.
+(Source: slide 57.)</p></li>
+<li><p><strong>T/F:</strong> “Running LDA twice with different random
+seeds always gives exactly the same topics.”</p>
+<p><em>What it’s asking, in plain words:</em> LDA finds topics by
+guessing randomly and improving step by step. The random seed is the
+starting point of that random guessing. The statement says changing the
+starting point never changes the topics.</p>
+<p><strong>Answer: False.</strong> <em>Why:</em> Different starting
+points can lead to different topics, and so can a different number of
+topics (K). Like two people sorting the same pile of photos: they may
+end up with slightly different piles. So trust the topics that show up
+again and again across runs. (Source: Notebook 2 cells 21, 31.)</p></li>
+<li><p><strong>Explain (2–5 sentences):</strong> “What is a topic model?
+Describe two methods and how they differ.”</p>
+<p><em>What it’s asking, in plain words:</em> Say what topic models do,
+then explain LSA and LDA and the difference between them.</p>
+<p><em>Model answer:</em> A topic model is an unsupervised method that
+explains what texts are about: topics are clusters of words that tend to
+occur together, and each document is a mixture of topics with different
+weights, so the large <span class="math inline">\(n\times p\)</span>
+document-term matrix is summarised by <span class="math inline">\(K \ll
+p\)</span> latent factors. LSA applies the singular value decomposition
+<span class="math inline">\(C = USV&#39;\)</span> to the DTM and keeps
+the <span class="math inline">\(K\)</span> largest components, giving
 document factors <span class="math inline">\(F = U_KS_K\)</span> and
 word loadings <span class="math inline">\(L = V_K\)</span>; it is a pure
 matrix decomposition, with unrestricted values and no probabilistic
@@ -6773,7 +7363,17 @@ topic and then a word from that topic’s word distribution, with
 Dirichlet priors encouraging sparsity. So both decompose the DTM into
 document–topic and topic–word parts, but in LDA these are probabilities
 (rows/columns sum to one), which makes it a more plausible model of how
-text is generated.</li>
+text is generated.</p>
+<p><em>What this answer is saying, in plain words:</em> A topic model
+finds themes without any answers: a topic is a group of words that often
+appear together, and each document is a blend of a few topics. LSA does
+this with table maths: it breaks the big word-count table into a few
+main patterns and keeps the biggest ones, giving a score for each
+document and a weight for each word. LDA instead tells a chance-based
+story: each document has a topic mix, and every word is written by first
+picking a topic, then picking a word from that topic. Both end up with
+“documents → topics” and “topics → words”, but only LDA’s numbers are
+real shares that add up to one.</p></li>
 </ol>
 <p><strong>Sources:</strong> Lecture 3 slides 30–59; Interactive
 Notebook 2 cells 21–24, 31; practical_day_1.ipynb cells 16–22 (LDA
@@ -15318,23 +15918,30 @@ and low-scoring articles; check the index spikes at known events
 </ul>
 <div class="callout exam">
 <p><strong>How this shows up on the exam</strong></p>
-<p>Block 5 (20 points, ½–1 page) in 2025. Expect a new business setting
-(customer reviews, news, reports, emails, survey answers) with an
-explicit list: motivation / problem solved / pitfalls. Earlier blocks
-also test “when is method X appropriate”.</p>
+<p>In 2025 this was Block 5 (20 points, ½–1 page). Expect a new business
+setting, such as customer reviews, news, reports, emails or survey
+answers. The question gives an explicit list of what to cover:
+motivation (why this method fits), problem solved, and pitfalls (what
+could go wrong). Earlier blocks of the exam also test “when is method X
+appropriate” (when is it the right tool).</p>
 </div>
 <div class="callout top">
 <p><strong>What a top-grade answer must include</strong></p>
 <ul>
-<li>At least the number of methods asked for (two), each from the course
-and named precisely.</li>
-<li>For each: motivation <em>in this context</em>, the concrete output
-(what number management gets), and at least one pitfall <em>specific to
-this case</em>.</li>
-<li>Methods that complement each other (supervised ↔︎ unsupervised;
-transparent ↔︎ context-aware; one validates the other).</li>
-<li>A validation step and one preprocessing judgement.</li>
-<li>About one page; structured with short headings or bold method
+<li>At least the number of methods asked for (two), each one from the
+course and named precisely.</li>
+<li>For each method: why it fits <em>this</em> firm, the concrete output
+(what number management actually gets), and at least one pitfall that is
+<em>specific to this case</em>.</li>
+<li>Methods that complement each other (cover each other’s weak spots).
+For example: one supervised (learns from tagged examples) and one
+unsupervised (finds patterns with no tags); one transparent (easy to see
+why it decided) and one context-aware (understands word order and
+meaning); or one that checks the other.</li>
+<li>A validation step (how you will check the results are right) and one
+preprocessing judgement (a choice about cleaning the text first,
+e.g. whether to remove stop words).</li>
+<li>About one page, organised with short headings or bold method
 names.</li>
 </ul>
 </div>
@@ -15342,40 +15949,77 @@ names.</li>
 <p><strong>Common mistakes that lose marks</strong></p>
 <ul>
 <li>Listing methods without linking them to the firm’s questions.</li>
-<li>Generic pitfalls (“the model may be wrong”) instead of case pitfalls
-(multilingual answers, small corpus, negation, survey selection bias,
-GDPR).</li>
-<li>Proposing an LLM as magic: no validation, no mention of
-hallucination or cost.</li>
-<li>Ignoring available labels (survey scores, ratings) that make
-supervised learning and validation possible.</li>
+<li>Generic pitfalls (“the model may be wrong”) instead of pitfalls tied
+to the case. Examples: answers in several languages, a small corpus (too
+few texts), negation (“not good”), survey selection bias (the people who
+answer are not typical customers), GDPR (the EU data-privacy law).</li>
+<li>Proposing an LLM as magic: no check of its results, no mention of
+hallucination (made-up answers) or cost.</li>
+<li>Ignoring labels that are already there (survey scores, star
+ratings). They make supervised learning and checking possible.</li>
 <li>Going far beyond the length limit.</li>
 </ul>
 </div>
 <div class="callout terms">
 <p><strong>Key terms to use</strong></p>
-<p>supervised / unsupervised / self-supervised; dictionary-based;
-Boolean search; normalisation; tf-idf; cosine similarity; topic model
-(LDA); number of topics K; Naive Bayes; regularisation; out-of-sample
-validation; baseline; fine-tuning with a classification head; prompt
-engineering (zero-/few-shot, chain-of-thought); RAG; hallucination;
-GDPR.</p>
+<ul>
+<li>supervised / unsupervised / self-supervised (learns from tags / no
+tags / text supplies answers)</li>
+<li>dictionary-based (count words from a hand-made word list)</li>
+<li>Boolean search (find texts with AND / OR / NOT rules)</li>
+<li>normalisation (clean text: lower case, remove punctuation,
+etc.)</li>
+<li>tf-idf (word counts re-weighted so rare words count more)</li>
+<li>cosine similarity (how alike two texts’ word profiles are)</li>
+<li>topic model (LDA) (finds hidden themes in many texts)</li>
+<li>number of topics K (how many themes you tell LDA to find)</li>
+<li>Naive Bayes (simple word-counting classifier that learns from
+labels)</li>
+<li>regularisation (penalty that stops a model over-fitting)</li>
+<li>out-of-sample validation (test on texts the model never saw)</li>
+<li>baseline (simple method your model must beat)</li>
+<li>fine-tuning with a classification head (extra training with a new
+labelling layer)</li>
+<li>prompt engineering (zero-/few-shot, chain-of-thought) (writing
+instructions; no examples / some examples / step-by-step)</li>
+<li>RAG (search step pastes relevant documents into the prompt)</li>
+<li>hallucination (confident-sounding but made-up answer)</li>
+<li>GDPR (EU law on handling personal data)</li>
+</ul>
 </div>
 <h3 id="quick-self-test-21">Quick self-test</h3>
 <ol type="1">
-<li><em>True or false:</em> “An unsupervised topic model is the best
+<li><p><em>True or false:</em> “An unsupervised topic model is the best
 choice when the firm already knows exactly which concept it wants to
-track.” <strong>False.</strong> A known concept with known words suits a
-dictionary/Boolean approach. Topic models are for discovering unknown
-themes (Assignment 2, Q2.2c framing; Lecture 3).</li>
-<li><em>True or false:</em> “If a survey contains star ratings next to
-the free text, these can be used to train or validate a text
-classifier.” <strong>True.</strong> They are labels, so supervised
-learning (Naive Bayes, fine-tuning) and validation are possible (Lecture
-3 slides 22–27; training slide 22).</li>
-<li><em>Short answer (2–5 sentences):</em> A retailer receives 50,000
+track.”</p>
+<p><em>What it’s asking, in plain words:</em> An unsupervised topic
+model (such as LDA) reads many texts and finds the themes in them by
+itself, with no hints. “Already knows which concept it wants to track”
+means the firm knows what it is looking for, for example “complaints
+about delivery”. Is a theme-finding tool the best pick in that case?</p>
+<p><strong>False.</strong> <em>Why:</em> when you know the concept and
+its words, a dictionary approach (counting words from your own list) or
+a Boolean search (rules like “delivery AND late”) does the job directly.
+Topic models are for discovering themes you did <em>not</em> know about.
+If you know you are looking for your keys, you search your pockets; you
+do not sort the whole house to see what turns up. (Source: Assignment 2,
+Q2.2c framing; Lecture 3)</p></li>
+<li><p><em>True or false:</em> “If a survey contains star ratings next
+to the free text, these can be used to train or validate a text
+classifier.”</p>
+<p><em>What it’s asking, in plain words:</em> Free text is what people
+wrote in their own words. A text classifier is a model that sorts texts
+into groups, such as happy or unhappy. “Train or validate” means teach
+it or check it. Can the star ratings be used for that?</p>
+<p><strong>True.</strong> <em>Why:</em> the stars are labels (ready-made
+right answers next to each text). So supervised learning, such as Naive
+Bayes or fine-tuning, becomes possible, and you can check the model
+against them. It is like a set of practice questions that comes with the
+answer sheet. (Source: Lecture 3 slides 22–27; training slide
+22)</p></li>
+<li><p><em>Short answer (2–5 sentences):</em> A retailer receives 50,000
 product reviews per month with star ratings and wants to know
-<em>why</em> customers are unhappy. Name two complementary methods.
+<em>why</em> customers are unhappy. Name two complementary methods.</p>
 <ul>
 <li><strong>Model answer:</strong> First, use the star ratings as labels
 to train a supervised sentiment classifier. Naive Bayes on word counts
@@ -15387,7 +16031,16 @@ the low-rated reviews to discover the themes behind dissatisfaction
 monthly. The classifier measures <em>how</em> unhappy customers are, and
 the topic model explains <em>why</em>. Pitfalls: topics depend on K and
 the random seed, and ratings are noisy labels.</li>
-</ul></li>
+</ul>
+<p><em>What this answer is saying, in plain words:</em> Method one: use
+the stars as answers to teach a model to tell happy from unhappy
+reviews. Start with a simple word-counting model, try a stronger one
+that understands phrases like “not good”, and test both on reviews they
+have not seen. Method two: take only the bad reviews and let a
+theme-finder show what people complain about, such as delivery or size.
+The first says <em>how</em> unhappy people are, the second says
+<em>why</em>, but the themes can shift with your settings and star
+ratings are not always accurate.</p></li>
 </ol>
 <p><strong>Sources:</strong> 2025 exam Block 5 and its evaluation
 guideline; assignment evaluation guidelines 2024/2025;
