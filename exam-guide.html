@@ -564,7 +564,11 @@ described below.</li>
 <li><strong>Feature extraction:</strong> turn the tidy text into
 numbers. A <strong>feature</strong> is one number that describes a
 document, such as “how many times ‘battery’ appears”. Tools:
-bag-of-words, TF-IDF, word embeddings.</li>
+bag-of-words (counting how often each word appears), TF-IDF (word counts
+re-weighted so rare, telling words count more) and word embeddings (a
+list of numbers for each word, so similar words get similar numbers).
+They only <em>describe</em> the text as numbers; they do not give an
+answer yet.</li>
 <li><strong>Modeling:</strong> a method, called a
 <strong>model</strong>, uses the numbers to give an answer, such as
 sorting reviews into “happy” or “unhappy”.</li>
@@ -579,7 +583,8 @@ punctuation → tokenize → drop stop words → drop numbers → (stem or
 lemmatize)”.</p>
 <ul>
 <li><strong>Lowercasing:</strong> turn every capital letter into a small
-one. Otherwise “War” and “war” count as two different words.</li>
+one. Otherwise “War” and “war” count as two different words, and the
+list of different words gets longer.</li>
 <li><strong>Removing punctuation:</strong> delete marks like . , ! ? so
 “good.” and “good” become the same.</li>
 <li><strong>Tokenization:</strong> cut the text into pieces, usually
@@ -779,36 +784,44 @@ see</li>
 <h3 id="truefalse-traps">True/False traps</h3>
 <ul>
 <li>“Lemmatization is part of the preprocessing step.” →
-<strong>True</strong>. <em>Why:</em> it tidies words before counting, so
-the course lists it under preprocessing.</li>
+<strong>True</strong>. <em>Why:</em> lemmatisation tidies each word into
+its dictionary form before anything is counted, and the workflow above
+puts all tidying at step 2, preprocessing.</li>
 <li>“TF-IDF is a modeling technique in the text-as-data workflow.” →
-<strong>False</strong>. <em>Why:</em> it only turns text into numbers,
-so it belongs to feature extraction.</li>
+<strong>False</strong>. <em>Why:</em> tf-idf only turns the tidy text
+into numbers, so in the workflow above it sits at step 3, feature
+extraction, not at step 4, modeling.</li>
 <li>“Sarcasm is an example of the ‘noisy text’ challenge.” →
-<strong>False</strong>. <em>Why:</em> noisy text means messy spelling;
-sarcasm is a problem of meaning, so it is ambiguity and context.</li>
+<strong>False</strong>. <em>Why:</em> “noisy text” means messy spelling
+such as typos, slang and “gr8”; sarcasm is a problem of meaning, so the
+four challenges above file it under ambiguity and context.</li>
 <li>“Removing stop words never changes the meaning of a sentence.” →
-<strong>False</strong>. <em>Why:</em> Ford’s “not good” becomes
-“good”.</li>
+<strong>False</strong>. <em>Why:</em> the standard stop-word list
+contains “not”, so Ford’s “the state of the Union is not good” turned
+into “state union good”, the opposite message.</li>
 <li>“In the course notebooks, removing English stop words can turn ‘is
 not good’ into ‘good’.” → <strong>True</strong>. <em>Why:</em> the
-standard list contains both “is” and “not”.</li>
+standard English stop-word list contains both “is” and “not”, so both
+are deleted and only “good” is left.</li>
 <li>“Searching for the letters ‘war’ anywhere in a text counts only the
 word ‘war’.” → <strong>False</strong>. <em>Why:</em> a substring search
-also matches “toward” and “warm”.</li>
+looks for the three letters anywhere, so it also counts words like
+“toward” and “warm”; only a whole-word search counts “war” alone.</li>
 <li>“N-grams can distinguish ‘low unemployment’ from ‘high
-unemployment’.” → <strong>True</strong>. <em>Why:</em> the pair keeps
-“low” and “unemployment” together.</li>
+unemployment’.” → <strong>True</strong>. <em>Why:</em> a bigram keeps
+the neighbours “low unemployment” together as one item, so it is counted
+separately from “high unemployment”.</li>
 <li>“A 2-gram model keeps some information about word order.” →
-<strong>True</strong>. <em>Why:</em> it knows which word came right
-before which, though not the whole sentence.</li>
+<strong>True</strong>. <em>Why:</em> each word pair records which word
+came right before which, so some order survives, although the order of
+the whole sentence is still lost.</li>
 <li>“If you do not lowercase, the vocabulary gets smaller.” →
-<strong>False</strong>. <em>Why:</em> it gets bigger, because “The” and
-“the” count as two words.</li>
+<strong>False</strong>. <em>Why:</em> without lowercasing, “The” and
+“the” count as two different words, so the vocabulary gets bigger, not
+smaller.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch01.md, v3/out/ch02.md (Lecture 1;
-Lecture 2a; Interactive 1; Practical Day 1; 2025 exam Q2(c), Q4(a),
-Block 5).</p>
+<p><strong>Sources:</strong> Lectures 1 and 2a; Interactive 1; Practical
+Day 1; 2025 exam Q2(c), Q4(a) and Block 5.</p>
 <h2 id="m2">2. Bag-of-words and the document-term matrix</h2>
 <p><strong>On the exam:</strong> asked in 2025 Q2(a) (5 points). Likely
 as True/False (word order, sparse vs dense). Useful for the reflection,
@@ -864,12 +877,13 @@ late, the delivery is fine” get exactly the same row. The table cannot
 tell them apart.</p>
 <p><strong>A fix for word order.</strong> The columns can be pairs of
 neighbouring words instead of single words. A run of <em>n</em>
-neighbouring words is an <strong>n-gram</strong>. A 2-gram column like
-“low unemployment” keeps a bit of order, so it can tell “low
-unemployment” from “high unemployment”. What one row stands for
-(sentence, article, day) and what one column stands for (word or word
-pair) are both your choices, driven by the research question (the exact
-question your study tries to answer).</p>
+neighbouring words is an <strong>n-gram</strong>. A 1-gram is one single
+word, the normal bag-of-words column. A 2-gram column like “low
+unemployment” keeps a bit of order, so it can tell “low unemployment”
+from “high unemployment”. What one row stands for (sentence, article,
+day) and what one column stands for (word or word pair) are both your
+choices, driven by the research question (the exact question your study
+tries to answer).</p>
 <h3 id="why-it-works-the-reasoning-1">Why it works: the reasoning</h3>
 <p>The <strong>assumption</strong> (something a method takes as true to
 keep things simple) is that word order does not matter. In the course’s
@@ -985,27 +999,33 @@ term</li>
 <h3 id="truefalse-traps-1">True/False traps</h3>
 <ul>
 <li>“In a bag-of-words model the order of words matters.” →
-<strong>False</strong>. <em>Why:</em> “The word sequence does not
-matter!”</li>
+<strong>False</strong>. <em>Why:</em> the bag-of-words assumption throws
+the order away and keeps only the counts; the course says “The word
+sequence does not matter!”.</li>
 <li>“A DTM is typically dense.” → <strong>False</strong>. <em>Why:</em>
-each document uses few of all the words, so it is mostly zeros
-(sparse).</li>
+each document uses only a few of all the words in the vocabulary, so
+most cells are zero, which makes the table sparse, not dense.</li>
 <li>“Most cells in a DTM are zero.” → <strong>True</strong>.
-<em>Why:</em> same reason; the course says “Typically sparse (many
-zeros)”.</li>
+<em>Why:</em> this is the same point from the other side: each text uses
+few of all the words, and the course says DTMs are “Typically sparse
+(many zeros)”.</li>
 <li>“A document-term matrix has dimension n × p, where p is the
-vocabulary size.” → <strong>True</strong>. <em>Why:</em> one row per
-document, one column per different word.</li>
+vocabulary size.” → <strong>True</strong>. <em>Why:</em> the table has
+one row for each of the n documents and one column for each of the p
+different terms, so p is the size of the vocabulary.</li>
 <li>“With 1-grams, ‘the dog bites the man’ and ‘the man bites the dog’
 get the same row in the DTM.” → <strong>True</strong>. <em>Why:</em>
-same words, same counts; only pairs like “dog bites” would tell them
-apart.</li>
+with single-word columns both sentences contain exactly the same words
+the same number of times, so their rows are identical, like the delivery
+and phone reviews above; only word-pair columns such as “dog bites”
+would tell them apart.</li>
 <li>“A document must always be a full article.” →
-<strong>False</strong>. <em>Why:</em> it “Can be a sentence, a day, an
-article, a paragraph, etc.”</li>
+<strong>False</strong>. <em>Why:</em> you choose what counts as one
+document to fit your question, and the course says it “Can be a
+sentence, a day, an article, a paragraph, etc.”</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch03.md; simple/s1.md 2025 Q2(a) and
-Q1(e) (Lecture 2a; Lecture 3; official marking guide).</p>
+<p><strong>Sources:</strong> Lectures 2a and 3; 2025 exam Q2(a) and
+Q1(e).</p>
 <h2 id="m3">3. Adjusting the counts: row shares, yes/no (binary),
 tf-idf</h2>
 <p><strong>On the exam:</strong> asked in 2025 Q2(b) (5 points: three
@@ -1018,13 +1038,14 @@ they are long. Common words win because they are common. Each adjustment
 fixes one of these, the way “deaths per 100,000 people” stops big
 countries looking worse only because they are big.</p>
 <h3 id="how-it-works-in-plain-words-2">How it works, in plain words</h3>
-<p><strong>The starting point.</strong> A computer counts how often each
-word appears in each document and keeps the counts in a table: one row
-per document (one text), one column per word, each cell a count. This
-table is the <strong>document-term matrix</strong> (DTM). The numbers
-before any change are the <strong>raw counts</strong>. The slides call
-raw counts a “Simple representation but sensitive to document
-length”.</p>
+<p><strong>The starting point.</strong> A computer first cuts each text
+into pieces, usually single words; each piece is a
+<strong>token</strong>. It then counts how often each word appears in
+each document and keeps the counts in a table: one row per document (one
+text), one column per word, each cell a count. This table is the
+<strong>document-term matrix</strong> (DTM). The numbers before any
+change are the <strong>raw counts</strong>. The slides call raw counts a
+“Simple representation but sensitive to document length”.</p>
 <p>Changing all the numbers in a fixed way so documents become fairer to
 compare is called <strong>normalising</strong> the table. The course
 gives three ways.</p>
@@ -1216,23 +1237,28 @@ words</li>
 <h3 id="truefalse-traps-2">True/False traps</h3>
 <ul>
 <li>“A term that occurs in all documents gets idf = 0.” →
-<strong>True</strong> (under the slide formula). <em>Why:</em> a word
-every text uses cannot tell texts apart; in scikit-learn, which adds 1,
-it would not be 0.</li>
+<strong>True</strong> (under the slide formula). <em>Why:</em> idf is
+the rarity weight, and a word found in every document cannot tell
+documents apart, so under the slide formula its weight is zero. In
+scikit-learn, which adds 1 to every idf, it would not be exactly
+zero.</li>
 <li>“Rare terms get a low idf.” → <strong>False</strong>. <em>Why:</em>
-the other way round; few documents contain them, so their weight is
-high.</li>
+it is the other way round: idf goes up as fewer documents contain the
+word, so rare words get a high weight, not a low one.</li>
 <li>“Rare terms receive a high idf.” → <strong>True</strong>.
-<em>Why:</em> the slides say “Rare terms: High IDF”.</li>
+<em>Why:</em> few documents contain a rare word, so its idf is high; the
+slides say “Rare terms: High IDF”.</li>
 <li>“Binary representation keeps information on how often a word is
-used.” → <strong>False</strong>. <em>Why:</em> it is a tick box; once or
-fifty times both give 1.</li>
+used.” → <strong>False</strong>. <em>Why:</em> binary turns every count
+above zero into 1, like a tick box, so a word used once and a word used
+fifty times both get 1.</li>
 <li>“Tf-idf removes rare words.” → <strong>False</strong>. <em>Why:</em>
-it boosts rare words and pushes down words found everywhere.</li>
+tf-idf keeps every word and only changes its weight: words found
+everywhere are pushed down, and rare, distinctive words are pushed
+up.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch04.md; simple/s1.md 2025 Q2(b)
-(Lecture 2a; Interactive 1; Practical Day 1; official marking
-guide).</p>
+<p><strong>Sources:</strong> Lecture 2a; Interactive 1; Practical Day 1;
+2025 exam Q2(b).</p>
 <h2 id="m4">4. Measuring how similar two texts are: cosine vs
 Euclidean</h2>
 <p><strong>On the exam:</strong> asked in 2025 Q3(d) (5 points: draw
@@ -1271,8 +1297,9 @@ point. The angle is written θ (“theta”). Arrows pointing the same way
 mean the same mix of words, whatever their length. The angle is turned
 into a score: 1 when the arrows point the same way, 0 when they are at a
 right angle. “At a right angle” is called <strong>orthogonal</strong>.
-For word counts, orthogonal means the two texts share no words at all.
-The slides say the score is “bounded between -1 and 1”.</li>
+For word counts, orthogonal means the two texts share no words at all,
+because counts are never negative. The slides say the score is “bounded
+between -1 and 1”.</li>
 </ol>
 <p>How the computer gets the score without a protractor: it multiplies
 the matching numbers of the two texts and adds them up (the <strong>dot
@@ -1284,7 +1311,10 @@ that does not change when a text gets longer or shorter is
 Review B is review A written twice. Review C says “bad bad good”. By
 ruler distance, C looks closer to A than B does, although B says exactly
 what A says. By angle, B points exactly the same way as A (a perfect
-match), and C points a bit away.</p>
+match, cosine 1), and C points a bit away. When every count of one text
+is the same multiple of the other’s, like B being A doubled, the counts
+are called <strong>proportional</strong>. Proportional texts always
+point the same way.</p>
 <h3 id="why-it-works-the-reasoning-3">Why it works: the reasoning</h3>
 <p>What a text is about shows in its <em>mix</em> of words, not in how
 much text there is. Writing a document twice stretches its arrow but
@@ -1452,32 +1482,37 @@ their angle</li>
 <h3 id="truefalse-traps-3">True/False traps</h3>
 <ul>
 <li>“Euclidean distance is unaffected by document length.” →
-<strong>False</strong>. <em>Why:</em> a longer document has a longer
-arrow, so its tip moves further away.</li>
+<strong>False</strong>. <em>Why:</em> Euclidean distance is the ruler
+gap between arrow tips, and a longer document has a longer arrow, so its
+tip moves further away and the gap grows.</li>
 <li>“Cosine similarity of 0 means the documents are orthogonal.” →
-<strong>True</strong>. <em>Why:</em> 0 means the arrows are at a right
-angle.</li>
+<strong>True</strong>. <em>Why:</em> a cosine of 0 means the two arrows
+stand at a right angle, and “at a right angle” is exactly what
+orthogonal means.</li>
 <li>“A cosine similarity of 0 means the documents share no terms.” →
-<strong>True</strong> for count or tf-idf vectors. <em>Why:</em> counts
-are never negative, so the only way to get 0 is when no word appears in
-both.</li>
+<strong>True</strong> for count or tf-idf vectors. <em>Why:</em> as
+explained above, word counts are never negative, so the arrows can only
+stand at a right angle when no word appears in both texts.</li>
 <li>“Two documents whose word counts are exactly proportional have
 cosine similarity 1.” → <strong>True</strong>. <em>Why:</em> doubling
-every count stretches the arrow but keeps its direction.</li>
+every count stretches the arrow but does not turn it, so the angle is
+zero and the score is 1, like reviews A and B above.</li>
 <li>“A longer document is less similar to a short one under cosine, even
 with the same word mix.” → <strong>False</strong>. <em>Why:</em> cosine
-ignores length; only the mix of words counts.</li>
+divides out the arrow lengths and looks only at the angle, so a long and
+a short document with the same mix of words count as very similar.</li>
 <li>“Cosine similarity is bounded between −1 and 1.” →
-<strong>True</strong>. <em>Why:</em> the slides say so. For word counts
-it is in practice between 0 and 1. <strong>[Not in course files —
+<strong>True</strong>. <em>Why:</em> the slides say the score is
+“bounded between -1 and 1”. For word counts, which are never negative,
+it stays between 0 and 1 in practice. <strong>[Not in course files —
 general knowledge]</strong></li>
 <li>“A high cosine similarity shows that two speeches make the same
-argument.” → <strong>False</strong>. <em>Why:</em> it “is not evidence
-that the speeches make the same argument”; it only measures word
-overlap.</li>
+argument.” → <strong>False</strong>. <em>Why:</em> cosine only measures
+how much the texts share the same words, and the course warns it “is not
+evidence that the speeches make the same argument”.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch05.md; simple/s2.md 2025 Q3(d)
-(Lecture 2a; Practical Day 1; official marking guide).</p>
+<p><strong>Sources:</strong> Lecture 2a; Practical Day 1; 2025 exam
+Q3(d).</p>
 <h1 id="p2">Part 2: Methods built on word counts (exam Block 2 and
 True/False)</h1>
 <h2 id="m5">5. Three ways a computer can learn: supervised,
@@ -1488,7 +1523,7 @@ supervised/unsupervised”), and useful in the reflection, where you
 should say which kind each of your methods is and why it fits your
 data.</p>
 <h3 id="the-point-of-it-4">The point of it</h3>
-<p>It is a sorting key for every method in the course. One question
+<p>It is a sorting key for every method on the exam. One question
 decides the box: <strong>do we already know what should come
 out?</strong> Get the box right and a whole family of True/False
 statements becomes easy.</p>
@@ -1497,8 +1532,8 @@ statements becomes easy.</p>
 single text we study (one review, one email, one speech) is called a
 <strong>document</strong>. There are three situations the shop can be
 in.</p>
-<p><strong>1. Supervised: “we know what comes out.”</strong> In this
-course the word has two versions.</p>
+<p><strong>1. Supervised: “we know what comes out.”</strong> On this
+exam the word has two versions.</p>
 <ul>
 <li><em>We have the correct answers.</em> Each review comes with the
 stars the customer gave. That stored answer is a <strong>label</strong>,
@@ -1513,8 +1548,8 @@ who studies past exams with the answer sheet: the answer sheet
 you decide the rule in advance: “count the happy words, subtract the
 angry words”. A hand-made word list like this is a
 <strong>dictionary</strong>, and a search rule built with AND, OR and
-NOT is a <strong>Boolean search</strong>. The course puts these in the
-supervised box too. The next section explains why.</li>
+NOT is a <strong>Boolean search</strong>. The teacher puts these in the
+supervised box too. “Why it works” below explains why.</li>
 </ul>
 <p><strong>2. Unsupervised: no answers and no rule.</strong> You have
 only the texts. The computer finds structure on its own: which words
@@ -1525,13 +1560,14 @@ of mixed letters with no instructions, and naming the piles “bills”,
 <p><strong>3. Self-supervised: the answers come from the text
 itself.</strong> Take a real sentence, hide a word, and ask the computer
 to guess it. Nobody labelled anything by hand, yet there is a correct
-answer every time: the hidden word. The course calls this
-<strong>self-supervised</strong> (the lecture definition calls it
-<strong>semi-supervised</strong>: “Input (x) and output (y) given by the
-structure of the training data itself”). Like making a fill-in-the-blank
-quiz by covering words in a book: no teacher needed, but always a right
-answer.</p>
-<p><strong>Where each course method sits:</strong></p>
+answer every time: the hidden word. The teacher calls this
+<strong>self-supervised</strong> (the teaching material also uses the
+name <strong>semi-supervised</strong> in one place, with the definition
+“Input (x) and output (y) given by the structure of the training data
+itself”: the input and the right answer both come from the text). Like
+making a fill-in-the-blank quiz by covering words in a book: no teacher
+needed, but always a right answer.</p>
+<p><strong>Where each method sits:</strong></p>
 <ul>
 <li><strong>Boolean search and dictionaries</strong>: supervised,
 because the rule is known.</li>
@@ -1544,8 +1580,8 @@ box.</li>
 <li><strong>Topic models (LSA, LDA)</strong>: unsupervised. They find
 themes with no answers and no rule.</li>
 <li><strong>Word embeddings</strong> (turning each word into a list of
-numbers so similar words get similar lists): drawn in the unsupervised
-box of the course’s map. word2vec, one embedding method, learns by
+numbers so similar words get similar lists): usually placed in the
+unsupervised box on this exam. word2vec, one embedding method, learns by
 guessing hidden words, which is the self-supervised idea.</li>
 <li><strong>LLMs</strong> (large language models, the big
 text-predicting models behind chatbots): self-supervised in their first,
@@ -1556,7 +1592,7 @@ prepared with correct answers, which is openly supervised.</li>
 <p><strong>Why dictionaries count as “supervised”, even with no
 answers.</strong> This confuses almost everyone. A dictionary method has
 no answer column and learns nothing from data. So why “supervised”?</p>
-<p>Because in this course “supervised” does not mean “we have labelled
+<p>Because on this exam “supervised” does not mean “we have labelled
 data”. It means <strong>we know what comes out</strong>. A
 <strong>function</strong> is a fixed rule that turns an input into an
 output, like a little machine. A dictionary method is exactly that
@@ -1564,11 +1600,11 @@ machine: the input is one document’s word counts, the rule is “happy
 words minus angry words”, and the output is a score. You wrote the rule
 before seeing any data, and nothing in it is learned. So for any review
 anyone hands you, you can work out the score with a pencil and always
-get the same result. The course says the method has a <strong>known
+get the same result. The teacher says the method has a <strong>known
 functional form</strong> (“functional form” = the shape of the rule;
-“known” = fixed by you). The lecture: “Although we do not know the
-outcome, we call these methods supervised because we know the functional
-form.”</p>
+“known” = fixed by you). In the teacher’s words: “Although we do not
+know the outcome, we call these methods supervised because we know the
+functional form.”</p>
 <p>What is still missing is the true answer. How happy the writer really
 is stays hidden. Something real but hidden is called
 <strong>latent</strong>. The score is only our estimate of it.</p>
@@ -1583,11 +1619,11 @@ groups.</li>
 <p><strong>Why LLMs are not “unsupervised”.</strong> In unsupervised
 learning there is no right answer. In LLM training there is a right
 answer for every guess: the real next word. It is only that no human had
-to write it down. That is why the course says “self-supervised”.</p>
+to write it down. That is why the exam word is “self-supervised”.</p>
 <p>[Not in course files — general knowledge] Outside this course, many
 textbooks use “supervised” only for learning from labelled examples, and
 some call language-model pre-training “unsupervised”. On this exam,
-follow the course.</p>
+follow the teacher’s use.</p>
 <h3 id="when-to-use-it-and-when-not-4">When to use it, and when not</h3>
 <ul>
 <li>Use a <strong>supervised</strong> method with labels when your texts
@@ -1608,6 +1644,33 @@ must name it.</li>
 single best one. Real projects often mix boxes, for example finding
 topics first and then using them as inputs in a regression.</li>
 </ul>
+<h3 id="more-ideas-the-exam-can-test">More ideas the exam can test</h3>
+<p><strong>Two directions: text regression versus Naive Bayes.</strong>
+Both are supervised, but they start from opposite ends. <strong>Text
+regression</strong> goes from the words to the outcome. It asks: “this
+review says ‘great’, so what is the chance of 5 stars?” <strong>Naive
+Bayes</strong>, a method that sorts texts into boxes such as spam / not
+spam, first learns the other way round: which words each box tends to
+use (“if an email is spam, how likely is the word ‘prize’?”). It then
+flips that question with <strong>Bayes’ rule</strong>, a rule of
+probability that turns “the chance of these words, given the box” into
+“the chance of the box, given these words”. So a statement saying
+“regression models the chance of the outcome given the words, Naive
+Bayes the chance of the words given the class” is True. It does not mean
+Naive Bayes never picks a box: after the flip, it does.</p>
+<p><strong>LSA versus LDA: which one is a chance story?</strong> Both
+are topic models in the unsupervised box: they find themes in texts with
+no answers given. A <strong>probabilistic</strong> model works with
+chances between 0 and 1 that add up to 1, like shares adding up to 100%.
+A <strong>generative</strong> model tells a step-by-step story of how
+the text was written. LDA is both: it imagines each document picks a mix
+of topics (say 70% sport, 30% money), and each word is drawn from one of
+those topics. LSA is neither: it is plain table arithmetic that squeezes
+the word-count table into a few main patterns, and its scores can be any
+number, even negative. In the teacher’s words: “LSA is not a
+probabilistic model (non-parametric), and not seen as a plausible
+generative model for text!” (“Non-parametric” here means it assumes no
+chance model at all.)</p>
 <h3 id="what-the-exam-asks-4">What the exam asks</h3>
 <p><strong>2025 T/F (f): “Large Language Models are estimated using
 unsupervised learning.” (2 points)</strong></p>
@@ -1678,34 +1741,40 @@ directly</li>
 <h3 id="truefalse-traps-4">True/False traps</h3>
 <ul>
 <li>“Dictionary methods are unsupervised, because there is no outcome.”
-→ <strong>False</strong>. <em>Why:</em> there is no outcome, but the
-rule is known, so the course calls them supervised.</li>
+→ <strong>False</strong>. <em>Why:</em> on this exam “supervised” means
+“we know what comes out”, and with a dictionary we wrote the rule
+ourselves, so it goes in the supervised box even though there is no
+outcome.</li>
 <li>“Boolean and dictionary methods are called supervised because we
-observe the outcome.” → <strong>False</strong>. <em>Why:</em> we do not
-observe it; they are supervised because the researcher wrote the rule in
-advance.</li>
+observe the outcome.” → <strong>False</strong>. <em>Why:</em> the true
+outcome (for example how happy the writer really is) stays hidden, or
+latent; they are supervised only because the researcher wrote the rule
+in advance.</li>
 <li>“LDA is an unsupervised method.” → <strong>True</strong>.
-<em>Why:</em> it finds topics with no answers and no rule.</li>
+<em>Why:</em> LDA is a topic model, and topic models find themes on
+their own, with no answers and no rule given in advance.</li>
 <li>“Large Language Models are estimated using unsupervised learning.” →
-<strong>False</strong>. <em>Why:</em> the course calls it
-self-supervised; the real next word is the answer. (2025 exam.)</li>
+<strong>False</strong>. <em>Why:</em> every guess in LLM training has a
+right answer, the real next word, taken from the text itself, so the
+exam word is self-supervised, not unsupervised. (2025 exam.)</li>
 <li>“Text regression models the chance of the outcome given the words,
 while Naive Bayes models the chance of the words given the class.” →
-<strong>True</strong>. <em>Why:</em> regression goes from words to
-outcome; Naive Bayes first learns which words each class uses, then
-flips it round with Bayes’ rule.</li>
+<strong>True</strong>. <em>Why:</em> as “Two directions” above explains,
+regression goes from the words to the outcome, while Naive Bayes first
+learns which words each class uses and then flips that round with Bayes’
+rule.</li>
 <li>“LSA is a probabilistic model of how text is generated.” →
-<strong>False</strong>. <em>Why:</em> LSA is pure table arithmetic and
-tells no chance-based story of how words were written; LDA is the one
-that does.</li>
+<strong>False</strong>. <em>Why:</em> as “LSA versus LDA” above
+explains, LSA is plain table arithmetic with no chance-based story of
+how the words were written; LDA is the one that tells that story.</li>
 </ul>
-<p><strong>Sources:</strong> v3 chapter 6; 2025 exam T/F (f) in
-simple/s1.md; Lecture_bow_based_methods.pdf;
-Lecture_llm_trainingandfinetuning.pdf.</p>
+<p><strong>Sources:</strong> Lecture 3 (bag-of-words-based methods) and
+Lecture 9 (LLMs: training and fine-tuning); 2025 exam T/F (f).</p>
 <h2 id="m6">6. Boolean search and the EPU index</h2>
 <p><strong>On the exam:</strong> asked in 2025 as Q2(c) (5 points:
-describe a Boolean search method, with a course example). The example
-must be the EPU index. Also likely as True/False on the EPU rule.</p>
+describe a Boolean search method, with an example from the course). The
+EPU index, explained below, is the example to write. Also likely as
+True/False on the EPU rule.</p>
 <h3 id="the-point-of-it-5">The point of it</h3>
 <p>It turns a pile of text into one number you can track over time,
 using a search rule you write yourself. It is a thermometer for
@@ -1744,9 +1813,14 @@ fairly.</li>
 one number per month, rescaled to be easy to read, like a consumer
 confidence index.</li>
 </ol>
-<p><strong>The course example: the Economic Policy Uncertainty (EPU)
-index</strong> by Baker, Bloom and Davis (2016). It measures how much US
-newspapers write about uncertainty over economic policy.</p>
+<p><strong>A full example: the Economic Policy Uncertainty (EPU)
+index</strong> by Baker, Bloom and Davis (2016). Say you are an
+economist who wants to know, month by month, how worried America is
+about what the government will do with the economy. Nobody measures that
+directly. So the input is millions of US newspaper articles, and the
+output is one number per month: how much the papers write about
+uncertainty over economic policy. This is the example the lectures used,
+so it is the safe one to write in the exam.</p>
 <ul>
 <li><strong>Three word groups, all required.</strong> An article counts
 only if it has at least one word from <em>each</em> group, in the same
@@ -1784,11 +1858,11 @@ something tracks how much people care about it</strong>. If more
 articles mention uncertainty, the economy and policy together, worry
 about policy is likely rising. The spikes at known crises support that
 the number measures something real.</p>
-<p>The course calls this a (simple) <strong>supervised</strong> method.
-In this course “supervised” means “we know what comes out”. Nobody gives
+<p>The teacher calls this a (simple) <strong>supervised</strong> method.
+For this exam, “supervised” means “we know what comes out”. Nobody gives
 us the true level of worry, but we wrote the rule ourselves before
-seeing any data, so for any article we know whether it counts. The
-lecture: “we call these methods supervised because we know the
+seeing any data, so for any article we know whether it counts. In the
+teacher’s words: “we call these methods supervised because we know the
 functional form” (the exact rule from text to number is known in
 advance).</p>
 <h3 id="when-to-use-it-and-when-not-5">When to use it, and when not</h3>
@@ -1806,8 +1880,10 @@ list.</li>
 <strong>subjective</strong> (another researcher would pick other words
 and get another index); it misses <strong>synonyms</strong> (different
 words, same meaning, like “unsure” for “uncertain”); it is fooled by
-<strong>polysemy</strong> (one word, several meanings), because a word
-counts the same in every context.</li>
+<strong>polysemy</strong> (one word, several meanings, like “bank” as a
+river bank or a bank for money), because a word counts the same in every
+context. A news story about a “congress” of doctors would count as a
+policy hit.</li>
 <li><strong>Compared with a dictionary (word-list) method:</strong> its
 sister technique. Boolean = a logical rule that a document passes or
 fails; dictionary = word lists whose hits are counted and combined into
@@ -1893,20 +1969,27 @@ choices</li>
 <ul>
 <li>“An article enters the EPU count if it contains ‘uncertainty’ and
 ‘economy’, even without a policy term.” → <strong>False</strong>.
-<em>Why:</em> the groups are joined with AND, so it needs an uncertainty
-word, an economy word <em>and</em> a policy word.</li>
+<em>Why:</em> the three EPU word groups are joined with AND, so an
+article only counts if it has an uncertainty word, an economy word
+<em>and</em> a policy word; “Economic uncertainty rises as oil prices
+jump” is left out.</li>
 <li>“Boolean search methods are called supervised because we know the
 functional form.” → <strong>True</strong>. <em>Why:</em> the researcher
-fixes the rule in advance, so the output for any document is known.</li>
+writes the search rule before seeing any data, so for any article we
+know in advance whether it counts; that known rule is what “supervised”
+means on this exam.</li>
 <li>“Boolean search methods are unsupervised, because there is no
-outcome.” → <strong>False</strong>. <em>Why:</em> there is no outcome,
-but the rule is known, so the course calls them supervised.</li>
+outcome.” → <strong>False</strong>. <em>Why:</em> nobody gives us the
+true level of worry, but the rule is fixed by the researcher, and for
+this exam a known rule is enough to call a method supervised.</li>
 <li>“Boolean methods capture synonyms and polysemy well.” →
-<strong>False</strong>. <em>Why:</em> a word counts the same in every
-context, and words not on the list are never found.</li>
+<strong>False</strong>. <em>Why:</em> as the weak spots above explain, a
+word counts the same in every context (so both meanings of “bank”
+count), and a word not on the list, like “unsure” for “uncertain”, is
+never found.</li>
 </ul>
-<p><strong>Sources:</strong> v3 chapters 6 and 7; 2025 exam Q2(c) in
-simple/s1.md; Lecture_bow_based_methods.pdf.</p>
+<p><strong>Sources:</strong> Lecture 3 (bag-of-words-based methods);
+2025 exam Q2(c).</p>
 <h2 id="m7">7. Dictionary (word-list) methods and their weaknesses</h2>
 <p><strong>On the exam:</strong> asked in 2025 as True/False (h) on
 polysemy (2 points). Likely again as True/False on weaknesses, and very
@@ -1916,9 +1999,9 @@ named.</p>
 <h3 id="the-point-of-it-6">The point of it</h3>
 <p>It is a marking sheet for text. You write a column of “good words”
 and a column of “bad words”, tick every match in a text, and the score
-says how positive or negative the text sounds. The lecture calls
+says how positive or negative the text sounds. The teacher calls
 Boolean/dictionary methods “by far the most used approach in economics
-and finance”.</p>
+and finance”, because they are simple, cheap and easy to check.</p>
 <h3 id="how-it-works-in-plain-words-6">How it works, in plain words</h3>
 <p>Say a shop wants to score each review as happy or unhappy.</p>
 <ol type="1">
@@ -1947,25 +2030,26 @@ compared fairly.</li>
 <p>The <strong>Boolean</strong> method is the sister technique: instead
 of counting hits on lists, a document passes or fails a search rule
 built with AND, OR and NOT.</p>
-<p>Does counting words work at all? The course gives evidence that it
-does: the tone of news predicts firms’ stock returns (Tetlock et
-al. 2008); the tone of the words in the Greenbook forecasts tells you
-more about future economic growth than the forecast numbers alone
-(Sharpe et al. 2017) [Not in course files — general knowledge: the
-Greenbook forecasts are made by staff at the US central bank, the
-Federal Reserve]; the tone of central banks’ financial stability reports
-moves stock markets (Born et al. 2014).</p>
+<p>Does counting words work at all? Research shows that it does: the
+tone of news predicts firms’ stock returns (Tetlock et al. 2008); the
+tone of the words in the Greenbook forecasts tells you more about future
+economic growth than the forecast numbers alone (Sharpe et al. 2017)
+[Not in course files — general knowledge: the Greenbook forecasts are
+made by staff at the US central bank, the Federal Reserve]; the tone of
+central banks’ financial stability reports moves stock markets (Born et
+al. 2014).</p>
 <h3 id="why-it-works-the-reasoning-6">Why it works: the reasoning</h3>
 <p>The assumption is that <strong>the words a writer picks reveal their
 attitude</strong>: more happy words, happier writer. The true mood is
-hidden (the course calls it <strong>latent</strong>), and the score is
+hidden (the word for this is <strong>latent</strong>), and the score is
 our estimate of it.</p>
-<p>The course puts dictionary methods in the <strong>supervised</strong>
-box. In this course “supervised” means “we know what comes out”. There
-are no correct answers to learn from, but you wrote the rule (“positive
-minus negative, divided by length”) before seeing any data. So for any
-text, anyone gets the same score. The rule has a <strong>known
-functional form</strong> (its shape is fixed by you).</p>
+<p>The teacher puts dictionary methods in the
+<strong>supervised</strong> box. On this exam “supervised” means “we
+know what comes out”. There are no correct answers to learn from, but
+you wrote the rule (“positive minus negative, divided by length”) before
+seeing any data. So for any text, anyone gets the same score. The rule
+has a <strong>known functional form</strong> (its shape is fixed by
+you).</p>
 <p>The method treats each text as a <strong>bag of words</strong>: a bag
 of loose words with their order thrown away. That is the source of most
 of its weaknesses.</p>
@@ -1995,10 +2079,10 @@ negative, so the score comes out wrong. That is why Loughran and
 McDonald built a finance list. [Not in course files — general knowledge:
 a 10-K is the annual report US listed firms file with the SEC.]</li>
 <li><strong>Negation.</strong> “No crisis” is good news, but a plain
-count only sees “crisis”. The course’s crude fix is to skip a hit when
-the word right before it is <em>not, no, never, without</em> or
-<em>nor</em>. “Not a crisis” still slips through, because the word
-before “crisis” is “a”.</li>
+count only sees “crisis”. A crude fix is to skip a hit when the word
+right before it is <em>not, no, never, without</em> or <em>nor</em>.
+“Not a crisis” still slips through, because the word before “crisis” is
+“a”.</li>
 <li><strong>Very subjective.</strong> Someone chooses the words; another
 researcher would choose others and get a different answer.</li>
 <li><strong>You must know what to search for.</strong> You only find
@@ -2074,22 +2158,29 @@ choices</li>
 <h3 id="truefalse-traps-6">True/False traps</h3>
 <ul>
 <li>“Dictionary-based methods allow you to capture polysemy in text
-well.” → <strong>False</strong>. <em>Why:</em> a word counts the same in
-every context. (2025 exam.)</li>
+well.” → <strong>False</strong>. <em>Why:</em> as the polysemy point
+above explains, a word list counts the spelling, not the meaning, so
+“bank” counts the same in “river bank” and “bank loan”. (2025
+exam.)</li>
 <li>“Boolean/dictionary methods are by far the most used approach in
 economics and finance.” → <strong>True</strong>. <em>Why:</em> the
-lecture says so directly; they are simple and transparent.</li>
+teacher says exactly this, as noted at the top of this section: they are
+simple, cheap and transparent, so they are used more than any other text
+method in these fields.</li>
 <li>“General-purpose sentiment dictionaries work well for 10-K reports.”
-→ <strong>False</strong>. <em>Why:</em> words like <em>liability</em>,
-<em>tax</em> and <em>cost</em> are normal in company reports but marked
-negative by an everyday list.</li>
+→ <strong>False</strong>. <em>Why:</em> as the field-specific words
+point above explains, <em>liability</em>, <em>tax</em> and <em>cost</em>
+are normal words in a company’s annual report, but an everyday list
+marks them negative, which is why a finance list (Loughran and McDonald)
+was built.</li>
 <li>“Dictionary methods are unsupervised, because there is no outcome.”
-→ <strong>False</strong>. <em>Why:</em> the rule is known, so the course
-calls them supervised.</li>
+→ <strong>False</strong>. <em>Why:</em> there are no correct answers,
+but you wrote the rule (“positive minus negative”) before seeing any
+data, and on this exam a known rule is enough to call a method
+supervised.</li>
 </ul>
-<p><strong>Sources:</strong> v3 chapters 6 and 7; 2025 exam T/F (h) in
-simple/s1.md; Lecture_bow_based_methods.pdf;
-Lecture_llm_transformer.pdf.</p>
+<p><strong>Sources:</strong> Lecture 3 (bag-of-words-based methods) and
+Lecture 8 (Transformers); 2025 exam T/F (h).</p>
 <h2 id="m8">8. Text regression and regularisation (Lasso,
 cross-validation, out-of-sample)</h2>
 <p><strong>On the exam:</strong> asked in 2025 as True/False (e) (2
@@ -2114,7 +2205,8 @@ line through points.</p>
 <ul>
 <li>The number you predict (price) is the <strong>outcome</strong>.</li>
 <li>What you predict from (size) is the <strong>input</strong>, also
-called the <strong>explanatory variable</strong>.</li>
+called the <strong>explanatory variable</strong> or the
+<strong>regressor</strong>.</li>
 <li>The <strong>coefficient</strong> (or weight) says how much the input
 matters: how much the price goes up for each extra square metre.</li>
 <li>The standard way to pick the best line is <strong>OLS</strong>
@@ -2132,15 +2224,22 @@ column is one input with its own coefficient. A word with a positive
 coefficient pushes the prediction up each time it appears; a negative
 one pushes it down. Because the method learns from texts whose right
 number is already known, it is <strong>supervised</strong>.</p>
-<p>The course example: about 70 US State of the Union speeches (the
-president’s yearly speech to Congress), each paired with that year’s
-economic growth.</p>
+<p>An example. Say you want to know whether the words in a US
+president’s yearly speech to Congress (the State of the Union speech)
+can predict how fast the economy grew that year. The input is the word
+counts of each speech; the output is that year’s growth. You have about
+70 such speeches, each paired with its year’s growth. This is the
+example the lectures used.</p>
 <p><strong>Step 3: the problem, more words than documents.</strong> 70
-speeches, but thousands of different words. Every coefficient is an
-unknown the computer must choose, and every document gives only one fact
-to check it against. With more unknowns than facts, the computer can
-always find coefficients that hit every training speech exactly, in
-endless different ways.</p>
+speeches, but thousands of different words. Textbooks write the number
+of documents as <strong>n</strong> and the number of different words as
+<strong>p</strong>. “n ≪ p” is shorthand for “n is much smaller than p”:
+far fewer documents than words, which is the normal case for text. “n ≫
+p” would mean the opposite, far more documents than words, which is rare
+for text. Every coefficient is an unknown the computer must choose, and
+every document gives only one fact to check it against. With more
+unknowns than facts, the computer can always find coefficients that hit
+every training speech exactly, in endless different ways.</p>
 <p>That sounds great, but it is <strong>memorising, not
 learning</strong>. Think of a student who memorises last year’s exam
 answers. They score 100% on those exact questions and fail a new exam.
@@ -2148,9 +2247,10 @@ In the model this is <strong>overfitting</strong>: it memorises the
 training examples, including their random noise, and then predicts badly
 on new ones. Each input column is one <strong>dimension</strong>, so the
 trouble that comes with far more columns than rows is called the
-<strong>curse of dimensionality</strong>. The slides: “we have more
-explanatory variables than observations of the outcome (more unknowns
-than equations). Thus, we cannot apply linear regression directly.”</p>
+<strong>curse of dimensionality</strong>. In the teacher’s words: “we
+have more explanatory variables than observations of the outcome (more
+unknowns than equations). Thus, we cannot apply linear regression
+directly.”</p>
 <p><strong>Step 4: the fix, charge a fee.</strong> Imagine guessing
 house prices from 70 sales, but you may use 5,000 features (door colour,
 the dog’s name…). With enough features you can explain the 70 prices
@@ -2176,8 +2276,8 @@ knowledge]</li>
 <p><strong>Step 5: the dial, λ (lambda).</strong> The strength of the
 fee is a dial called λ.</p>
 <ul>
-<li>λ = 0: no fee, so you are back to plain OLS. The slides: “This is
-typically not what we do with text data!”</li>
+<li>λ = 0: no fee, so you are back to plain OLS. In the teacher’s words:
+“This is typically not what we do with text data!”</li>
 <li>Small λ: a tiny fee; the model can still overfit.</li>
 <li>Big λ: a huge fee; every coefficient is pushed to zero, the model
 ignores all words and predicts the average every time.</li>
@@ -2189,12 +2289,12 @@ part (the <strong>test set</strong>, or <strong>held-out data</strong>).
 Try several λ values and keep the one that predicts the hidden part
 best. This is <strong>cross-validation</strong>, a form of
 <strong>out-of-sample</strong> testing (“out-of-sample” = measured on
-data the model never saw). The course cuts the speeches into 5 groups,
-trains on 4, predicts the 5th, and repeats so each group is predicted
-once. A second way to pick λ is an <strong>information
-criterion</strong> such as AIC or BIC: a score on the training data that
-rewards good fit but charges for every extra coefficient [Not in course
-files — general knowledge].</p>
+data the model never saw). A common way: cut the speeches into 5 groups,
+train on 4, predict the 5th, and repeat so each group is predicted once.
+A second way to pick λ is an <strong>information criterion</strong> such
+as AIC or BIC: a score on the training data that rewards good fit but
+charges for every extra coefficient [Not in course files — general
+knowledge].</p>
 <p><strong>Step 7: judging the result.</strong> The usual score is
 <strong>R²</strong>: 1 means perfect predictions, 0 means no better than
 always guessing the average. Measured on the training documents it is
@@ -2203,12 +2303,13 @@ always guessing the average. Measured on the training documents it is
 <h3 id="why-it-works-the-reasoning-7">Why it works: the reasoning</h3>
 <p>The insight is that <strong>a model that can fit anything proves
 nothing</strong>. With far more words than documents, the in-sample R²
-is close to 1 almost always. The course shows this with a
-<strong>placebo test</strong>: it shuffles the growth numbers between
-years, so the words cannot hold real information about them. The
-in-sample R² still stays near 1, like a student memorising 70 random
-answers. The out-of-sample R² collapses. The course’s lesson: “Judge
-text models on data they have <strong>not seen</strong>.”</p>
+is close to 1 almost always. A <strong>placebo test</strong> shows this.
+A placebo is a fake treatment, like a sugar pill. Here you shuffle the
+growth numbers between years, so the words cannot hold real information
+about them. The in-sample R² still stays near 1, like a student
+memorising 70 random answers. The out-of-sample R² collapses. The
+lesson, in the teacher’s words: “Judge text models on data they have
+<strong>not seen</strong>.”</p>
 <p>The penalty works because most words carry no real signal. Forcing
 the model to “pay” for each word makes it spend only on words that
 genuinely help predict new texts. That is learning instead of
@@ -2230,7 +2331,7 @@ out-of-sample?</li>
 <li><strong>Compared with dimension reduction:</strong> instead of a
 fee, you can first squeeze the thousands of word columns into a few
 summary columns (PCA, Partial Least Squares, or topic shares) and run
-the regression on those. The slides: “Text regressions are
+the regression on those. In the teacher’s words: “Text regressions are
 high-dimensional problems. Thus, we need penalization methods or
 dimension reduction.”</li>
 <li><strong>Compared with a dictionary score:</strong> a dictionary
@@ -2316,30 +2417,38 @@ should collapse</li>
 <ul>
 <li>“In text regressions usage of regularization techniques help
 overcome the curse of dimensionality.” → <strong>True</strong>.
-<em>Why:</em> the fee stops the model fitting anything when there are
-far more words than documents. (2025 exam.)</li>
+<em>Why:</em> with far more words than documents the model can fit
+anything (the curse of dimensionality), and the fee on big word weights
+(regularisation) stops it from doing so. (2025 exam.)</li>
 <li>“With λ = 0 the Lasso equals OLS.” → <strong>True</strong>.
-<em>Why:</em> no fee means only the fit counts, which is plain OLS.</li>
+<em>Why:</em> λ is the dial for the fee; at zero there is no fee, so
+only the fit counts, which is plain OLS (Step 5).</li>
 <li>“In Lasso, high values of λ make coefficients larger.” →
-<strong>False</strong>. <em>Why:</em> a higher fee shrinks coefficients,
-and a high enough one makes them zero.</li>
+<strong>False</strong>. <em>Why:</em> turning the λ dial up makes the
+fee bigger, which shrinks the coefficients; a big enough fee pushes them
+all to zero (Step 5).</li>
 <li>“λ is chosen by cross-validation.” → <strong>True</strong>.
-<em>Why:</em> you pick the λ that predicts held-back documents
-best.</li>
+<em>Why:</em> as Step 6 explains, you try several λ values and keep the
+one that predicts the held-back documents best; that is
+cross-validation.</li>
 <li>“A high in-sample R² proves the text predicts the outcome.” →
-<strong>False</strong>. <em>Why:</em> with far more words than
-documents, the model can fit its own training data almost perfectly
-anyway.</li>
+<strong>False</strong>. <em>Why:</em> in-sample R² is measured on the
+texts the model learned from, and with far more words than documents the
+model can fit those almost perfectly anyway; only the score on unseen
+texts is honest.</li>
 <li>“If a Ridge regression of a shuffled (placebo) target on word counts
 gives an in-sample R² near 1, the words are informative.” →
-<strong>False</strong>. <em>Why:</em> the model can memorise even random
-answers; only out-of-sample R² counts.</li>
+<strong>False</strong>. <em>Why:</em> as the placebo test above shows,
+shuffled answers carry no real information, yet the model still
+memorises them; only the out-of-sample R² would reveal that it has
+learned nothing.</li>
 <li>“Text regressions typically have more documents than words (n ≫ p).”
-→ <strong>False</strong>. <em>Why:</em> it is far fewer documents than
-words (n ≪ p).</li>
+→ <strong>False</strong>. <em>Why:</em> as Step 3 explains, text usually
+gives far fewer documents than words (n ≪ p), not the other way
+round.</li>
 </ul>
-<p><strong>Sources:</strong> v3 chapter 8; 2025 exam T/F (e) in
-simple/s1.md; Lecture_bow_based_methods.pdf; Interactive notebook 2.</p>
+<p><strong>Sources:</strong> Lecture 3 (bag-of-words-based methods);
+2025 exam T/F (e).</p>
 <h2 id="m9">9. Naive Bayes: sorting texts into categories</h2>
 <p><strong>On the exam:</strong> asked in 2025 as True/False (g) (2
 points: Naive Bayes is not for two continuous variables). Likely again
@@ -2824,14 +2933,19 @@ big one, like ChatGPT, is an <strong>LLM</strong> (large language
 model). Guessing the next piece of text from the pieces before it is
 called <strong>next-token prediction</strong>. A <strong>token</strong>
 is one small piece of text: a whole word, part of a word, or a single
-letter. Big chatbots use parts of words. The course’s small model uses
-single letters, and learns to write new first names.</p>
-<p>Earlier course methods treat a text as a loose <strong>bag of
-words</strong>: count each word, throw the order away. The lecture: “Up
-to now, we have treated tokens in a text as independent entities.”
-(<strong>Independent</strong> = each word has nothing to do with the one
-before.) A language model drops that idea: the whole point is what comes
-after what.</p>
+letter. Big chatbots use parts of words. A small model can use single
+letters, which are called <strong>characters</strong>. Running example:
+say you want a computer to invent new first names that sound real. It
+reads a long list of real names, letter by letter, and learns which
+letter tends to follow which. Its input is the letters so far; its
+output is a guess for the next letter. (This names example is the one
+the lectures use, so it is safe to mention in the exam.)</p>
+<p>Simpler text methods treat a text as a loose <strong>bag of
+words</strong>: count each word, throw the order away. In the lecturer’s
+words: “Up to now, we have treated tokens in a text as independent
+entities.” (<strong>Independent</strong> = each word has nothing to do
+with the one before.) A language model drops that idea: the whole point
+is what comes after what.</p>
 <p><strong>Step 1: collect example text</strong>, the
 <strong>corpus</strong>: a long list of names, or years of a shop’s
 customer emails.</p>
@@ -2847,8 +2961,11 @@ each piece, work out how often each next piece followed it. That gives a
 probability</strong>.</p>
 <p>More generally, an <strong>n-gram</strong> model guesses the next
 token from the n − 1 tokens before it. A bigram looks back
-<strong>one</strong> token. A <strong>trigram</strong> looks back
-two.</p>
+<strong>one</strong> token. A <strong>trigram</strong> looks back two.
+The words a model looks at before guessing are the words it
+<strong>conditions on</strong>. So a bigram “conditions on” the one
+token before, never two. Exam statements use this phrase a lot, so read
+it as “looks at before guessing”.</p>
 <p><strong>Step 4: fix the zeros.</strong> A pair you never saw gets
 chance zero, so the model would call it impossible. That is too harsh,
 so you pretend every pair was seen one extra time. This is
@@ -2862,18 +2979,20 @@ until you hit “end”. Picking the next piece at random, weighted by the
 chances, is <strong>sampling</strong>. Always taking the favourite
 instead is <strong>greedy decoding</strong>, and it writes the same
 thing every time. A model that always gives the same output for the same
-start is <strong>deterministic</strong>, and the course says: “We don’t
-want our model to be deterministic.”</p>
+start is <strong>deterministic</strong>. We don’t want that here: a
+names generator that writes the same name every time is useless.</p>
 <p><strong>Step 6: grade the model.</strong> Walk through real text and,
 at each step, look at the chance the model gave to the piece that really
 came next.</p>
 <ul>
 <li>The <strong>loss</strong> is a surprise score. If the model gave the
 real next word a high chance, it isn’t surprised: low loss. If it gave
-it a low chance, it is very surprised: high loss. Averaged over the
-text; lower is better. Its official name is <strong>negative
-log-likelihood</strong>. <strong>Training</strong> means making this
-score small.</li>
+it a low chance, it is very surprised: high loss. If it gave the real
+next word a chance of zero, the surprise has no limit, and the loss
+becomes infinite. A single never-seen pair is enough, which is why Step
+4’s smoothing matters. Averaged over the text; lower is better. Its
+official name is <strong>negative log-likelihood</strong>.
+<strong>Training</strong> means making this score small.</li>
 <li><strong>Perplexity</strong> turns the loss into an easier reading:
 roughly how many options the model is torn between at each step. A model
 that knows nothing is torn between all options equally: this blind
@@ -2888,15 +3007,28 @@ walked my…” the chances might be dog 70%, cat 20%, banana 10% (made-up
 numbers). <strong>Temperature</strong> changes those chances right
 before the word is picked. Low temperature (below 1): the favourite gets
 even more likely, so “dog” almost every time. Safe and predictable, but
-repetitive. Good for a customer-service bot. Turned all the way down, it
-becomes greedy decoding. High temperature (above 1): the chances get
-flatter, so “cat” and even “banana” come up more. Varied and creative,
-but more mistakes. Good for brainstorming. It doesn’t change what the
-model has learned; it only changes how the next word is picked.</p>
-<p><strong>Where the right answers come from.</strong> Nobody labels
-anything: the real next word is already in the text. This is
-<strong>self-supervised</strong> learning, and big chatbots are trained
-the same way.</p>
+repetitive. Good for a customer-service bot. Turned all the way down to
+0, it becomes greedy decoding: the model always takes its favourite, so
+you get the same answer every time you ask. Temperature 0 suits jobs
+with one right answer, such as pulling facts out of a text or sorting
+texts into boxes. High temperature (above 1): the chances get flatter,
+so the underdogs, like “cat” and even “banana”, come up more. In the
+names generator, that means rare letters (characters) get picked more
+often. Varied and creative, but more mistakes. Good for brainstorming.
+It doesn’t change what the model has learned; it only changes how the
+next word is picked.</p>
+<p><strong>Where the right answers come from.</strong> Machine learning
+comes in three kinds, depending on who supplies the right answers.
+<strong>Supervised</strong>: a human gives them, like a teacher marking
+every email “spam” or “not spam”. <strong>Unsupervised</strong>: there
+are no right answers at all, only patterns to discover, like sorting a
+pile of news stories into themes nobody named.
+<strong>Self-supervised</strong>: the data supplies its own answers.
+That is the case here. Nobody labels anything: the real next word is
+already in the text, so the model can check every guess against it. Big
+chatbots are trained the same way, so the right word for their training
+is self-supervised, not unsupervised. (Exam papers often say a model is
+<strong>estimated</strong>; that means trained.)</p>
 <h3 id="why-it-works-the-reasoning-10">Why it works: the reasoning</h3>
 <p>Language has order. What comes next depends on what came before:
 after “thank” comes “you” far more often than “banana”. So if a pair
@@ -2905,8 +3037,8 @@ Counting is the learning.</p>
 <p>Smoothing rests on a sensible idea: not seeing something in a limited
 sample doesn’t prove it can never happen. The loss rests on another: a
 good model should not be surprised by real text.</p>
-<p>The course’s big message is that the chatbots run on this same “guess
-the next piece” recipe. The lecture: “Modern LLMs follow the same
+<p>The big message is that the chatbots run on this same “guess the next
+piece” recipe. In the lecturer’s words: “Modern LLMs follow the same
 recipe, with a transformer and hundreds of thousands of tokens of
 context.” (A <strong>transformer</strong> is the network design behind
 today’s chatbots.)</p>
@@ -2925,8 +3057,16 @@ multiplies its size again.</li>
 order, which is fine for “what is this text about?”. An n-gram keeps
 short-range order, which is what you need for “what comes next?”.</li>
 <li><strong>Compared with a neural network doing the same job:</strong>
-the lecture says the network “learns the same thing as counting, but it
-scales: we can give it more context without the table exploding.” Giving
+a <strong>neural network</strong> is a machine of many small dials that
+learns by nudging them after every wrong guess, instead of counting.
+Picture building one for exactly the same job as the names generator:
+guess the next letter from the one letter before. That is the
+<strong>neural network bigram</strong>. After training it scores almost
+exactly the same as the counting bigram, and its learned dials turn into
+almost the same table of chances. So it is not “much better”. In the
+lecturer’s words, the network “learns the same thing as counting, but it
+scales: we can give it more context without the table exploding.” A
+bigger network that looks back five letters does clearly better. Giving
 the model more to look back on is what really improves it.</li>
 </ul>
 <h3 id="what-the-exam-asks-10">What the exam asks</h3>
@@ -2991,7 +3131,7 @@ both.</li>
 <li>Saying the neural network version is “much better” than counting. It
 learns the same thing; its advantage is that it can look further
 back.</li>
-<li>Calling LLM training “unsupervised”. The course word is
+<li>Calling LLM training “unsupervised”. The right word is
 self-supervised.</li>
 </ul>
 </div>
@@ -3023,33 +3163,39 @@ answers</li>
 <h3 id="truefalse-traps-10">True/False traps</h3>
 <ul>
 <li>“A bigram conditions on the previous two tokens.” →
-<strong>False</strong>. <em>Why:</em> “conditions on” means “looks at
-before guessing”, and a bigram looks back only one.</li>
+<strong>False</strong>. <em>Why:</em> as explained in Step 3,
+“conditions on” means “looks at before guessing”, and a bigram looks
+back at only one token; it is the trigram that looks back two.</li>
 <li>“The n-gram model treats tokens as independent.” →
-<strong>False</strong>. <em>Why:</em> the whole point is that it uses
-the token before.</li>
+<strong>False</strong>. <em>Why:</em> treating words as independent is
+the bag-of-words idea, and the n-gram model drops it on purpose: it
+guesses each word from the word or words just before it.</li>
 <li>“Higher temperature makes output more predictable.” →
-<strong>False</strong>. <em>Why:</em> turning the dial up makes it more
-random, not less.</li>
+<strong>False</strong>. <em>Why:</em> temperature is the creativity
+dial, and turning it up flattens the chances, so the output gets more
+random and less predictable.</li>
 <li>“Setting the temperature above 1 makes rare characters more likely.”
-→ <strong>True</strong>. <em>Why:</em> the favourite loses some of its
-lead and the underdogs gain.</li>
+→ <strong>True</strong>. <em>Why:</em> above 1 the favourite loses some
+of its lead, so the underdogs, here the rare letters in the names
+generator, get picked more often.</li>
 <li>“Without smoothing, a single unseen bigram can make the loss
-infinite.” → <strong>True</strong>. <em>Why:</em> a never-seen pair gets
-chance zero, and calling the real next piece impossible means endless
-surprise.</li>
+infinite.” → <strong>True</strong>. <em>Why:</em> a pair never seen in
+the data gets chance zero, and when the model calls the real next piece
+impossible, its surprise score (the loss) has no limit.</li>
 <li>“The neural network bigram is much better than the count-based
-bigram.” → <strong>False</strong>. <em>Why:</em> the two are nearly
-identical; the network’s advantage is that it can grow to look further
-back.</li>
+bigram.” → <strong>False</strong>. <em>Why:</em> the neural network
+bigram does the same job as counting and scores almost exactly the same;
+its only advantage is that it can grow to look further back without the
+table exploding.</li>
 <li>“Large Language Models are estimated using unsupervised learning.”
-(2025, 1(f)) → <strong>False</strong>. <em>Why:</em> the course calls it
-self-supervised: the real next word is the answer, taken from the text
-itself, with no human labels.</li>
+(2025, 1(f)) → <strong>False</strong>. <em>Why:</em> “estimated” means
+trained, and the training is self-supervised, not unsupervised: the
+right answer (the real next word) is already in the text, so there are
+right answers, they just don’t come from a human.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch11.md;
-notes/C_ngram_neuralnets_embeddings.md (Lecture 4 and its notebook);
-2025 exam 1(f) in simple/s1.md.</p>
+<p><strong>Sources:</strong> Lecture 4 (Introducing next token
+prediction) and its notebooks; Lecture 9 class notebook (temperature 0);
+2025 exam T/F (f).</p>
 <h2 id="m12">12. Neural networks, only what the exam needs</h2>
 <p><strong>On the exam:</strong> the one-hot vector was asked in 2025,
 Q3(c) (2.5 points). Softmax, loss and the training words come back in
@@ -3084,7 +3230,11 @@ no calculation, so it isn’t counted.</li>
 their numbers directly.</li>
 <li>The <strong>output layer</strong> gives the final answer.</li>
 </ul>
-<p>Many hidden layers stacked up is called <strong>deep
+<p>When people count a network’s layers, they leave the input layer out,
+because it only passes numbers in. So a network with one hidden layer is
+called a <strong>two-layer network</strong>: the hidden layer plus the
+output layer. Think of a house: you don’t count the front door as a
+room. Many hidden layers stacked up is called <strong>deep
 learning</strong>.</p>
 <p><strong>Words must become numbers first.</strong> The network only
 handles numbers. So each word becomes a <strong>one-hot vector</strong>.
@@ -3093,16 +3243,28 @@ list as long as the <strong>vocabulary</strong> (the full list of words
 the model knows), all zeros except a single 1 in that word’s own slot.
 Think of a row of light switches where only one is on: the switch for
 “dog”.</p>
-<p>In the first layer, the zeros wipe out every other word’s weights,
-and only that word’s own column of weights comes through. So the one-hot
-vector works as a <strong>selection vector</strong>, like a finger
-pointing at one name in a phone book.</p>
+<p>All the weights of one layer, written out as a table with a row or
+column per word, form a <strong>weight matrix</strong> (a
+<strong>matrix</strong> is a table of numbers, like a spreadsheet). In
+the first layer, the one-hot vector is multiplied by this table. The
+zeros wipe out every other word’s weights, and only that word’s own
+column of weights comes through. You do not get all the columns added
+up; you get one. So the one-hot vector works as a <strong>selection
+vector</strong>, like a finger pointing at one name in a phone book.</p>
+<p>This is exactly how <strong>word2vec</strong> starts. word2vec is a
+small network that learns a short list of numbers for every word, called
+the word’s <strong>embedding</strong>, so that words with similar
+meanings get similar lists. Those lists sit in the first layer’s table,
+one column per word. The one-hot vector picks out the column of the word
+being fed in, and learning good columns is the whole point of
+word2vec.</p>
 <p><strong>From scores to chances: softmax.</strong> Say the job is to
 guess the next word. The output layer gives one raw
 <strong>score</strong> for each possible word, of any size, even
 negative. <strong>Softmax</strong> turns scores into chances that add up
-to 100%. The biggest score gets the biggest chance, but every option
-keeps some.</p>
+to 100%. Chances are often written between 0 and 1, so “add up to 100%”
+is the same as “sum to 1”. The biggest score gets the biggest chance,
+but every option keeps some.</p>
 <p><strong>How training nudges the weights.</strong> At first the
 weights are random, so the guesses are bad. Then:</p>
 <ol type="1">
@@ -3120,22 +3282,38 @@ that way, like feeling your way down a foggy hill.</li>
 <li>Repeat many times. One full pass through all the examples is an
 <strong>epoch</strong>.</li>
 </ol>
-<p>Doing each step on a small random handful of examples is
-<strong>stochastic gradient descent (SGD)</strong>. Networks have a long
-history; they took off partly thanks to SGD, <strong>dropout and
-regularisation</strong> (tricks against memorising the examples), and
-<strong>GPUs</strong> (graphics chips that do thousands of sums at
-once).</p>
+<p>Doing each step on a small random handful of examples (a
+<strong>mini-batch</strong>) instead of all of them is
+<strong>stochastic gradient descent (SGD)</strong>; “stochastic” means
+random. It is faster, and a bit noisier.</p>
+<p><strong>Why networks took off.</strong> A network can learn its
+training examples by heart instead of the general pattern, like
+memorising last year’s exam answers without understanding them. This is
+<strong>overfitting</strong>. Tricks against it are called
+<strong>regularisation</strong>. One such trick is
+<strong>dropout</strong>: during training, switch off some random
+neurons each time, so the network can’t lean on any single one. (How
+dropout works is <strong>[Not in course files — general
+knowledge]</strong>.) Networks also need huge numbers of small
+multiplications, and a <strong>GPU</strong> (a graphics chip) can do
+thousands of them at the same time. Networks are not new; they have a
+long history. They became popular partly thanks to these newer
+developments: SGD, dropout and regularisation, and GPUs.</p>
 <h3 id="why-it-works-the-reasoning-11">Why it works: the reasoning</h3>
 <p>Nobody has to name the patterns. The hidden layers build their own
 useful summaries of the input, called <strong>latent features</strong>
 (“latent” = hidden). Thousands of small nudges, each making the error a
 bit smaller, add up to a good model.</p>
-<p>An older method, <strong>logistic regression</strong>, takes a
-weighted sum and squeezes it into a chance. A network’s last layer does
-the same, so a deep network is like layer after layer of small judges
-passing verdicts on. The difference: in logistic regression a human
-picks the inputs; in a network, the earlier layers build them.</p>
+<p>An older method, <strong>logistic regression</strong>, is a
+<strong>classifier</strong>: something that sorts items into groups,
+such as “spam” or “not spam”. It takes a weighted sum of the inputs and
+squeezes it into a chance. A network whose last layer is softmax does
+the same thing at the end, so that last layer works like logistic
+regression. And since every layer does a weighted sum and a squashing
+step, a deep network is like layer after layer of logistic regressions,
+small judges each passing their verdict on to the next. The difference:
+in logistic regression a human picks the inputs; in a network, the
+earlier layers build them.</p>
 <h3 id="when-to-use-it-and-when-not-11">When to use it, and when
 not</h3>
 <ul>
@@ -3151,6 +3329,23 @@ explodes every time you look one more word back; a network takes in more
 context without exploding. On the same short context, it learns the same
 thing as counting.</li>
 </ul>
+<h3 id="more-ideas-the-exam-can-test-1">More ideas the exam can
+test</h3>
+<p><strong>The neural network bigram: the simplest network, with no
+hidden layer.</strong> A <strong>bigram</strong> is a pair of
+neighbours, and a bigram model guesses the next piece of text from the
+one piece before it. Say you want a computer to invent new first names:
+it reads real names letter by letter and guesses each next letter from
+the letter before. A neural network can do this job. Each letter goes in
+as a one-hot vector, a single table of dials turns it into one score per
+possible next letter, and softmax turns those scores into chances. That
+is all: the input goes straight to the output layer, so this network has
+<strong>no hidden layer</strong>. After training it guesses almost
+exactly as well as plain counting of letter pairs. A network with at
+least one hidden layer is called an <strong>MLP</strong>; a bigger one
+that looks back five letters does better. This is the example the
+lectures use, so “the neural network bigram” in an exam statement means
+this network.</p>
 <h3 id="what-the-exam-asks-11">What the exam asks</h3>
 <p><strong>2025, Q3(c) (2.5 points): “What is a one-hot-vector? Describe
 its usage in the first layer of the word2vec model.”</strong></p>
@@ -3230,29 +3425,32 @@ pattern</li>
 <h3 id="truefalse-traps-11">True/False traps</h3>
 <ul>
 <li>“Multiplying a one-hot vector by a weight matrix returns the sum of
-all rows of the matrix.” → <strong>False</strong>. <em>Why:</em> every
-zero wipes out its part, so you get only the one row or column where the
-1 sits.</li>
+all rows of the matrix.” → <strong>False</strong>. <em>Why:</em> the
+one-hot vector is all zeros except one 1, and every zero wipes out its
+part of the weight table, so you get only the one row or column where
+the 1 sits, not everything added up.</li>
 <li>“Softmax outputs always sum to 1.” → <strong>True</strong>.
-<em>Why:</em> softmax turns scores into chances that add up to
-100%.</li>
+<em>Why:</em> softmax turns raw scores into chances that always add up
+to 100%, and 100% written as a number between 0 and 1 is 1.</li>
 <li>“A softmax output layer makes a neural network like logistic
-regression.” → <strong>True</strong>. <em>Why:</em> both turn a weighted
-sum into a chance at the end.</li>
+regression.” → <strong>True</strong>. <em>Why:</em> logistic regression
+turns a weighted sum into a chance, and a network ending in softmax does
+the same thing in its last layer.</li>
 <li>“A deep neural network can be seen as layer after layer of logistic
-regression classifiers.” → <strong>True</strong>. <em>Why:</em> each
-layer does a weighted sum and a squashing step, then passes its result
-on.</li>
+regression classifiers.” → <strong>True</strong>. <em>Why:</em> every
+layer does a weighted sum and a squashing step, which is what logistic
+regression does, and passes its verdict on to the next layer.</li>
 <li>“The input layer is counted when we call a network with one hidden
 layer a two-layer network.” → <strong>False</strong>. <em>Why:</em> the
-input layer does no calculation; the two layers are the hidden layer and
-the output layer.</li>
+input layer only passes numbers in and does no calculation, so it is
+left out; the two layers are the hidden layer and the output layer.</li>
 <li>“The neural network bigram has a hidden layer.” →
-<strong>False</strong>. <em>Why:</em> the course’s first network, which
-guesses the next letter from the one before, has no hidden layer.</li>
+<strong>False</strong>. <em>Why:</em> the neural network bigram, which
+guesses the next letter from the one before, goes straight from input to
+output through a single table of dials, so it has no hidden layer.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch12.md; 2025 exam Q3(c) in
-simple/s2.md.</p>
+<p><strong>Sources:</strong> Lecture 4; Lecture 6 (Neural Networks and
+Word Embeddings) and the next-token notebooks; 2025 exam Q3(c).</p>
 <h2 id="m13">13. Word embeddings: word meanings as positions on a
 map</h2>
 <p><strong>On the exam:</strong> a whole 15-point block in 2025: Q3(a)
@@ -3583,11 +3781,12 @@ billions of tiny volume knobs. Each knob is one number, called a
 <strong>weight</strong> or a <strong>parameter</strong> (the two words
 mean the same here). Where the knobs sit decides which guesses come out.
 The blueprint that arranges the knobs is the
-<strong>Transformer</strong> (Section 16). The lecture’s definition: an
-LLM is “A learned set of <strong>parameters (weights)</strong>, used
-with a tokenizer and inference software to generate language.” In plain
-words: a big pile of learned numbers, a tool that cuts text into pieces,
-and a program that runs the numbers.</p>
+<strong>Transformer</strong> (Section 16). A standard definition worth
+learning: an LLM is “A learned set of <strong>parameters
+(weights)</strong>, used with a tokenizer and inference software to
+generate language.” In plain words: a big pile of learned numbers, a
+tool that cuts text into pieces, and a program that runs the
+numbers.</p>
 <p><strong>Training: guess, measure how wrong, nudge.</strong> At the
 start the knobs are set at random, so the guesses are rubbish.
 <strong>Training</strong> means setting the knobs well by showing the
@@ -3596,15 +3795,18 @@ model examples. It is a loop:</p>
 <li>Show the model some text with the next token hidden.</li>
 <li>Let it guess.</li>
 <li>Reveal the real token and measure how wrong the guess was. This “how
-wrong” score is the <strong>loss</strong>, like points lost on a
-test.</li>
+wrong” score is the <strong>loss</strong>, like points lost on a test.
+For LLMs it is called <strong>cross-entropy loss</strong> (explained
+under “More ideas the exam can test” below).</li>
 <li>Nudge every knob a tiny bit, so the real token gets a little more
-likely next time.</li>
+likely next time. The nudging rule is <strong>gradient descent</strong>,
+and the trick that finds which way to turn each knob is
+<strong>backpropagation</strong> (both explained below).</li>
 <li>Repeat, billions of times.</li>
 </ol>
-<p><strong>The three training stages, and why each exists.</strong> The
-lecture calls them “common ingredients, not a fixed pipeline”: not every
-model uses every stage.</p>
+<p><strong>The three training stages, and why each exists.</strong> They
+are “common ingredients, not a fixed pipeline”: not every model uses
+every stage.</p>
 <ol type="1">
 <li><strong>Pre-training:</strong> “Learn to predict tokens from large
 collections of text, code, and, for some models, other media.” This is
@@ -3625,7 +3827,7 @@ teaches it to answer. This is the <strong>supervised</strong> stage,
 because people wrote the right answers. (<strong>Fine-tuning</strong> in
 general means extra training of an already-trained model. It changes the
 weights.)</li>
-<li><strong>Preference training</strong> (the lecture says “preference
+<li><strong>Preference training</strong> (its full name is “preference
 optimization / reinforcement learning”): “Improve responses using
 preferences or rewards, including verifiable results such as passing
 code tests.” The model is shown pairs of answers and which one people
@@ -3635,8 +3837,8 @@ it pushes the model towards the kind of answers people actually
 want.</li>
 </ol>
 <p>Everything after pre-training is called
-<strong>post-training</strong>. The lecture says it “develops
-instruction following, tool use, and reasoning capabilities.”</p>
+<strong>post-training</strong>. It “develops instruction following, tool
+use, and reasoning capabilities.”</p>
 <p><strong>Answer time: the knobs are frozen.</strong> Using the
 finished model to write answers is called <strong>inference</strong>.
 During inference the weights do not move at all. So the model does not
@@ -3653,31 +3855,40 @@ window; nothing else is ‘remembered’ unless the application re-inserts
 it.” A bigger window costs more, is slower, and “does not guarantee that
 every detail is used reliably”.</p>
 <p>So there are two very different things you can change: what is on the
-desk (the context), and the gut feeling (the weights). The lecture’s key
-line: “<strong>Uploading a document changes the context. Fine-tuning
+desk (the context), and the gut feeling (the weights). The key line to
+remember: “<strong>Uploading a document changes the context. Fine-tuning
 changes the weights.</strong>” <strong>RAG</strong> (retrieval-augmented
 generation: search your own documents and paste the relevant bits into
 the context) is uploading done automatically. “Retrieval changes
 context; fine-tuning changes weights. Neither guarantees accuracy.”</p>
-<p><strong>Hugging Face.</strong> Some makers publish their learned
-numbers so anyone can download and run the model. This is called
-<strong>open weights</strong>. Open weights “do not necessarily include
-training data or the full training recipe”. The course outline calls
-Huggingface “the AI community’s open-source hub for Machine Learning and
-Natural Language Processing”. In plain words: a free website, a bit like
-an app store, where people share models. (<strong>Open-source</strong>:
-free for anyone to use and share. <strong>Natural Language Processing
-(NLP)</strong>: computers working with human language.)</p>
+<p><strong>Open weights and Hugging Face.</strong> Some makers publish
+their learned numbers so anyone can download the model and run it on
+their own machines. This is called <strong>open weights</strong>. Put
+formally: “downloadable model parameters; permissions depend on the
+license” (a <strong>license</strong> is the legal terms saying what you
+may do with it, like the rules in a rental contract). Open weights “do
+not necessarily include training data or the full training recipe”.
+Think of being handed a finished cake: you can eat it and share it, but
+you don’t get the recipe or the list of ingredients. The best-known
+place to download open-weight models is <strong>Hugging Face</strong>.
+Its official description is “the AI community’s open-source hub for
+Machine Learning and Natural Language Processing”. In plain words: a
+free website, a bit like an app store, where people share models. That
+description comes from the course outline, and the 2025 exam tested it.
+(<strong>Open-source</strong>: free for anyone to use and share.
+<strong>Natural Language Processing (NLP)</strong>: computers working
+with human language.)</p>
 <h3 id="why-it-works-the-reasoning-13">Why it works: the reasoning</h3>
 <p>Text carries its own answer key. Every sentence ever written shows
 which word came after which. So the model can practise guessing on all
 of it, with no teacher. This is called <strong>self-supervised
-learning</strong>. The lecture: “Training LLMs is often called
-self-supervised training. Why? We use the actual text and train the
-model to predict the next word (or masked words). I.e., no need for
-manually creating training data.” (<strong>Masked words</strong>: words
-hidden inside a sentence, fill-in-the-blank style. Some models, such as
-BERT, practise that way.)</p>
+learning</strong>. The standard explanation, worth quoting in the exam:
+“Training LLMs is often called self-supervised training. Why? We use the
+actual text and train the model to predict the next word (or masked
+words). I.e., no need for manually creating training data.”
+(<strong>Masked words</strong>: words hidden inside a sentence,
+fill-in-the-blank style. Some models, such as BERT, practise that
+way.)</p>
 <p>Why is it not “unsupervised”? Compare the three kinds of
 learning:</p>
 <ul>
@@ -3703,16 +3914,21 @@ not</h3>
 <ul>
 <li><strong>Use it when</strong> the task is writing, summarising,
 translating or answering common questions, because it has seen huge
-amounts of that kind of text. The lecture names four ways a business can
-use one: a chat app, an <strong>API</strong> (a doorway that lets your
-own program send text and get answers back), an <strong>agent</strong>
-(the model loops through a task using outside tools), or running it on
-your own machines. “The mode determines the cost structure, where data
-goes, and who is accountable for errors.”</li>
+amounts of that kind of text. There are four ways a business can use
+one: a chat app, an <strong>API</strong> (a doorway that lets your own
+program send text and get answers back), an <strong>agent</strong> (the
+model loops through a task using outside tools), or running it on your
+own machines. “The mode determines the cost structure, where data goes,
+and who is accountable for errors.”</li>
 <li><strong>Put your facts in the context</strong> (upload or RAG) when
 the model needs your company’s documents for this answer.
 <strong>Fine-tune</strong> when you need a lasting change in how it
-behaves on one task; that needs labelled examples.</li>
+behaves on one task; that needs <strong>labelled</strong> examples (each
+example comes with the right answer, written by a person). For instance,
+to fine-tune a <strong>sentiment classifier</strong> (a model that sorts
+texts such as reviews into positive or negative), you need texts already
+tagged positive or negative. That makes this kind of fine-tuning
+ordinary supervised learning.</li>
 <li><strong>Don’t use it when</strong> facts must be right and nobody
 checks (it can hallucinate), when the task depends on single letters or
 digits (it only sees tokens, so spelling and arithmetic can go wrong),
@@ -3721,12 +3937,91 @@ or when the material will not fit in the window.</li>
 increase capacity, but performance also depends on data quality,
 training, and the task,” and “the largest model is not always the best
 choice.” Smaller models can suit narrow tasks or running on your own
-machine.</li>
+machine. Think of vehicles: a lorry carries the most, but for a quick
+trip to the shop a bike is the better choice.</li>
 <li><strong>Compared with training your own from scratch:</strong>
 “Training a frontier model from scratch is beyond a typical laptop” (a
 <strong>frontier model</strong> is one of the biggest of its time). So
 most users prompt or fine-tune an existing model.</li>
 </ul>
+<h3 id="more-ideas-the-exam-can-test-2">More ideas the exam can
+test</h3>
+<p><strong>Mixture of experts (MoE): only part of the model works on
+each token.</strong> The point: it makes a huge model cheaper to run. An
+MoE model is split into many “expert” parts, and for each token only a
+few experts are switched on. In exam words: “only a subset of the
+parameters is activated for each token.” Think of a big hospital: a
+patient with a broken arm sees two specialists, not all 200 doctors. So
+the model can be huge in total but does much less work per token. It
+does NOT mean every knob is used for every token; that is exactly the
+trap.</p>
+<p><strong>Cross-entropy loss: the “how wrong” score.</strong> The
+point: training needs one number that says how bad a guess was, so it
+knows what to fix. Cross-entropy is the name of that score for LLMs. It
+looks only at the chance the model gave to the true next token. A high
+chance on the true token means a small penalty, a low chance means a big
+penalty, and 100% on the right token means no penalty at all: the loss
+is zero. Think of a weather forecaster: saying “90% rain” on a day it
+rains costs almost nothing, saying “5% rain” on that day costs a lot.
+For a whole sentence, the penalties at each position are averaged. (The
+formal definition, “the negative log probability the model assigns to
+the next word”, is the same idea in maths words.)</p>
+<p><strong>Gradient descent: walking downhill in fog.</strong> The
+point: it is the rule for nudging the knobs in step 4 of the training
+loop. Picture yourself on a foggy mountain, trying to reach the valley
+floor. You can’t see far, but you can feel which way the ground slopes
+under your feet, so you take a small step downhill, feel again, and step
+again. Here the height is the loss and your position is the setting of
+all the knobs. The list of “which way is uphill” for every knob is
+called the <strong>gradient</strong>, and “step the other way, again and
+again” is <strong>gradient descent</strong>. Formally, it is “a general
+method to find the optimum (or minimum) of a function”: the lowest point
+of the loss.</p>
+<p><strong>Mini-batch, epoch and online training: how much data per
+nudge.</strong> The point: looking at all the training text before every
+single nudge would be far too slow. So each nudge uses a small random
+handful of examples, called a <strong>mini-batch</strong> (or batch).
+Think of tasting a spoonful of soup instead of the whole pot. One full
+trip through all the training data is an <strong>epoch</strong>, like
+reading the whole textbook once. The two extremes have their own names.
+If the handful is the whole data set (the whole pot), that is
+<strong>standard gradient descent</strong>. If it is a single example,
+so there is one nudge after every example, that is <strong>online
+training</strong>, which comes “with a lot of noise” (the steps wobble a
+lot). Nudging with random mini-batches is called <strong>stochastic
+gradient descent (SGD)</strong>, “stochastic” meaning random; it is the
+standard way to train large networks. Don’t mix them up: a mini-batch of
+one is online training, not standard gradient descent, and an epoch is
+the full pass, not one handful.</p>
+<p><strong>Backpropagation and the chain rule: finding which way to turn
+every knob.</strong> The point: an LLM has billions of knobs, and
+gradient descent needs to know, for each one, whether turning it up
+makes the loss better or worse. The model’s calculation is a long chain
+of small steps, so a change in one knob passes along the chain, link by
+link, to the loss, like a row of dominoes. The <strong>chain
+rule</strong> is the maths rule for following an effect through such a
+chain. <strong>Backpropagation</strong> starts at the end (the loss) and
+walks backwards through the chain once, and that one backward sweep
+gives the direction for every knob at the same time. Think of a factory
+line that made a faulty product: one walk back from the end, station by
+station, tells you how much each station added to the fault. The formal
+statement: backpropagation “is a ML term for reverse-mode
+differentiation, which in turn is just one way of applying the
+multivariate chain rule”. (<strong>Differentiation</strong>: working out
+how a small change in one thing changes another. <strong>Reverse
+mode</strong>: doing it from the end backwards.) So the three names
+describe the same trick.</p>
+<p><strong>Teacher forcing: show the true earlier words during
+training.</strong> The point: when the model practises guessing, say,
+the fifth word of a sentence, it needs the first four words to work
+from. Should those be the real words from the text, or its own earlier
+guesses? Teacher forcing means always giving it the real ones. Formally:
+“give the model the correct history sequence to predict the next word
+rather than feeding the model its best case from the previous … time
+step”. Think of a teacher who corrects each word of your dictation
+before you write the next one. It does NOT mean feeding the model its
+own predictions; that happens at answer time, when the model writes on
+from its own words.</p>
 <h3 id="what-the-exam-asks-13">What the exam asks</h3>
 <p><strong>Why is LLM pre-training called self-supervised, and which
 training step is supervised?</strong> (likely 2–5 sentence question)</p>
@@ -3749,8 +4044,9 @@ the supervised one.</p>
 <p><strong>Common mistakes that lose marks</strong></p>
 <ul>
 <li>Calling pre-training “unsupervised”. This was the 2025 trap. The
-course word is “self-supervised”, because the text supplies the right
-answers.</li>
+right word is “self-supervised”, because the text supplies the right
+answers. It is the word the lectures use, so the graders look for
+it.</li>
 <li>Saying pre-training uses human-labelled data. It uses plain text
 with no labels.</li>
 <li>Saying the model “learns from your chat” or “remembers you”. The
@@ -3793,52 +4089,63 @@ models</li>
 <ul>
 <li>“Large Language Models are estimated using unsupervised learning”
 (2025, T/F f) → <strong>False</strong>. <em>Why:</em> “estimated” means
-trained, and the course word is self-supervised: there is a right answer
-every time, supplied by the text itself.</li>
+trained. As “Why it works” explains, there is a right answer every time
+(the real next word), supplied by the text itself, so the right word is
+self-supervised, not unsupervised.</li>
 <li>“HuggingFace is a open source hub for Natural Language Processing”
-(2025, T/F b) → <strong>True</strong>. <em>Why:</em> the course outline
-calls it exactly that; the small grammar slip does not matter.</li>
+(2025, T/F b) → <strong>True</strong>. <em>Why:</em> Hugging Face is a
+free website where people share AI models, and its official description
+is an “open-source hub for Machine Learning and Natural Language
+Processing”. The small grammar slip (“a open”) does not matter.</li>
 <li>“RAG updates the model’s weights” → <strong>False</strong>.
-<em>Why:</em> RAG pastes found documents into what the model reads; it
-changes the context, not what the model learned.</li>
+<em>Why:</em> RAG searches your documents and pastes the useful bits
+into what the model reads. It changes the context (the desk), not the
+weights (what the model learned).</li>
 <li>“An LLM updates its weights during each conversation” →
-<strong>False</strong>. <em>Why:</em> the weights stay fixed while you
-chat.</li>
+<strong>False</strong>. <em>Why:</em> during inference (answer time) the
+knobs are frozen, so the model does not learn from your chat; only the
+context changes.</li>
 <li>“In an MoE model all parameters are used for every token” →
-<strong>False</strong>. <em>Why:</em> a mixture-of-experts (MoE) model
-is split into many “expert” parts and only a few work on each token,
-like a patient seeing two specialists, not every doctor in the
-hospital.</li>
+<strong>False</strong>. <em>Why:</em> in a mixture-of-experts model only
+a few expert parts switch on for each token, like a patient who sees two
+specialists, not every doctor in the hospital.</li>
 <li>“Open weights always include the training data” →
-<strong>False</strong>. <em>Why:</em> you get the learned numbers, not
-the texts the model learned from.</li>
+<strong>False</strong>. <em>Why:</em> open weights give you the learned
+numbers to download, not the texts the model learned from: the finished
+cake, not the recipe or the ingredients.</li>
 <li>“Bigger is always better” → <strong>False</strong>. <em>Why:</em>
-results also depend on data quality, training and the task.</li>
+results also depend on data quality, training and the task, and a
+smaller model can be the better choice for a narrow task or for running
+on your own machine.</li>
 <li>“Fine-tuning a sentiment classifier needs labelled data” →
-<strong>True</strong>. <em>Why:</em> a model that sorts texts into
-positive or negative needs example texts already tagged positive or
-negative.</li>
+<strong>True</strong>. <em>Why:</em> fine-tuning for a task like this is
+supervised learning, so the model needs example texts already tagged
+positive or negative.</li>
 <li>“The cross-entropy loss is zero when the model gives the true next
 word probability one.” → <strong>True</strong>. <em>Why:</em>
-cross-entropy is the name of the “how wrong” score; if the model was
-100% sure of the right word, it loses nothing.</li>
+cross-entropy is the “how wrong” score, and it shrinks as the chance
+given to the true word grows; if the model was 100% sure of the right
+word, nothing is lost, so the score is zero.</li>
 <li>“An epoch is one pass through the full training set” →
 <strong>True</strong>. <em>Why:</em> an epoch is one full read-through
-of all the training data.</li>
+of all the training data, like reading the whole textbook once.</li>
 <li>“A mini-batch of size one is standard gradient descent” →
-<strong>False</strong>. <em>Why:</em> gradient descent is the “nudge the
-knobs downhill” rule; the standard version looks at all the data before
-each nudge, while one example per nudge is called online training.</li>
+<strong>False</strong>. <em>Why:</em> a mini-batch of one example is
+online training (one nudge after every example); standard gradient
+descent uses the whole data set, the whole pot of soup, for each
+nudge.</li>
 <li>“Teacher forcing feeds the model its own predictions” →
-<strong>False</strong>. <em>Why:</em> during training it is fed the
-<em>true</em> earlier words, not its own guesses.</li>
+<strong>False</strong>. <em>Why:</em> teacher forcing means the
+opposite: during training the model is shown the <em>true</em> earlier
+words, not its own guesses.</li>
 <li>“Backpropagation is reverse-mode differentiation / the chain rule” →
-<strong>True</strong>. <em>Why:</em> these are names for the same trick
-that works out, in one backward sweep, which way to nudge every
-knob.</li>
+<strong>True</strong>. <em>Why:</em> these are three names for the same
+trick: one backward sweep from the loss, following the chain rule, that
+works out which way to turn every knob.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch14.md, v3/out/ch19.md; 2025 exam
-T/F (b) and (f) in simple/s1.md.</p>
+<p><strong>Sources:</strong> Lecture 7 “Introducing Large Language
+Models” and Lecture 9b “LLMs: Training and fine tuning”; the course
+outline; 2025 exam T/F (b) and (f).</p>
 <h2 id="m15">15. Tokens: the pieces an LLM actually reads</h2>
 <p><strong>On the exam:</strong> asked in 2025 as Q4(c) (5 points) and
 True/False (c) (2 points). Useful for the reflection too: prices and
@@ -3863,9 +4170,10 @@ few familiar pieces: “unbelievable” becomes un | believ | able, and
 is its <strong>vocabulary</strong>. Each piece has its own ID number,
 like a barcode on a product (its <strong>token ID</strong>). The model
 only ever receives these IDs. Inside the model, each ID is turned into
-an <strong>embedding</strong>: a list of numbers the model can calculate
-with, chosen so that pieces with similar meanings get similar lists. The
-lecture: “We do not input words per se, but <strong>tokens</strong>.”
+an <strong>embedding</strong>: a list of numbers (a
+<strong>vector</strong>) the model can calculate with, chosen so that
+pieces with similar meanings get similar lists. A key phrase to
+remember: “We do not input words per se, but <strong>tokens</strong>.”
 (“Per se” means “as such”.)</p>
 <p><strong>How the list of pieces is built: Byte-Pair Encoding
 (BPE).</strong> Nobody writes the vocabulary by hand. It is learned from
@@ -3874,7 +4182,10 @@ example text, in these steps:</p>
 <li>Take a big pile of example text. Cut every word into single letters,
 with a small tag marking where each word ends.</li>
 <li>Count how often each pair of side-by-side pieces appears, for
-example “t” followed by “h”.</li>
+example “t” followed by “h”. Each piece at this moment, a letter or an
+already-glued chunk, is called a <strong>symbol</strong>, and two
+symbols sitting next to each other are <strong>adjacent
+symbols</strong>.</li>
 <li>Take the pair that appears <em>most</em> often and glue it into one
 new piece (a <strong>merge</strong>). Do this everywhere in the text,
 and add the new piece to the vocabulary.</li>
@@ -3884,9 +4195,12 @@ want.</li>
 <p>It is like noticing you type “th” all the time and adding one key for
 it. To cut up a new sentence later, the tokenizer starts from its
 letters and repeats the same merges, in the same order.</p>
-<p><strong>Tokens are not words.</strong> The lecture: “Token counts
+<p><strong>Tokens are not words.</strong> Put formally: “Token counts
 depend on language and formatting; one word need not equal one token.”
-The same sentence can need more tokens in Norwegian than in English.</p>
+Say you take a short English sentence, translate it into Norwegian, and
+count the tokens of both. The Norwegian version needs more, because its
+words get chopped into more pieces. This is the example the lectures
+used, so it is a safe one to write in the exam.</p>
 <h3 id="why-it-works-the-reasoning-14">Why it works: the reasoning</h3>
 <p>There are two bad extremes:</p>
 <ul>
@@ -3897,7 +4211,7 @@ word not seen in training is unknown to the model.</li>
 sentence becomes very long and slow to process, and each piece carries
 little meaning.</li>
 </ul>
-<p>Tokens are the middle way. The lecture: “Subword methods such as
+<p>Tokens are the middle way. The key sentence: “Subword methods such as
 <strong>byte-pair encoding (BPE)</strong> balance vocabulary size
 against sequence length.” (<strong>Sequence length</strong>: how many
 tokens a text turns into.) BPE glues the most frequent pairs because
@@ -3939,11 +4253,12 @@ letters or digits, so it is weak at spelling, counting letters (“how
 many r’s in strawberry?”) and arithmetic. Some languages need more
 tokens for the same meaning, which means a higher bill and less room in
 the window.</li>
-<li><strong>Compared with “token” in bag-of-words:</strong> earlier in
-the course, in <strong>bag-of-words</strong> (counting how often each
-word appears and ignoring word order), a token was a whole word cut out
-at the spaces. In LLMs, a token is a learned subword piece. Same word,
-two meanings, so say which one you mean.</li>
+<li><strong>Compared with “token” in bag-of-words:</strong> in
+<strong>bag-of-words</strong> (an older, simpler way to turn text into
+numbers: counting how often each word appears and ignoring word order),
+a token was a whole word cut out at the spaces. In LLMs, a token is a
+learned subword piece. Same word, two meanings, so say which one you
+mean.</li>
 <li><strong>Compared with stemming:</strong> <strong>stemming</strong>
 chops words down to a rough root by fixed rules (“easily” becomes
 “easili”). It throws information away, to shrink the word list for
@@ -4041,29 +4356,33 @@ tokens.” (2025, T/F c) → <strong>True</strong>. <em>Why:</em> the
 tokenizer cuts text into pieces and the model reads those pieces;
 “actually” is there only to make you doubt yourself.</li>
 <li>“one token always equals one word” → <strong>False</strong>.
-<em>Why:</em> a common word can be one token, but “strawberry” is
-three.</li>
+<em>Why:</em> as “Tokens are not words” above says, a common word can be
+one token, but “strawberry” is three pieces: st | raw | berry.</li>
 <li>“BPE merges the least frequent pair” → <strong>False</strong>.
-<em>Why:</em> it merges the <em>most</em> frequent pair.</li>
+<em>Why:</em> BPE glues the <em>most</em> frequent pair, because chunks
+that appear all the time are worth having as one piece; rare things get
+built from parts.</li>
 <li>“In BPE, each step merges the most frequent pair of adjacent
 symbols.” → <strong>True</strong>. <em>Why:</em> “adjacent symbols”
 means two pieces sitting next to each other, and the most common such
 pair is glued at each step.</li>
 <li>“the same sentence costs the same number of tokens in every
-language” → <strong>False</strong>. <em>Why:</em> “Token counts depend
-on language”; the tokenizer’s pieces fit some languages better than
-others.</li>
+language” → <strong>False</strong>. <em>Why:</em> token counts depend on
+language; the tokenizer’s pieces fit some languages better than others,
+so the same sentence can cost more in Norwegian than in English.</li>
 <li>“A Norwegian sentence and its English translation use the same
-number of tokens.” → <strong>False</strong>. <em>Why:</em> in the course
-notebook, the Norwegian sentence needed more tokens than its English
-translation.</li>
+number of tokens.” → <strong>False</strong>. <em>Why:</em> as in the
+example above, a Norwegian sentence needs more tokens than its English
+translation, because Norwegian words get chopped into more pieces.</li>
 <li>“Stemming and BPE tokenization both keep all the information in the
 original text.” → <strong>False</strong>. <em>Why:</em> stemming throws
 parts of words away; BPE only cuts, so the pieces glue back into the
 exact original.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch15.md; 2025 exam Q4(c) in
-simple/s2.md and T/F (c) in simple/s1.md.</p>
+<p><strong>Sources:</strong> Lecture 7 “Introducing Large Language
+Models”, Lecture 9 “LLMs: Input and output” and Lecture 2a
+(bag-of-words, cosine similarity and tf-idf); 2025 exam Q4(c) and T/F
+(c).</p>
 <h2 id="m16">16. Self-attention and the Transformer</h2>
 <p><strong>On the exam:</strong> asked in 2025 as Q4(b) positional
 information (5 points), Q4(d) the motivation for self-attention (5
@@ -4089,12 +4408,13 @@ token into an <strong>embedding</strong>: a list of numbers that stands
 for its meaning, like coordinates on a map. But this first lookup gives
 “bank” the same list in every sentence. What we want is a
 <strong>contextual embedding</strong>: a list for “bank” that changes
-with its neighbours. In the course example, “bank” next to a pond should
-end up close to “water”, and “bank” that “had issued a lot of credit”
-should end up close to “credit”.</p>
+with its neighbours. Say one sentence is about a bank next to a pond,
+and another says the bank “had issued a lot of credit”. The first “bank”
+should end up close to “water”, and the second close to “credit”.</p>
 <p><strong>Self-attention as a library search.</strong> Each word gets
 three new lists of numbers, made from its embedding by three tables the
-model learns during training:</p>
+model learns during training (this is called <strong>projecting</strong>
+each token into a query, a key and a value):</p>
 <ul>
 <li>the <strong>query</strong>: the word’s question, “what am I looking
 for?” Like the question you bring to a library.</li>
@@ -4103,29 +4423,35 @@ the label on a book’s spine.</li>
 <li>the <strong>value</strong>: the word’s content, what gets passed on.
 Like the text inside the book.</li>
 </ul>
-<p>Each word compares its query with every word’s key. A good match
-gives a high <strong>compatibility score</strong>. The scores are turned
-into shares that add up to 100%, the <strong>attention weights</strong>.
-Then the word mixes in the other words’ values in those shares, a
-<strong>weighted average</strong>, like a smoothie that is mostly banana
-with a bit of strawberry. The result is a new list for the word that
-carries its context. In the course example, “it” gives most of its
+<p>Each word compares its query with every word’s key. The comparison is
+called a <strong>dot product</strong>: a quick way of measuring how well
+two lists of numbers match. A good match gives a high
+<strong>compatibility score</strong>. A rule called
+<strong>softmax</strong> turns the scores into shares that add up to
+100%, the <strong>attention weights</strong>. Then the word mixes in the
+other words’ values in those shares, a <strong>weighted
+average</strong>, like a smoothie that is mostly banana with a bit of
+strawberry. The result is a new list for the word that carries its
+context. Back to the tired-animal sentence: “it” gives most of its
 attention to “animal” (made-up shares to picture it: animal 70%, street
-10%, the rest 20%), so its new list carries a lot of “animal”. The
-course calls this the <strong>database</strong> or
+10%, the rest 20%), so its new list carries a lot of “animal”. This
+picture is called the <strong>database</strong> or
 <strong>information-retrieval analogy</strong>: you match what you are
 looking for against the labels, then fetch the contents of the items
-that match.</p>
+that match. The 2025 graders looked for this analogy.</p>
 <p><strong>Two kinds of self-attention: causal and
 bidirectional.</strong></p>
 <ul>
 <li><strong>Causal attention:</strong> each word may look only at itself
-and the words before it. The later words are hidden, which the course
-calls <strong>masking</strong> (“masking out the future”). Like reading
-with a sheet of paper covering everything to the right. It is needed
-when a model writes text one word at a time. While training to guess the
-next word, it must not peek at the answer: “if we know the future, it is
-easy to predict it.”</li>
+and the words before it. The later words are hidden, which is called
+<strong>masking</strong> (“masking out the future”). Like reading with a
+sheet of paper covering everything to the right. In practice, the scores
+of the later words are set to <strong>minus infinity</strong> (written
+−∞, a value lower than any number) before softmax, so their share of
+attention comes out as exactly zero. Causal attention is needed when a
+model writes text one word at a time. While training to guess the next
+word, it must not peek at the answer: “if we know the future, it is easy
+to predict it.”</li>
 <li><strong>Bidirectional attention:</strong> each word looks both ways,
 at the whole sentence. It suits a model that only needs to understand a
 finished text.</li>
@@ -4145,23 +4471,27 @@ one checks names. The heads’ results are glued together and brought back
 to the original length. It is richer, not slower: the heads run side by
 side (<strong>in parallel</strong>), and each works on a smaller slice
 of the numbers, so the total work is about the same as one big head [Not
-in course files — general knowledge].</p>
+in course files — general knowledge]. So multi-head attention does not
+make <strong>estimation</strong> (another word for training a model)
+slower or less efficient.</p>
 <p><strong>The Transformer block.</strong> After attention comes a small
 extra calculation on each word, the <strong>feed-forward
-network</strong>. The course says it “Adds non-linearity to the mix
-(self-attention is linear operations)”. In plain words: it lets the
-model capture curved, more complex patterns, not only straight-line
-ones. A few tidying steps keep training steady. Attention plus these
-steps is one <strong>Transformer block</strong>. Real models stack many
-blocks, and each one makes the word lists richer in meaning.</p>
+network</strong>. Its job, in the standard description: it “Adds
+non-linearity to the mix (self-attention is linear operations)”. In
+plain words: it lets the model capture curved, more complex patterns,
+not only straight-line ones. A few tidying steps keep training steady.
+Attention plus these steps is one <strong>Transformer block</strong>.
+Real models stack many blocks, and each one makes the word lists richer
+in meaning.</p>
 <p><strong>Positional encoding: seat numbers.</strong> Attention looks
 at all the words at the same time. Nothing in it says which word came
 first. The fix is a <strong>positional encoding</strong> (also called
 <strong>positional embedding</strong>): a list of numbers for each place
 in the sentence (“1st place”, “2nd place” and so on). It has the same
 length as a word’s list and is <strong>added</strong> to it slot by
-slot, not glued on the end. Like stamping a seat number onto each
-ticket. The course writes the result as “word + position”. The original
+slot, not glued on the end (gluing on the end is called
+<strong>concatenating</strong>). Like stamping a seat number onto each
+ticket. The result is often written “word + position”. The original
 Transformer built these lists from smooth up-and-down waves, called
 <strong>sinusoidal</strong> (from sine and cosine).</p>
 <h3 id="why-it-works-the-reasoning-15">Why it works: the reasoning</h3>
@@ -4320,31 +4650,40 @@ word numbers</li>
 <ul>
 <li>“In the Transformer’s self-attention mechanism, you can have two
 types of attention; causal- and bidirectional-attention.” (2025, T/F a)
-→ <strong>True</strong>. <em>Why:</em> the course shows exactly these
-two: look back only, and look both ways.</li>
+→ <strong>True</strong>. <em>Why:</em> these are the two kinds described
+above: causal attention looks back only (for writing text), and
+bidirectional attention looks both ways (for understanding a finished
+text).</li>
 <li>“Multi-head attention mechanisms makes estimation of Large Language
 Models slower and less efficient” (2025, T/F i) →
-<strong>False</strong>. <em>Why:</em> “estimation” means training; the
-heads run in parallel and add richer patterns, so it is an improvement,
-not a cost.</li>
+<strong>False</strong>. <em>Why:</em> “estimation” means training. The
+heads run side by side, in parallel, each on a smaller slice, and each
+can spot a different kind of link, so multi-head attention is an
+improvement, not a slowdown.</li>
 <li>“Masking hides earlier words” → <strong>False</strong>.
-<em>Why:</em> it hides <em>future</em> (later) words.</li>
+<em>Why:</em> masking hides the <em>future</em> (later) words, so the
+model can’t peek at the word it is learning to guess; earlier words stay
+visible.</li>
 <li>“In causal attention, the scores for future words are set to −∞
-before the softmax.” → <strong>True</strong>. <em>Why:</em> minus
-infinity is lower than any number, so after turning scores into shares,
-future words get a share of exactly zero.</li>
+before the softmax.” → <strong>True</strong>. <em>Why:</em> this is how
+masking is done: minus infinity is lower than any number, so when
+softmax turns the scores into shares, future words get a share of
+exactly zero.</li>
 <li>“The feed-forward layer adds non-linearity” → <strong>True</strong>.
-<em>Why:</em> it lets the model capture curved, more complex patterns,
-not only straight-line ones.</li>
+<em>Why:</em> the feed-forward network “Adds non-linearity”: it lets the
+model capture curved, more complex patterns, not only the straight-line
+ones attention gives.</li>
 <li>“Positional vectors are concatenated” → <strong>False</strong>.
-<em>Why:</em> “concatenated” means glued on the end; they are added slot
-by slot.</li>
+<em>Why:</em> “concatenated” means glued on the end; the position
+numbers are added slot by slot instead, like stamping a seat number onto
+each ticket.</li>
 <li>“Positional embeddings are added to the word embeddings.” →
 <strong>True</strong>. <em>Why:</em> each word’s numbers get its
 position’s numbers added, giving “word + position”.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch16.md; 2025 exam Q4(b) and Q4(d)
-in simple/s2.md and T/F (a) and (i) in simple/s1.md.</p>
+<p><strong>Sources:</strong> Lecture 8 “Transformers” and Lecture 9
+“LLMs: Input and output”; 2025 exam Q4(b), Q4(d) and T/F (a) and
+(i).</p>
 <h2 id="m17">17. How an LLM picks its next word: input, output and
 temperature</h2>
 <p><strong>On the exam:</strong> not a full question in 2025, but
@@ -4377,9 +4716,11 @@ means. Think of a phone book: name in, number out. The table is called
 the <strong>embedding matrix</strong> (a <strong>matrix</strong> is a
 table of numbers, like a spreadsheet). The lookup works with a
 <strong>one-hot row</strong>: a row of zeros with a single 1 that marks
-the token. It picks out exactly that token’s row of the table, like
-holding one key in a wall of lockers. Nobody writes the numbers in the
-table by hand. They are set during <strong>training</strong>, the long
+the token. When this row is multiplied by the table, every 0 wipes out
+its row of the table and the single 1 keeps one. So the multiplication
+picks out exactly that token’s row, like holding one key in a wall of
+lockers: only one locker opens. Nobody writes the numbers in the table
+by hand. They are set during <strong>training</strong>, the long
 learning phase where the model’s adjustable numbers (its
 <strong>weights</strong>) are tuned.</p>
 <p><strong>Step 3: add “where am I?” numbers.</strong> “Dog bites man”
@@ -4387,8 +4728,11 @@ is not “man bites dog”. But the lookup gives “dog” the same numbers
 wherever it stands. So each position in the text (1st, 2nd, 3rd…) gets
 its own list of numbers too, a <strong>positional embedding</strong>,
 like a seat number at a cinema. It is <strong>added</strong> to the
-token’s numbers, not glued on the end. Now each token carries both
-“which word am I?” and “where am I?”.</p>
+token’s numbers, number by number, not glued on the end. Gluing two
+lists end to end is called <strong>concatenating</strong>, and the exam
+may use that word as a trick: word and position numbers are added, not
+concatenated. Now each token carries both “which word am I?” and “where
+am I?”.</p>
 <p><strong>Step 4: the layers.</strong> These lists then pass through
 many <strong>Transformer layers</strong>: processing stages stacked one
 after another, like rounds of a group discussion. In each round, every
@@ -4419,8 +4763,8 @@ the part that doesn’t fit may be cut off without warning
 (<strong>truncated</strong>), which can change the answer, or you get an
 error.</p>
 <p><strong>Step 6: pick one token, add it, go again.</strong> The rule
-for picking is called <strong>decoding</strong>. The course lists
-these:</p>
+for picking is called <strong>decoding</strong>. These are the main
+rules:</p>
 <ul>
 <li><strong>Greedy decoding:</strong> always pick the top token. Like
 always ordering the most popular dish on the menu. The same input gives
@@ -4438,11 +4782,11 @@ then draw among them. Downside: k stays fixed, but sometimes only 2
 options make sense and sometimes 50 do.</li>
 <li><strong>Temperature sampling:</strong> reshape the chances before
 drawing (see below).</li>
-<li><strong>Top-p sampling</strong> is named in the course but not
-explained. <strong>[Not in course files — general knowledge]</strong> It
-keeps the smallest group of top tokens whose chances add up to a share
-you choose, such as 90%, so the number kept changes with the
-situation.</li>
+<li><strong>Top-p sampling</strong> is named in the course material but
+not explained there. <strong>[Not in course files — general
+knowledge]</strong> It keeps the smallest group of top tokens whose
+chances add up to a share you choose, such as 90%, so the number kept
+changes with the situation.</li>
 </ul>
 <p>The chosen token is stuck onto the end of the text, and the whole
 machine runs again for the next one: “So long and thanks for” → “all” →
@@ -4459,8 +4803,12 @@ customer-service bot. High temperature: the chances get flatter, so
 mistakes. Good for brainstorming. It doesn’t change what the model has
 learned; it only changes how the next word is picked. Exam: “A higher
 temperature makes the output more random” → True.</p>
-<p>At temperature 0 the model always takes the top token, which is
-greedy decoding.</p>
+<p>The dial has a middle point. At temperature 1 the chances are left
+exactly as the model gave them. Below 1 they get
+<strong>sharper</strong>: the favourite wins even more often. Above 1
+they get <strong>flatter</strong>: the underdogs catch up. At
+temperature 0 the model always takes the top token, which is greedy
+decoding, so the same input always gives the same output.</p>
 <p><strong>Encoder and decoder: a second meaning of “decoding”.</strong>
 These words also name two parts of a model.</p>
 <ul>
@@ -4474,19 +4822,26 @@ token at a time, using what it has written so far.</li>
 original Transformer was built this way for translation (“I am a dog” →
 “Jeg er en hund”). Inside a decoder, each token may look only at itself
 and earlier tokens, never later ones, like reading a book with the next
-pages glued shut. This is <strong>causal</strong> attention.
-<strong>Cross-attention</strong>, in one line: the writing part looks
-back at the reading part’s notes, like a translator glancing at the
-original sentence, with the questions (<strong>queries</strong>) coming
-from the decoder and the labels and contents (<strong>keys</strong> and
-<strong>values</strong>) coming from the encoder.</p>
+pages glued shut. This is <strong>causal</strong> attention.</p>
+<p><strong>Cross-attention</strong> is how the two parts talk. It is the
+step where the writing part (decoder) looks back at the reading part’s
+(encoder’s) notes, like a translator glancing back at the original
+sentence while writing the translation. Attention always uses three
+things. The <strong>query</strong> is the question a token asks: “what
+am I looking for?” The <strong>keys</strong> are labels on the notes,
+used to find the matching ones. The <strong>values</strong> are the
+contents of those notes, which get blended into the answer. In
+cross-attention, the <strong>queries come from the decoder</strong> (the
+writer brings the question) and the <strong>keys and values come from
+the encoder</strong> (the reader’s notes supply the labels and the
+content). Swapping these two sides is a favourite exam trap.</p>
 <p>BERT-type models are encoders: each word sees the words on both sides
 (<strong>bidirectional</strong>), and they are used to understand text,
 for example to judge whether a review is positive. GPT-type models are
 decoders: they see only earlier words and are used to write.
-<strong>[Not in course files — general knowledge]</strong> The slides
-list these features without pairing them with BERT and GPT; the pairing
-is standard knowledge.</p>
+<strong>[Not in course files — general knowledge]</strong> The course
+material lists these features without pairing them with BERT and GPT;
+the pairing is standard knowledge.</p>
 <h3 id="why-it-works-the-reasoning-16">Why it works: the reasoning</h3>
 <ul>
 <li><strong>Numbers carry meaning.</strong> A computer can only
@@ -4564,8 +4919,8 @@ again.</li>
 word. It uses only the last token’s.</li>
 <li>Mixing up which side supplies the queries in cross-attention. It is
 the decoder.</li>
-<li>Presenting top-p as defined in the slides. It is not explained
-there.</li>
+<li>Presenting top-p as defined in the course material. It is not
+explained there.</li>
 </ul>
 </div>
 <div class="callout terms">
@@ -4602,45 +4957,53 @@ encoder’s notes</li>
 <h3 id="truefalse-traps-16">True/False traps</h3>
 <ul>
 <li>“The input to a Large Language Model is actually not words, but
-tokens.” (2025, item c) → <strong>True</strong>. <em>Why:</em> the model
-reads tokens, which can be whole words or pieces of words.</li>
+tokens.” (2025, item c) → <strong>True</strong>. <em>Why:</em> as step 1
+explains, the model reads tokens, which can be whole words, pieces of
+words or punctuation marks.</li>
 <li>“A higher temperature makes the output more random.” →
-<strong>True</strong>. <em>Why:</em> it flattens the chances, so less
-likely words come up more often.</li>
+<strong>True</strong>. <em>Why:</em> turning the creativity dial up
+flattens the chances, so less likely words get picked more often.</li>
 <li>“Higher temperature makes the output more deterministic.” →
-<strong>False</strong>. <em>Why:</em> it makes the output more random;
-“deterministic” means the same answer every time.</li>
+<strong>False</strong>. <em>Why:</em> “deterministic” means the same
+answer every time, and a higher temperature does the opposite: it makes
+the output more random.</li>
 <li>“Setting the temperature above 1 makes the next-word chances
-sharper.” → <strong>False</strong>. <em>Why:</em> above 1 flattens them;
-below 1 sharpens them.</li>
+sharper.” → <strong>False</strong>. <em>Why:</em> temperature 1 leaves
+the chances as they are; above 1 flattens them so the underdogs catch
+up, and only below 1 sharpens them.</li>
 <li>“At temperature 0 the model gives the same answer every time.” →
-<strong>True</strong>. <em>Why:</em> temperature 0 means greedy
-decoding, so there is no dice roll.</li>
+<strong>True</strong>. <em>Why:</em> temperature 0 is greedy decoding,
+where the model always takes its top token, so there is no dice
+roll.</li>
 <li>“Greedy decoding always picks the most likely word.” →
 <strong>True</strong>. <em>Why:</em> that is the definition of greedy
-decoding.</li>
+decoding, like always ordering the most popular dish.</li>
 <li>“The original BERT can take inputs of 512 tokens.” →
-<strong>True</strong>. <em>Why:</em> the slides give 512 tokens as the
-original BERT’s limit.</li>
+<strong>True</strong>. <em>Why:</em> as the context-window paragraph
+says, 512 tokens is the most the original BERT can read at once.</li>
 <li>“Word and position embeddings are concatenated.” →
-<strong>False</strong>. <em>Why:</em> they are added together, not glued
-end to end.</li>
+<strong>False</strong>. <em>Why:</em> as step 3 explains, the position
+numbers are added to the word’s numbers, not glued on the end
+(concatenated).</li>
 <li>“Multiplying a one-hot row by the embedding matrix selects one row
-of that matrix.” → <strong>True</strong>. <em>Why:</em> every 0 wipes
-out its row and the single 1 keeps one, so it works as a lookup.</li>
+of that matrix.” → <strong>True</strong>. <em>Why:</em> as step 2
+explains, every 0 wipes out its row and the single 1 keeps one, so the
+multiplication works as a lookup.</li>
 <li>“Weight tying means the same table is used to build the input and to
-produce the output scores.” → <strong>True</strong>. <em>Why:</em> that
-is the definition: one table used both ways.</li>
+produce the output scores.” → <strong>True</strong>. <em>Why:</em> as
+step 5 explains, weight tying means one table is used in both
+directions, like one dictionary used both ways.</li>
 <li>“In cross-attention, queries come from the encoder.” →
-<strong>False</strong>. <em>Why:</em> the queries come from the decoder
-(the writing part).</li>
+<strong>False</strong>. <em>Why:</em> the queries (the questions) come
+from the decoder, the writing part; only the keys and values come from
+the encoder.</li>
 <li>“In the decoder’s cross-attention layer, the keys and values come
 from the encoder.” → <strong>True</strong>. <em>Why:</em> the writer
-brings the questions; the reader’s notes supply the labels and
-contents.</li>
+brings the questions, and the reader’s (encoder’s) notes supply the
+labels (keys) and the contents (values).</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch18.md; 2025 exam True/False (c) in
-simple/s1.md.</p>
+<p><strong>Sources:</strong> Lecture 9a “LLMs: Input and output”, with
+points from Lectures 7, 8 and 9b; 2025 exam T/F (c).</p>
 <h2 id="m18">18. Fine-tuning vs prompting (zero-shot and few-shot)</h2>
 <p><strong>On the exam:</strong> asked in 2025, Q4(e) (5 points: “the
 difference between fine-tuning approaches and prompt engineering”) and
@@ -4650,9 +5013,8 @@ the business-case reflection.</p>
 <p>You have a ready-made model that “knows language” but not your job.
 You can either send it back to school on your own examples
 (<strong>fine-tuning</strong>), or write it a better set of instructions
-(<strong>prompting</strong>). The course sums it up in one line:
-“Uploading a document changes the context. Fine-tuning changes the
-weights.”</p>
+(<strong>prompting</strong>). One line sums it up: “Uploading a document
+changes the context. Fine-tuning changes the weights.”</p>
 <h3 id="how-it-works-in-plain-words-17">How it works, in plain
 words</h3>
 <p><strong>What the model is made of.</strong> A <strong>large language
@@ -4667,7 +5029,9 @@ knows language, but it has never seen your task.</p>
 <strong>prompt</strong>: instructions, examples, documents and your
 question. Everything the model can see in one request is its
 <strong>context</strong>. The context disappears after the answer; the
-next request starts fresh.</p>
+next request starts fresh. The weights, on the other hand, stay fixed
+while you chat: nothing you type in a conversation changes them. Only
+training changes them.</p>
 <p>So there are two different things you can change: <strong>the
 context</strong> (what the model reads this time) or <strong>the
 weights</strong> (the dials inside it).</p>
@@ -4683,7 +5047,9 @@ complaint into one of: fees, app, loans. Reply with one word.” The
 “zero” means zero examples.</li>
 <li><strong>Few-shot</strong>: add one or a few solved examples to the
 prompt, and the model copies the pattern. “Example: ‘The app crashes
-when I log in.’ → app.”</li>
+when I log in.’ → app.” The examples can sit in the system prompt
+(below) or next to the question; either way it is few-shot, and either
+way they are only something the model reads.</li>
 <li>A <strong>system prompt</strong>: standing instructions sent before
 the user’s text, like house rules on a staff noticeboard, often with an
 exact <strong>output format</strong> and the right <strong>tone</strong>
@@ -4702,8 +5068,8 @@ works.</p>
 the model itself.</p>
 <ol type="1">
 <li>Collect complaints that staff have already sorted by hand. Examples
-with the right answer attached are <strong>labelled data</strong>
-(“training data already classified”, in the course’s words).</li>
+with the right answer attached are <strong>labelled data</strong>:
+training data that is already classified.</li>
 <li>Bolt a small new output part onto the top of the model whose only
 job is to choose between your bins. This is a <strong>problem-specific
 head</strong>.</li>
@@ -4714,12 +5080,34 @@ this is <strong>supervised training</strong>.</li>
 old ones locked (<strong>frozen</strong>), or every dial in the
 model.</li>
 </ol>
-<p>The course’s own example is a film review, “entirely predictable and
-lacks energy”, labelled positive or negative. A BERT-type model (a model
-family built to understand text) puts a special marker,
-<strong>[CLS]</strong>, at the start of the text, and its final numbers
-act as a summary of the whole text. A new head on top turns that summary
-into chances for “positive” and “negative”.</p>
+<p><strong>An example, step by step.</strong> Say you run a film website
+and want to sort thousands of reviews into happy (positive) and unhappy
+(negative) ones. The input is one review, such as “entirely predictable
+and lacks energy”. The output you want is two chances that add up to
+100%: how likely the review is positive, and how likely it is negative.
+For this review, “negative” should win.</p>
+<ul>
+<li>You start from a ready-made <strong>BERT-type model</strong>: a
+model family built to read and understand text rather than to write it.
+A model’s reading part is called an <strong>encoder</strong>, so BERT is
+an encoder.</li>
+<li>Before the review goes in, a special marker called
+<strong>[CLS]</strong> is put at the very start: “[CLS] entirely
+predictable and lacks energy”. It is not a real word. It is a
+placeholder whose job is to hold a summary. After the model has read the
+whole review, the list of numbers it holds at the marker’s position (its
+<strong>embedding</strong>) acts as a summary of the whole text.</li>
+<li>On top you bolt a <strong>head</strong>: a small extra final layer
+that turns the model’s output into the answer you need. Here it is a
+<strong>softmax layer</strong>, which turns that summary into two
+chances, positive and negative, that add up to 100%.</li>
+<li>You then train on reviews that people have already tagged positive
+or negative. Retraining the head (and maybe the rest of the model) on
+such examples is what the exam calls <strong>re-estimating</strong> the
+parameters: the dials get new values.</li>
+</ul>
+<p>This is the example the lectures used, and the 2025 model answer
+below mentions the [CLS] marker, so it is worth knowing.</p>
 <p>Fine-tuning is one case of <strong>transfer learning</strong>:
 reusing what a model learned on one job to help with another, like a
 violin player learning the viola much faster than a beginner.</p>
@@ -4741,8 +5129,9 @@ documents change what the most likely answer is, without touching what
 the model has learned.</li>
 <li><strong>The trade-off is control against effort.</strong> Changing
 the weights gives a specialist that behaves the same way every time, but
-costs data, computer power and skill. Changing the context is fast and
-cheap, but the result depends on how well the prompt is written.</li>
+costs data, computer power (often called <strong>compute</strong>) and
+skill. Changing the context is fast and cheap, but the result depends on
+how well the prompt is written.</li>
 </ul>
 <h3 id="when-to-use-it-and-when-not-17">When to use it, and when
 not</h3>
@@ -4753,8 +5142,10 @@ general model is available. Keep a small hand-sorted set to check
 quality.</li>
 <li><strong>Don’t rely on prompting when</strong> you need the same
 behaviour every time at huge volume. It can be inconsistent, you pay for
-every token (text piece) on every request, and only so much fits in the
-context window (the most text the model can read at once).</li>
+every token (text piece) on every request, a small model run on your own
+laptop (a <strong>local model</strong>) can take 5–30 seconds per text,
+and only so much fits in the context window (the most text the model can
+read at once).</li>
 <li><strong>Use fine-tuning when</strong> the task is stable, the volume
 is high, and you have (or can create) labelled data. You get a
 consistent, cheaper-to-run specialist.</li>
@@ -4841,7 +5232,8 @@ against a hand-labelled sample and a simple benchmark.</p>
 is slow and costly at that volume. Training a specialist pays off only
 if you have tagged examples, the job stays the same and the volume is
 big. Either way, check the results. (Naive Bayes is a simple, fast
-word-counting sorter from earlier in the course.)</p>
+sorter that decides a text’s group by counting which words appear in
+it.)</p>
 <div class="callout mistake">
 <p><strong>Common mistakes that lose marks</strong></p>
 <ul>
@@ -4854,7 +5246,7 @@ data.</li>
 <li>Describing only one side of the comparison.</li>
 <li>Claiming fine-tuning always beats prompting.</li>
 <li>Presenting zero-shot or chain-of-thought definitions as quotes from
-the slides. They are not in the course files.</li>
+the course material. They are not in it.</li>
 </ul>
 </div>
 <div class="callout terms">
@@ -4890,27 +5282,31 @@ fine-tuning changes the model</li>
 <ul>
 <li>“In the context of Large Language Models, zero-shot learning
 involves re-estimating only the final output layer of the model.” (2025,
-item j) → <strong>False</strong>. <em>Why:</em> zero-shot changes no
-weights; retraining only the last layer is fine-tuning.</li>
+item j) → <strong>False</strong>. <em>Why:</em> zero-shot means giving
+instructions only, with no examples and no weights changed; retraining
+only the last layer (the head) is a kind of fine-tuning.</li>
 <li>“Few-shot prompting changes the model’s parameters.” →
-<strong>False</strong>. <em>Why:</em> the examples are only part of what
-the model reads; no dial moves.</li>
+<strong>False</strong>. <em>Why:</em> the few examples are only part of
+what the model reads this time, so not a single dial (parameter)
+moves.</li>
 <li>“Adding an example of the desired answer to the system prompt is
 called few-shot prompting.” → <strong>True</strong>. <em>Why:</em>
-few-shot means showing the model one or a few examples of what you
-want.</li>
+few-shot means showing the model one or a few solved examples, and the
+system prompt is one of the places they can go.</li>
 <li>“When fine-tuning, one can update all model parameters or only the
-parameters in the new head.” → <strong>True</strong>. <em>Why:</em> both
-options exist: retrain every dial, or only the new layer’s.</li>
+parameters in the new head.” → <strong>True</strong>. <em>Why:</em> as
+step 4 of fine-tuning says, you can retrain every dial in the model or
+lock the old ones and train only the new head.</li>
 <li>“Fine-tuning is a form of transfer learning.” →
-<strong>True</strong>. <em>Why:</em> it reuses what the model already
-learned and adapts it to your task.</li>
+<strong>True</strong>. <em>Why:</em> fine-tuning reuses what a model
+learned in pre-training and adapts it to your task, which is exactly
+what transfer learning means.</li>
 <li>“RAG updates the model’s weights.” → <strong>False</strong>.
-<em>Why:</em> RAG only changes what the model reads (the context), not
-its weights.</li>
+<em>Why:</em> RAG is a kind of prompting: it pastes documents into what
+the model reads (the context) and leaves the weights untouched.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch20.md; 2025 exam Q4(e) in
-simple/s2.md and True/False (j) in simple/s1.md.</p>
+<p><strong>Sources:</strong> Lecture 9b “Training and fine tuning” and
+Lecture 7 “Introducing LLMs”; 2025 exam Q4(e) and T/F (j).</p>
 <h2 id="m19">19. Using LLMs in practice, including RAG</h2>
 <p><strong>On the exam:</strong> not asked directly in 2025, but it is
 ready-made material for the business-case reflection (2025 Block 5, 20
@@ -4925,8 +5321,8 @@ look things up in before it answers.</p>
 words</h3>
 <p><strong>Where firms use LLMs.</strong> A <strong>large language
 model</strong> (<strong>LLM</strong>), such as ChatGPT, is a program
-that writes text by guessing a likely next piece over and over. The
-course lists five common uses:</p>
+that writes text by guessing a likely next piece over and over. Five
+common uses are:</p>
 <ul>
 <li><strong>Customer support:</strong> answer questions from company
 knowledge and handle routine requests.</li>
@@ -4948,13 +5344,13 @@ send text to the provider over the internet and get answers back
 model plan, use tools and repeat steps by itself. Or you run a free
 model on your own computer (<strong>local deployment</strong>), possible
 because some makers publish the model’s learned numbers (<strong>open
-weights</strong>). The course’s point: “The mode determines the cost
+weights</strong>). The key point: “The mode determines the cost
 structure, where data goes, and who is accountable for errors.”</p>
-<p><strong>What makes a good use case.</strong> The course names five
-things: a <strong>clear task</strong> (what goes in, what should come
-out, what counts as success), <strong>available context</strong> (the
-documents and data needed), <strong>verifiable results</strong> (answers
-that are easy to check against sources or rules), <strong>manageable
+<p><strong>What makes a good use case.</strong> Five things matter: a
+<strong>clear task</strong> (what goes in, what should come out, what
+counts as success), <strong>available context</strong> (the documents
+and data needed), <strong>verifiable results</strong> (answers that are
+easy to check against sources or rules), <strong>manageable
 errors</strong> (start where mistakes can be caught before they cause
 harm) and <strong>business value</strong> (count the cost of setting it
 up, checking it and keeping it running).</p>
@@ -4979,9 +5375,11 @@ given), with an instruction like “Answer using ONLY the provided
 excerpts”. Telling the model to answer only from a text you supply is
 <strong>grounding</strong>, like an open-book exam where only the book
 on the desk is allowed.</li>
-<li>The model writes its answer, ideally at temperature 0 (always taking
-its most likely next word, so the same question gives the same
-answer).</li>
+<li>The model writes its answer, ideally at <strong>temperature</strong>
+0. Temperature is a creativity dial for how the model picks each next
+word: low is safe and predictable, high is varied but makes more
+mistakes. At 0 the model always takes its most likely next word, so the
+same question gives the same answer every time.</li>
 </ol>
 <p>Why not paste in the whole handbook? The model can only read so much
 text at once; that limit is its <strong>context window</strong>, like
@@ -4992,13 +5390,16 @@ as <strong>tf-idf</strong> (it scores a word highly when it is frequent
 in this chunk but rare across all chunks), only finds chunks that share
 the exact words of the question. A search built on <strong>dense
 embeddings</strong> (number lists that capture what a text means) can
-match meaning, so it can link “pensions” with “Social Security”.</p>
+match meaning, so it can link “pensions” with “Social Security”. The
+small practice RAG system built for this course uses the first kind,
+tf-idf word matching, and names dense embeddings as the better choice;
+that is an easy True/False item.</p>
 <p><strong>Making the output usable.</strong> When answers feed into
 other software, they need an exact shape, such as <strong>JSON</strong>
-(a strict text layout like <code>{&quot;sentiment&quot;: &quot;positive&quot;}</code>). The
-course’s practice steps: set temperature 0; write a <strong>system
-prompt</strong> (standing instructions before the user’s text) spelling
-out the exact output format; add one solved example
+(a strict text layout like <code>{&quot;sentiment&quot;: &quot;positive&quot;}</code>). Four
+steps make the output reliable: set temperature 0; write a
+<strong>system prompt</strong> (standing instructions before the user’s
+text) spelling out the exact output format; add one solved example
 (<strong>few-shot</strong>); and say what to do with <strong>edge
 cases</strong>, like a lukewarm review (“The app is fine, I guess”).
 Which labels are allowed is “a business decision, not a coding one”.</p>
@@ -5008,9 +5409,11 @@ up. Without the facts in front of it, the most likely-sounding answer
 may be invented. Putting the right passage into its context makes the
 true answer the most likely one to write. That is why RAG helps, and
 also why it fails when the search hands over the wrong passage: the
-model will happily repeat whatever it was given. The course’s summary:
-“Retrieval changes context; fine-tuning changes weights. Neither
-guarantees accuracy.”</p>
+model will happily repeat whatever it was given. The model’s
+<strong>weights</strong> (the huge set of adjustable numbers it learned
+in training) stay exactly as they were: RAG only changes what the model
+reads this time. In one line: “Retrieval changes context; fine-tuning
+changes weights. Neither guarantees accuracy.”</p>
 <h3 id="when-to-use-it-and-when-not-18">When to use it, and when
 not</h3>
 <ul>
@@ -5042,23 +5445,25 @@ finds nothing when the question uses other words than the document. Test
 how often it finds the right chunk (its <strong>hit rate</strong>) on
 reworded questions, and consider embedding-based search.</li>
 <li><strong>Format failures</strong>: a few good test replies do not
-prove thousands will be. Build checks around the model: a program that
-tests each reply’s format, a <strong>validation sample</strong> (texts
-people have labelled by hand) and a <strong>benchmark</strong> to beat,
-such as Naive Bayes (a simple word-counting sorter) or always guessing
-the most common label.</li>
+prove thousands will be. Four valid JSON replies out of four tries say
+little about 100,000 reviews. Build checks around the model: a program
+that tests each reply’s format, a <strong>validation sample</strong>
+(texts people have labelled by hand) and a <strong>benchmark</strong> to
+beat, such as Naive Bayes (a simple word-counting sorter) or always
+guessing the most common label.</li>
 <li><strong>Token cost</strong>: models read and charge per
-<strong>token</strong> (a word or word piece). Norwegian text, numbers
-and codes get cut into more pieces than English, so they cost more and
-fill the context window faster.</li>
+<strong>token</strong> (a word or word piece). The tool that cuts text
+into tokens was built mostly from English text, so Norwegian text,
+numbers and codes get cut into more pieces than English, so they cost
+more and fill the context window faster.</li>
 <li><strong>Privacy</strong>: sending customer texts to an outside
 provider moves personal data; running a model locally keeps it on your
 own machine, but a small local model is weaker and slower.</li>
 </ul>
 <h3 id="what-the-exam-asks-18">What the exam asks</h3>
 <p><strong>A Norwegian company wants an LLM to answer staff questions
-from its internal handbook. Name two risks the course shows and how to
-handle them.</strong></p>
+from its internal handbook. Name two risks and how to handle
+them.</strong></p>
 <div class="callout model">
 <p><strong>Model answer</strong></p>
 <p>First, the model hallucinates when it lacks the facts, so it should
@@ -5134,39 +5539,46 @@ you can check and fix</li>
 <h3 id="truefalse-traps-18">True/False traps</h3>
 <ul>
 <li>“RAG updates the model’s weights.” → <strong>False</strong>.
-<em>Why:</em> it only changes what the model reads this time.</li>
+<em>Why:</em> RAG only pastes documents into what the model reads this
+time; the weights it learned in training stay exactly as they were.</li>
 <li>“RAG guarantees accurate answers.” → <strong>False</strong>.
-<em>Why:</em> the course says retrieval and fine-tuning both leave
-accuracy unguaranteed; the search can hand over the wrong text.</li>
+<em>Why:</em> retrieval and fine-tuning both leave accuracy
+unguaranteed, because the search step can hand the model the wrong text
+and the model will repeat it.</li>
 <li>“Giving the model the wrong source text can be worse than giving it
-no source at all.” → <strong>True</strong>. <em>Why:</em> the model may
-repeat the wrong passage as if it were the answer.</li>
+no source at all.” → <strong>True</strong>. <em>Why:</em> as the
+hallucination risk says, the model may repeat the wrong passage
+confidently as if it were the answer.</li>
 <li>“Because the document collection is larger than the model’s context
 window, a few chunks are retrieved instead of feeding in everything.” →
-<strong>True</strong>. <em>Why:</em> everything does not fit on the
-model’s desk, so a search picks the pieces.</li>
+<strong>True</strong>. <em>Why:</em> the whole collection does not fit
+on the model’s desk (its context window), so a search step picks the few
+chunks that match best.</li>
 <li>“A tf-idf retriever will find a passage about ‘Social Security for
 the elderly’ when asked about ‘pensions for old people’.” →
-<strong>False</strong>. <em>Why:</em> tf-idf matches exact words only,
-and these two phrases share none.</li>
-<li>“The course’s mini-RAG retriever uses dense embeddings to find
-relevant passages.” → <strong>False</strong>. <em>Why:</em> it uses
-tf-idf word matching; dense embeddings are suggested as the better
-choice.</li>
+<strong>False</strong>. <em>Why:</em> tf-idf only finds chunks that
+share the exact words of the question, and these two phrases share
+none.</li>
+<li>“The small practice RAG system built for the course uses dense
+embeddings to find relevant passages.” → <strong>False</strong>.
+<em>Why:</em> as the retriever paragraph says, it uses tf-idf word
+matching, and dense embeddings are named as the better choice.</li>
 <li>“At temperature 0 the model gives the same answer every time.” →
-<strong>True</strong>. <em>Why:</em> it always takes the top word, so
-there is no randomness.</li>
+<strong>True</strong>. <em>Why:</em> at temperature 0 the model always
+takes its most likely next word, so there is no randomness left.</li>
 <li>“Once a prompt gives 4 out of 4 valid JSON replies, the pipeline can
 safely run on 100,000 reviews without checks.” → <strong>False</strong>.
-<em>Why:</em> a few good replies do not prove thousands; reliability has
-to be checked by code around the model.</li>
+<em>Why:</em> a few good replies do not prove thousands will be good, so
+you need checks around the model: a format checker, a hand-labelled
+validation sample and a benchmark.</li>
 <li>“A Norwegian sentence typically costs fewer tokens than its English
-translation.” → <strong>False</strong>. <em>Why:</em> Norwegian words
-get cut into more pieces, so they cost more.</li>
+translation.” → <strong>False</strong>. <em>Why:</em> the token-cutting
+tool was built mostly from English, so Norwegian words get cut into more
+pieces and cost more.</li>
 </ul>
-<p><strong>Sources:</strong> v3/out/ch21.md; Lecture 7 use cases,
-use-case checklist, risk grid and RAG points in
-notes/D_llm_intro_tokenizers_transformer.md.</p>
+<p><strong>Sources:</strong> Lecture 7 “Introducing LLMs” and the “A
+real LLM on your laptop” practice session; no 2025 exam question asked
+this directly.</p>
 <h2 id="m20">20. Critical issues with LLMs (ESG)</h2>
 <p><strong>On the exam:</strong> asked in 2025, Q4(a) (5 points):
 “Discuss shortly two” ESG issues of LLMs. The same issues make good
